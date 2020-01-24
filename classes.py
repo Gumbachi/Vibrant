@@ -278,9 +278,10 @@ class Guild():
         for i, theme in enumerate(self.themes):
 
             #draw text
-            draw.text((20, i*row_height + 15), f"{theme.name}: ", font=fnt, fill=text_color) #draw text on rectangles
+            draw.text((20, i*row_height + 15), f"{theme.name}: ",
+                      font=fnt, fill=text_color) # draw text on rectangles
             w, _ = draw.textsize(f"{theme.name}: ", fnt)
-            w += 20 #include margin
+            w += 20 # include margin
 
             amt_colors = len(theme.colors)
             rem_space = canvas_width - text_width - margin
@@ -289,7 +290,7 @@ class Guild():
             #draw color preview
             for j, color in enumerate(theme.colors, 0):
                 rgb = color.rgb
-                x1 = j * width_of_rect + text_width + margin #+5 for segmentation margin
+                x1 = j * width_of_rect + text_width + margin
                 x2 = i * row_height + margin
                 y1 = (j+1) * width_of_rect + text_width
                 y2 = (i+1) * row_height - margin
