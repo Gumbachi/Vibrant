@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Red",
+    "hexcode": "#ff0000",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 1
+  },
+  {
+    "name": "Orange",
+    "hexcode": "#ffa500",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 2
+  },
+  {
+    "name": "Yellow",
+    "hexcode": "#ffff00",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 3
+  },
+  {
+    "name": "Green",
+    "hexcode": "#008000",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 4
+  },
+  {
+    "name": "Blue",
+    "hexcode": "#0000ff",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 5
+  },
+  {
+    "name": "Indigo",
+    "hexcode": "#4b0082",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 6
+  },
+  {
+    "name": "Violet",
+    "hexcode": "#ee82ee",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 7
+  }
+]

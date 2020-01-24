@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Color 1",
+    "hexcode": "#d11141",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 1
+  },
+  {
+    "name": "Color 2",
+    "hexcode": "#00b159",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 2
+  },
+  {
+    "name": "Color 3",
+    "hexcode": "#00aedb",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 3
+  },
+  {
+    "name": "Color 4",
+    "hexcode": "#f37735",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 4
+  },
+  {
+    "name": "Color 5",
+    "hexcode": "#ffc425",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 5
+  }
+]

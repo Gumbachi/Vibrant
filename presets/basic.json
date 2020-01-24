@@ -1,0 +1,67 @@
+[
+  {
+    "name": "Aqua",
+    "hexcode": "#00ffff",
+    "index": 1
+  },
+  {
+    "name": "Black",
+    "hexcode": "#000001",
+    "index": 2
+  },
+  {
+    "name": "Blue",
+    "hexcode": "#0000ff",
+    "index": 3
+  },
+  {
+    "name": "Fuchsia",
+    "hexcode": "#ff00ff",
+    "index": 4
+  },
+  {
+    "name": "Green",
+    "hexcode": "#008000",
+    "index": 5
+  },
+  {
+    "name": "Lime",
+    "hexcode": "#00ff00",
+    "index": 6
+  },
+  {
+    "name": "Maroon",
+    "hexcode": "#800000",
+    "index": 7
+  },
+  {
+    "name": "Orange",
+    "hexcode": "#ffa500",
+    "index": 8
+  },
+  {
+    "name": "Purple",
+    "hexcode": "#800080",
+    "index": 9
+  },
+  {
+    "name": "Red",
+    "hexcode": "#ff0000",
+    "index": 10
+  },
+  {
+    "name": "Teal",
+    "hexcode": "#008080",
+    "index": 11
+  },
+  {
+    "name": "White",
+    "hexcode": "#ffffff",
+    "index": 12
+  },
+  {
+    "name": "Yellow",
+    "hexcode": "#ffff00",
+    "index": 13
+  }
+]

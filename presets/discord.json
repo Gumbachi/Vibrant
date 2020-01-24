@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Blurple",
+    "hexcode": "#7289da",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 1
+  },
+  {
+    "name": "White",
+    "hexcode": "#ffffff",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 2
+  },
+  {
+    "name": "Light Gray",
+    "hexcode": "#99aab5",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 3
+  },
+  {
+    "name": "Medium Gray",
+    "hexcode": "#2c2f33",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 4
+  },
+  {
+    "name": "Dark Gray",
+    "hexcode": "#23272a",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 5
+  }
+]

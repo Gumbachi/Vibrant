@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Maastricht Blue",
+    "hexcode": "#08183A",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 1
+  },
+  {
+    "name": "Space Cadet",
+    "hexcode": "#152852",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 2
+  },
+  {
+    "name": "English Violet",
+    "hexcode": "#4b3d60",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 3
+  },
+  {
+    "name": "Sunset Orange",
+    "hexcode": "#fd5e53",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 4
+  },
+  {
+    "name": "Sandy Brown",
+    "hexcode": "#fc9c54",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 5
+  },
+  {
+    "name": "Shandy",
+    "hexcode": "#ffe373",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 6
+  }
+]

@@ -1,0 +1,127 @@
+[
+  {
+    "name": "Aqua",
+    "hexcode": "#00ffff",
+    "index": 1
+  },
+  {
+    "name": "Aquamarine",
+    "hexcode": "#7fffd4",
+    "index": 2
+  },
+  {
+    "name": "Blue",
+    "hexcode": "#0000ff",
+    "index": 4
+  },
+  {
+    "name": "Blue Violet",
+    "hexcode": "#8a2be2",
+    "index": 5
+  },
+  {
+    "name": "Chartreuse",
+    "hexcode": "#7fff00",
+    "index": 6
+  },
+  {
+    "name": "Coral",
+    "hexcode": "#ff7f50",
+    "index": 7
+  },
+  {
+    "name": "Crimson",
+    "hexcode": "#dc143c",
+    "index": 8
+  },
+  {
+    "name": "Cyan",
+    "hexcode": "#00ffff",
+    "index": 9
+  },
+  {
+    "name": "Deep Pink",
+    "hexcode": "#ff1493",
+    "index": 10
+  },
+  {
+    "name": "Deep Sky Blue",
+    "hexcode": "#00bfff",
+    "index": 11
+  },
+  {
+    "name": "Fuchsia",
+    "hexcode": "#ff00ff",
+    "index": 12
+  },
+  {
+    "name": "Hot Pink",
+    "hexcode": "#ff69b4",
+    "index": 13
+  },
+  {
+    "name": "Lime",
+    "hexcode": "#00ff00",
+    "index": 14
+  },
+  {
+    "name": "Midnight Blue",
+    "hexcode": "#191970",
+    "index": 15
+  },
+  {
+    "name": "Orange Red",
+    "hexcode": "#ff4500",
+    "index": 16
+  },
+  {
+    "name": "Pink",
+    "hexcode": "#ffc0cb",
+    "index": 17
+  },
+  {
+    "name": "Plum",
+    "hexcode": "#dda0dd",
+    "index": 18
+  },
+  {
+    "name": "Purple",
+    "hexcode": "#800080",
+    "index": 19
+  },
+  {
+    "name": "Red",
+    "hexcode": "#ff0000",
+    "index": 20
+  },
+  {
+    "name": "Slate Blue",
+    "hexcode": "#6a5acd",
+    "index": 21
+  },
+  {
+    "name": "Spring Green",
+    "hexcode": "#00ff7f",
+    "index": 22
+  },
+  {
+    "name": "Turquoise",
+    "hexcode": "#40e0d0",
+    "index": 23
+  },
+  {
+    "name": "Violet",
+    "hexcode": "#ee82ee",
+    "index": 24
+  },
+  {
+    "name": "White",
+    "hexcode": "#ffffff",
+    "index": 25
+  },
+  {
+    "name": "Yellow",
+    "hexcode": "#ffff00",
+    "index": 26
+  }
+]

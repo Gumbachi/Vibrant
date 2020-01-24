@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+cfg.py
+Procfile
+runtime.txt
+.vscode
+colorbot_env/

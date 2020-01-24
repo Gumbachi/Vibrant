@@ -1,0 +1,37 @@
+[
+  {
+    "name": "Red",
+    "hexcode": "#ff0000",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 1
+  },
+  {
+    "name": "Light Red",
+    "hexcode": "#ff7878",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 2
+  },
+  {
+    "name": "White",
+    "hexcode": "#ffffff",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 3
+  },
+  {
+    "name": "Light Green",
+    "hexcode": "#74d680",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 4
+  },
+  {
+    "name": "Green",
+    "hexcode": "#378b29",
+    "guild_id": 565257922356051973,
+    "role_id": null,
+    "index": 5
+  }
+]
