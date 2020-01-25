@@ -10,7 +10,7 @@ from fuzzywuzzy import process
 from PIL import Image, ImageDraw, ImageFont
 
 from vars import bot
-from functions import hex_to_rgb
+import functions as fn
 
 
 class Guild():
@@ -123,7 +123,7 @@ class Guild():
         """returns discord.Channel objects of enabled channels"""
         guild = bot.get_guild(self.id)
         if guild:
-            return [channel for channel in guild.text_channel
+            return [channel for channel in guild.text_channels
                     if channel.id not in self.disabled_channels]
         else:
             return []
@@ -133,7 +133,7 @@ class Guild():
         """returns discord.Channel objects of disabled channels"""
         guild = bot.get_guild(self.id)
         if guild:
-            return [channel for channel in guild.text_channel
+            return [channel for channel in guild.text_channels
                     if channel.id in self.disabled_channels]
         else:
             return []
@@ -405,7 +405,7 @@ class Color():
     def __init__(self, name, hexcode, guild_id, role_id=None):
         self.name = name
         self.hexcode = hexcode
-        self.rgb = hex_to_rgb(hexcode)
+        self.rgb = fn.hex_to_rgb(hexcode)
         self.guild_id = guild_id
         self.role_id = role_id
         try:

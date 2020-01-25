@@ -14,7 +14,6 @@ class UtilityCommands(commands.Cog):
     async def update_mongo(self, ctx):
         await update_prefs()
 
-
     @commands.command(name='purge')
     async def delete_messages(self, ctx, amount):
         verified_ids = [
@@ -27,11 +26,9 @@ class UtilityCommands(commands.Cog):
             await ctx.channel.purge(limit=int(amount)+1)
             await ctx.send(f"purged {amount} messages", delete_after=2)
 
-
     @commands.command(name="repeat", aliases=["print", "write"])
     async def repeat(self, ctx, *msg):
         await ctx.send(" ".join(msg))
-
 
     @commands.command(name="check")
     async def is_visible(self, ctx, id):
@@ -42,7 +39,6 @@ class UtilityCommands(commands.Cog):
             return await ctx.send("Is visible")
         else:
             return await ctx.send("Is not visible")
-
 
     @commands.command(name="servers")
     async def count_guilds(self, ctx):
@@ -55,10 +51,10 @@ class UtilityCommands(commands.Cog):
         #announce_embed = discord.Embed(title="ColorBOT Announcement", description=" ".join(message))
         # unfinished
 
-    @commands.command(name='test')
+    @commands.command(name='embed')
     async def test_command(self, ctx):
         embed = discord.Embed(
-            title="Test", description="[Google](https://www.google.com/)")
+            title="Test", description="* One\n* Two\n* One\n* Two")
         await ctx.send(embed=embed)
 
 

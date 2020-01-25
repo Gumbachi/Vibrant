@@ -15,7 +15,7 @@ import requests
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from fuzzywuzzy import process
 
-from classes import Guild
+import classes as c
 from cfg import coll  # collection from mongoDB
 from vars import preset_names
 
@@ -27,7 +27,7 @@ async def update_prefs(guilds=None):
         guilds (list of Guild): list of guild to update
     """
     if not guilds:
-        guilds = list(Guild._guilds.values())
+        guilds = list(c.Guild._guilds.values())
 
     for guild in guilds:
         json_data = serialize(guild) # serialize objects
@@ -46,13 +46,13 @@ async def get_prefs():
 
     Only runs on start of program
     """
-    Guild._guilds.clear()  # remove all guilds to be remade
+    c.Guild._guilds.clear()  # remove all guilds to be remade
     data = list(coll.find())  # get mongo data
     if not data:
         return
 
     for dictionary in data:
-        Guild.from_json(dictionary)  # builds guild objects from dictionaries
+        c.Guild.from_json(dictionary)  # builds guild objects from dictionaries
 
 
 def check_hex(search):
@@ -77,9 +77,9 @@ def is_disabled(channel):
     Returns:\n
         bool: if the channel is enabled
     """
-    if isinstance(channel, discord.channel.DMChannel):
+    if isinstance(channel, discord.DMChannel):
         return True
-    if channel.id in Guild.get_guild(channel.guild.id).disabled_channels:
+    if channel.id in c.Guild.get_guild(channel.guild.id).disabled_channels:
         return True
     else:
         return False
@@ -103,7 +103,17 @@ def serialize(obj):
 
 
 def find_user(message, query, guild, threshold=80):
-    # find the right user
+    """Searches for a user in the guild with a query
+
+    Args:
+        message (discord.Message): the message with command
+        query (str): the name to search for
+        guild (discord.Guild): the guild the member is in
+        threshold (int): the fuzzy matching threshold
+
+    Returns:
+        discord.User: the user if found
+    """
     if message.mentions:
         user = message.mentions[0]
     else:
