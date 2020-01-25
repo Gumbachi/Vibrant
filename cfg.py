@@ -7,7 +7,7 @@ client = MongoClient(os.environ['MONGO_KEY'])
 if os.environ["BOT_VERSION"] == "real":
 	print("Using Real Collection")
 	db = client.colorbot_db
-	coll = db.data
+	coll = db.vibrant
 elif os.environ["BOT_VERSION"] == "test":
 	print("Using Test Collection")
 	db = client.colorbot_db
