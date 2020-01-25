@@ -7,9 +7,9 @@ If you forgot your prefix then you can @mention the bot for help.
 
 ## What makes this bot special
 
-  1. This bot is special because it can do things like save and use different themes, disable channels, and has helpful commands like splash which can color everybody so you don't have to do it all yourself.
-  2. The syntax for commands is intuitive for commands like colorme, add, remove which are also aliased for ease of use (e.g. colourme works too for those with the extra 'u')
-  3. The bot also manages your roles so if you aren't using a color then it is removed until you use it again. This cuts down on role clutter
+1. This bot is special because it can do things like save and use different themes, disable channels, and has helpful commands like splash which can color everybody so you don't have to do it all yourself.
+2. The syntax for commands is intuitive for commands like colorme, add, remove which are also aliased for ease of use (e.g. colourme works too for those with the extra 'u')
+3. The bot also manages your roles so if you aren't using a color then it is removed until you use it again. This cuts down on role clutter
 
 ## Features
 
@@ -24,9 +24,9 @@ If you forgot your prefix then you can @mention the bot for help.
 
 ## Setup
 
-**1.** Invite the [bot](https://discordapp.com/api/oauth2/authorize?client_id=589685258841096206&permissions=268561488&redirect_uri=https%3A%2F%2Fdiscordapp.com%2Foauth2%2Fauthorize%3F%26client_id%3D589685258841096206%26scope%3Dbot&scope=bot) to your server
-**2.** Type `$help 1` in a text channel to view setup instructions and to get a basic understanding of how to use the bot. Note that '$' is the default prefix and may change if you decide to, in which case you need to use your custom prefix
-**3.** Follow the setup through until the end and you should have a basic understanding of how to use the bot>
+1. Invite the [bot](https://discordapp.com/api/oauth2/authorize?client_id=589685258841096206&permissions=268561488&redirect_uri=https%3A%2F%2Fdiscordapp.com%2Foauth2%2Fauthorize%3F%26client_id%3D589685258841096206%26scope%3Dbot&scope=bot) to your server
+2. Type `$help 1` in a text channel to view setup instructions and to get a basic understanding of how to use the bot. Note that '$' is the default prefix and may change if you decide to, in which case you need to use your custom prefix
+3. Follow the setup through until the end and you should have a basic understanding of how to use the bot>
 
 ## General Commands
 
