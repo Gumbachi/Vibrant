@@ -2,14 +2,14 @@
 
 A discord bot that can make a server fun and colorful.  
 This bot manages colorful roles for a discord server ie. creation, deletion, editing of roles in a server.  
-You can view how to setup and use commands with the bot using the help command after inviting the bot to your server  
-If you forgot your prefix then you can @mention the bot for help
+You can view how to setup and use commands with the bot using the help command after inviting the bot to your server.  
+If you forgot your prefix then you can @mention the bot for help.
 
 ## What makes this bot special
 
-1. This bot is special because it can do things like save and use different themes, disable channels, and has helpful commands like splash which can color everybody so you don't have to do it all yourself.
-2. The syntax for commands is intuitive for commands like colorme, add, remove which are also aliased for ease of use (e.g. colourme works too for those with the extra 'u')
-3. The bot also manages your roles so if you aren't using a color then it is removed until you use it again. This cuts down on role clutter
+  1. This bot is special because it can do things like save and use different themes, disable channels, and has helpful commands like splash which can color everybody so you don't have to do it all yourself.
+  2. The syntax for commands is intuitive for commands like colorme, add, remove which are also aliased for ease of use (e.g. colourme works too for those with the extra 'u')
+  3. The bot also manages your roles so if you aren't using a color then it is removed until you use it again. This cuts down on role clutter
 
 ## Features
 
