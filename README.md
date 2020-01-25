@@ -30,13 +30,13 @@ If you forgot your prefix then you can @mention the bot for help
 
 ## General Commands
 
-|      **Command**     |      **Example**     |                               **Description**                              |
-|:--------------------:|:--------------------:|:--------------------------------------------------------------------------:|
-| help \<page>         | $help setup          | Standard help command. You know what it does                               |
-| prefix \<new prefix> | $prefix %            | Changes the prefix you use to call commands                                |
-| expose \<user>       | $expose @Gumbachi    | Shows general information about a person in the server                     |
-| pfp \<user>          | $pfp @Gumbachi       | Tries its hardest to find the prominent color of the users profile picture |
-| report \<msg>        | $report Bot's busted | Sends me a direct message. Should be used to report bugs                   |
+|      **Command**     |      **Example**     |                     **Description**                            |
+|:--------------------:|:--------------------:|:--------------------------------------------------------------:|
+| help \<page>         | $help setup          | Standard help command. You know what it does                   |
+| prefix \<new prefix> | $prefix %            | Changes the prefix you use to call commands                    |
+| expose \<user>       | $expose @Gumbachi    | Shows general information about a person in the server         |
+| pfp \<user>          | $pfp @Gumbachi       | Tries to find the prominent color of the users profile picture |
+| report \<msg>        | $report Bot's busted | Sends me a direct message. Should be used to report bugs       |
 
 ## Main Color Commands
 
