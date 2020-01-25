@@ -47,7 +47,7 @@ class Colors(commands.Cog):
     #color author : anyone can use
     @commands.command(name="colorme", aliases=['me', "colourme"])
     async def colorme(self, ctx, *color):
-        if is_disabled(ctx.channel):     
+        if is_disabled(ctx.channel):
             try: await ctx.message.delete()#delete command if disabled
             except: pass
             return await ctx.author.send(f"#{ctx.channel.name} is disabled")
