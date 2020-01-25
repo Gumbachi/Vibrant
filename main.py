@@ -4,12 +4,11 @@ import random
 
 import discord
 from discord.ext import commands
-from webcolors import hex_to_rgb, rgb_to_hex
 
 from cfg import coll, tokens
 from classes import Guild
 from cogs.colors import color_user
-from functions import check_hex, get_prefs, update_prefs
+from functions import check_hex, get_prefs, update_prefs, rgb_to_hex
 from vars import bot, extensions, get_prefix, waiting_on_hexcode
 
 

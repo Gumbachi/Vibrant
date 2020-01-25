@@ -1,12 +1,14 @@
-import re
 import random
+import re
+
 import discord
 from discord.ext import commands
-from webcolors import hex_to_rgb
 from fuzzywuzzy import fuzz, process
-from functions import is_disabled, update_prefs, check_hex
-from vars import bot, get_prefix, get_help, change_log, get_commands
-from classes import Guild, Color
+
+from classes import Color, Guild
+from functions import check_hex, is_disabled, update_prefs
+from vars import bot, change_log, get_commands, get_help, get_prefix
+
 
 class BaseCommands(commands.Cog):
     def __init__(self, bot):

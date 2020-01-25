@@ -8,7 +8,6 @@ import asyncio
 import discord
 from discord.ext import commands, tasks
 from fuzzywuzzy import fuzz, process
-from webcolors import hex_to_rgb
 
 import functions as functions
 from functions import is_disabled, update_prefs, check_hex
@@ -517,7 +516,7 @@ async def swap(ctx, name, action):
     #adjust roles if color is changed
     if color.role_id:
         role = bot.get_guild(color.guild_id).get_role(color.role_id)
-        await role.edit(name=color.name, color=discord.Color.from_rgb(*hex_to_rgb(color.hexcode)))
+        await role.edit(name=color.name, color=discord.Color.from_rgb(*color.rgb))
 
     await update_prefs([guild])#update mongoDB
 

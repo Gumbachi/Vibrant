@@ -8,9 +8,9 @@ import random
 import discord
 from fuzzywuzzy import process
 from PIL import Image, ImageDraw, ImageFont
-from webcolors import hex_to_rgb
 
 from vars import bot
+from functions import hex_to_rgb
 
 
 class Guild():

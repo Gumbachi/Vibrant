@@ -13,44 +13,47 @@ import binascii
 import discord
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageOps
-from webcolors import hex_to_rgb, rgb_to_hex
 from fuzzywuzzy import process
 
 from classes import Guild
-from cfg import coll #collection from mongoDB
+from cfg import coll  # collection from mongoDB
 from vars import preset_names
 
+
 async def update_prefs(guilds=None):
-    """Updates the linked mongoDB database. Will update all if arg is left blank
+    """Updates the linked mongoDB database. Updates all if arg is left blank
 
     Args:\n
-        guilds (list of Guild): A list of guild objects specifying which mongoDB document to update
+        guilds (list of Guild): list of guild to update
     """
     if not guilds:
         guilds = list(Guild._guilds.values())
 
     for guild in guilds:
-        json_data = serialize(guild) #serialize objects to be json compatible for storage in database
+        json_data = serialize(guild) # serialize objects
 
-        #find a document based on ID and update update
+        # find a document based on ID and update update
         if coll.find_one({"id": guild.id}):
             if not coll.find_one(json_data):
                 coll.find_one_and_update({"id": guild.id}, {'$set': json_data})
         else:
-            coll.insert_one(json_data) #add new document if guild is not found
+            # add new document if guild is not found
+            coll.insert_one(json_data)
+
 
 async def get_prefs():
     """Generates objects from json format to python objects from mongoDB
 
     Only runs on start of program
     """
-    Guild._guilds.clear() #remove all guilds to be remade
-    data = list(coll.find())#get mongo data
+    Guild._guilds.clear()  # remove all guilds to be remade
+    data = list(coll.find())  # get mongo data
     if not data:
         return
 
     for dictionary in data:
-        Guild.from_json(dictionary)#builds guild objects from dictionaries
+        Guild.from_json(dictionary)  # builds guild objects from dictionaries
+
 
 def check_hex(search):
     """Verify that a string is a valid hexcode
@@ -63,6 +66,7 @@ def check_hex(search):
     """
     valid = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', search)
     return True if valid else False
+
 
 def is_disabled(channel):
     """Evaluates if a channel is disabled
@@ -79,6 +83,7 @@ def is_disabled(channel):
         return True
     else:
         return False
+
 
 def serialize(obj):
     """Convert an object into valid json
@@ -98,7 +103,7 @@ def serialize(obj):
 
 
 def find_user(message, query, guild, threshold=80):
-    #find the right user
+    # find the right user
     if message.mentions:
         user = message.mentions[0]
     else:
@@ -113,30 +118,34 @@ def find_user(message, query, guild, threshold=80):
                     break
     return user
 
+
 def draw_presets():
     """Draws a preset based on colorbot presets
 
-    Returns:\n
+    Returns:
         A byte array of the image
     """
     row_height = 60
     canvas_width = 900
     text_width = 250
 
-    img = Image.new('RGB', (canvas_width, len(preset_names) * row_height), color=(54,57,63))#generate image
-    draw = ImageDraw.Draw(img) #set image for drawing
-    fnt = ImageFont.truetype(f'.{os.path.sep}assets{os.path.sep}OpenSans-Regular.ttf', 40)#set font
-    text_color = (255,255,255)#white text
+    img = Image.new('RGB', (canvas_width, len(preset_names) * row_height),
+                            color=(54, 57, 63))  # generate image
+    draw = ImageDraw.Draw(img)  # set image for drawing
+    fnt = ImageFont.truetype(
+        f'.{os.path.sep}assets{os.path.sep}OpenSans-Regular.ttf', 40)  # set font
+    text_color = (255, 255, 255)  # white text
     margin = 5
 
-    #draws boxes based on amount of items and colors each box and labels them
+    # draws boxes based on amount of items and colors each box and labels them
     for i, preset in enumerate(preset_names):
         with open(f"presets{os.path.sep}{preset}.json") as data_file:
             set_data = json.load(data_file)
 
-        draw.text((20, i*row_height), f"{preset}: ", font=fnt, fill=text_color) #draw text on rectangles
+        # draw text on rectangles
+        draw.text((20, i*row_height), f"{preset}: ", font=fnt, fill=text_color)
         w, _ = draw.textsize(f"{preset}: ", fnt)
-        w += 20 #include margin
+        w += 20  # include margin
 
         amt_colors = len(set_data)
         rem_space = canvas_width - text_width - margin
@@ -144,16 +153,18 @@ def draw_presets():
 
         for j, color in enumerate(set_data, 0):
             rgb = hex_to_rgb(color['hexcode'])
-            x1 = j * width_of_rect + text_width + margin #+5 for segmentation margin
+            x1 = j * width_of_rect + text_width + margin  # +5 for segmentation margin
             x2 = i * row_height + margin
             y1 = (j+1) * width_of_rect + text_width
             y2 = (i+1) * row_height - margin
             draw.rectangle([x1, x2, y1, y2], fill=rgb)
-    #return binary data
+
+    # return binary data
     imgByteArr = io.BytesIO()
     img.save(imgByteArr, format='PNG')
     imgByteArr = imgByteArr.getvalue()
     return imgByteArr
+
 
 def pfp_analysis(URL):
     NUM_CLUSTERS = 5
@@ -176,3 +187,15 @@ def pfp_analysis(URL):
     hexcode = binascii.hexlify(bytearray(int(c) for c in rgb)).decode('ascii')
     #print(f'most frequent is {rgb} ({hexcode})')
     return f"#{hexcode[:6]}"
+
+
+def rgb_to_hex(rgb):
+    """Converts rgb tuple to hexcode string"""
+    return '%02x%02x%02x' % rgb
+
+
+def hex_to_rgb(value):
+    """Converts hexcode string to rgb tuple"""
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i+lv//3], 16) for i in range(0, lv, lv//3))
