@@ -23,6 +23,7 @@ class BaseCommands(commands.Cog):
     async def help(self, ctx, arg=None):
         """The standard help command. Pulls info from vars.py and allows
          users to select pages or specific commands"""
+
         # check if channel is disabled
         disabled = is_disabled(ctx.channel)
         if disabled:

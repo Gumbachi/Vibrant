@@ -5,7 +5,7 @@ import random
 import discord
 from discord.ext import commands
 
-from cfg import coll, tokens
+from cfg import coll
 from classes import Guild
 from cogs.colors import color_user
 from functions import check_hex, get_prefs, update_prefs, rgb_to_hex
@@ -185,4 +185,4 @@ if __name__ == '__main__':
             print(f"Couldnt load {extension}")
             print(e)
 
-bot.run(tokens["token"])  # runs the bot
+bot.run(os.environ["TOKEN"])  # runs the bot
