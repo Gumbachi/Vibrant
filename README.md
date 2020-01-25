@@ -66,11 +66,11 @@ If you forgot your prefix then you can @mention the bot for help
 
 |    **Command**    | **Example** |                                                   **Description**                                                   |
 |:-----------------:|:-----------:|:-------------------------------------------------------------------------------------------------------------------:|
-| enable \<all>     | $enable     | Will enable a channel if disabled. 'all' is an optional argument to enable all channels                             |
-| disable \<all>    | $disable    | Will disable a channel if enabled. 'all' is an optional argument to disable all channels                            |
+| enable \<all>     | $enable     | Will enable a channel if disabled. 'all' will toggle all channnels                             |
+| disable \<all>    | $disable    | Will disable a channel if enabled. 'all' will toggle all channels                            |
 | welcome \<remove> | $welcome    | Sets the welcome channel for greetings and auto assigned colors |
 | status            | $status     | Provides the status of the channel                                                                                  |
-| channels          | $channels   | Provides a list of all enabled and disabled channels. Also shows the welcome channel                                |
+| channels          | $channels   | Provides a list of all enabled and disabled channels                                |
 
 ## About the Bot
 
