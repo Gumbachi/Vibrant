@@ -40,37 +40,37 @@ If you forgot your prefix then you can @mention the bot for help
 
 ## Main Color Commands
 
-|             **Command**             |       **Example**       |                                 **Description**                                |
-|:-----------------------------------:|:-----------------------:|:------------------------------------------------------------------------------:|
-| colorme \<color/index>              | $colorme 3               | Colors you. Colors user randomly if not given a color                          |
-| color \<user> \<color/index>        | $color @Gumbachi 2    | Colors a specific user a specific color                                        |
-| colors                              | $colors                  | Shows a nicely laid out grid of your colors                                    |
-| add \<hexcode> \<name>              | $add #FFC0CB Pink        | Adds a color to your active colors                                             |
-| remove \<color>                | $remove pink             | Removes a color from your active colors                                        |
-| rename \<color> \| \<name> | $rename pink \| blue     | Renames a color in your active colors                                         |
-| recolor \<color> \| \<hexcode> | $recolor 2 \| #0000FF | Changes the way the color looks                                               |
+|          **Command**           |      **Example**      |                  **Description**                      |
+|:------------------------------:|:---------------------:|:-----------------------------------------------------:|
+| colorme \<color/index>         | $colorme 3            | Colors you. Colors user randomly if not given a color |
+| color \<user> \<color/index>   | $color @Gumbachi 2    | Colors a specific user a specific color               |
+| colors                         | $colors               | Shows a nicely laid out grid of your colors           |
+| add \<hexcode> \<name>         | $add #FFC0CB Pink     | Adds a color to your active colors                    |
+| remove \<color>                | $remove pink          | Removes a color from your active colors               |
+| rename \<color> \| \<name>     | $rename pink \| blue  | Renames a color in your active colors                 |
+| recolor \<color> \| \<hexcode> | $recolor 2 \| #0000FF | Changes the way the color looks                       |
 
 ## Other Color Commands
 
-|   **Command**   |    **Example**   |                                                **Description**                                                |
-|:---------------:|:----------------:|:-------------------------------------------------------------------------------------------------------------:|
-| splash \<color> | $splash          | Colors everyone who isn't. |
-| set \<preset>   | $set vibrant     | Changes the active colors to a preset set of colors                                                           |
-| presets         | $presets         | Shows a list of presets to choose from                                                                        |
-| preview         | $preview vibrant | Shows a preview of the preset                                                                                 |
-| info \<color>   | $info Red        | Shows info about a color like members it belongs to and hexcode                                               |
-| export          | $export          | Provides a JSON file with a backup of your color loadout                                                      |
-| import          | $import          | Sets colors to those in attached JSON file              |
+|   **Command**   |    **Example**   |                       **Description**                           |
+|:---------------:|:----------------:|:---------------------------------------------------------------:|
+| splash \<color> | $splash          | Colors everyone who isn't.                                      |
+| set \<preset>   | $set vibrant     | Changes the active colors to a preset set of colors             |
+| presets         | $presets         | Shows a list of presets to choose from                          |
+| preview         | $preview vibrant | Shows a preview of the preset                                   |
+| info \<color>   | $info Red        | Shows info about a color like members it belongs to and hexcode |
+| export          | $export          | Provides a JSON file with a backup of your color loadout        |
+| import          | $import          | Sets colors to those in attached JSON file                      |
 
 ## Channel Commands
 
-|    **Command**    | **Example** |                                                   **Description**                                                   |
-|:-----------------:|:-----------:|:-------------------------------------------------------------------------------------------------------------------:|
-| enable \<all>     | $enable     | Will enable a channel if disabled. 'all' will toggle all channnels                             |
-| disable \<all>    | $disable    | Will disable a channel if enabled. 'all' will toggle all channels                            |
-| welcome \<remove> | $welcome    | Sets the welcome channel for greetings and auto assigned colors |
-| status            | $status     | Provides the status of the channel                                                                                  |
-| channels          | $channels   | Provides a list of all enabled and disabled channels                                |
+|    **Command**    | **Example** |                        **Description**                             |
+|:-----------------:|:-----------:|:------------------------------------------------------------------:|
+| enable \<all>     | $enable     | Will enable a channel if disabled. 'all' will toggle all channnels |
+| disable \<all>    | $disable    | Will disable a channel if enabled. 'all' will toggle all channels  |
+| welcome \<remove> | $welcome    | Sets the welcome channel for greetings and auto assigned colors    |
+| status            | $status     | Provides the status of the channel                                 |
+| channels          | $channels   | Provides a list of all enabled and disabled channels               |
 
 ## About the Bot
 
