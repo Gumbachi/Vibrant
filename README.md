@@ -1,8 +1,8 @@
 # ColorBOT
 
-A discord bot that can make a server fun and colorful.
-This bot manages colorful roles for a discord server ie. creation, deletion, editing of roles in a server.
-You can view how to setup and use commands with the bot using the help command after inviting the bot to your server/guild
+A discord bot that can make a server fun and colorful.  
+This bot manages colorful roles for a discord server ie. creation, deletion, editing of roles in a server.  
+You can view how to setup and use commands with the bot using the help command after inviting the bot to your server  
 If you forgot your prefix then you can @mention the bot for help
 
 ## What makes this bot special
@@ -74,7 +74,7 @@ If you forgot your prefix then you can @mention the bot for help
 
 ## About the Bot
 
-This bot is written in python using the discord.py library and makes use of other libraries like pillow to draw images to make viewing colors easy
+This bot is written in python using the discord.py library and makes use of other libraries like pillow to draw images to make viewing colors easy  
 The bot stores information about your colors in a MongoDB database so if the bot goes offline you don't lose your data
 
 ## Support Server
