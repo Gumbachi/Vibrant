@@ -39,7 +39,7 @@ def get_prefix(bot, message):
                 id = guild.id
     else:
         id = message.guild.id
-    if coll.count():
+    if coll.count_documents():
         data = coll.find_one({"id": id})
     if "prefix" not in data.keys():
         data["prefix"] = '$'
