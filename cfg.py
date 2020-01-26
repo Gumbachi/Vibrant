@@ -1,14 +1,18 @@
 import os
+import sys
 from pymongo import MongoClient
 
 # database setup
-client = MongoClient(os.environ['MONGO_KEY'])
+client = MongoClient(f"mongodb+srv://Gumbachi:{os.environ['MONGO_PASS']}@cluster0-wglq9.mongodb.net/test?retryWrites=true&w=majority")
+db = client.VibrantDB
+
 
 if os.environ["BOT_VERSION"] == "real":
 	print("Using Real Collection")
-	db = client.colorbot_db
-	coll = db.vibrant
+	coll = db.VibrantData
 elif os.environ["BOT_VERSION"] == "test":
 	print("Using Test Collection")
-	db = client.colorbot_db
-	coll = db.ColorTest
+	coll = db.VibrantTestData
+else:
+	print("Couldn't connect to MongoDB. Exiting Program")
+	sys.exit()

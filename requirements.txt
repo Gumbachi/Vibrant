@@ -13,6 +13,7 @@ multidict>=4.7.4
 numpy>=1.18.1
 Pillow>=7.0.0
 pymongo>=3.10.1
+python-Levenshtein==0.12.0
 ratelimiter>=1.2.0.post0
 requests>=2.22.0
 scipy>=1.4.1
