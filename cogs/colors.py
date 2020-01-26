@@ -1,7 +1,7 @@
 import io
 import json
 import os
-import random
+from random import randint
 import re
 
 import asyncio
@@ -70,19 +70,28 @@ class Colors(commands.Cog):
         await ctx.send(f"{ctx.author.name} no longer has the **{role.name}** color role")
         await update_prefs([guild])
 
-    #splashes the entire guild with color roles
     @commands.command(name="splash", aliases=["colorall", "colourall"])
     async def color_server(self, ctx, qcolor=None, trace=True):
+        """
+        Gathers all of the uncolored people and assigns them a color
+
+        Args:
+            qcolor (str): An optional arg for coloring everyone a single color
+            trace (bool): Whether or not the function should print anything
+        """
+        # check if channel status
         if is_disabled(ctx.channel):
             await ctx.message.delete()
             return await ctx.author.send(f"#{ctx.channel.name} is disabled")
 
+        # check permissions
         if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need the `manage roles` permission to use this command")
+            return await ctx.send(
+                "You need the `manage roles` permission to use this command")
 
         guild = Guild.get_guild(ctx.guild.id)
 
-        #shows lack of colors to user
+        # check if there are colors
         if not guild.colors and trace:
             return await ctx.send(embed=vars.none_embed)
 
@@ -93,23 +102,34 @@ class Colors(commands.Cog):
             if not color:
                 return await ctx.send("Couldn't find that color")
 
-        uncolored = [member.name for member in ctx.guild.members if not guild.get_color_role(member)]#list of members that need colors
+        # get uncolored members
+        uncolored = [member.name for member in ctx.guild.members
+                     if not guild.get_color_role(member)]
 
+        # estimate time to complete command
         if trace:
-            await ctx.send(f"Coloring everyone will take around {len(uncolored)/2 + (5 * (len(uncolored)//8))} seconds")
+            await ctx.send(("Coloring everyone will take around "
+                f"{len(uncolored)/2 + (5 * (len(uncolored)//8))} seconds"))
 
+        # loop through and color members
         async with ctx.channel.typing():
-            index = 1 if not color else color.index
+            index = randint(1, len(guild.colors)) if not color else color.index
             for counter, name in enumerate(uncolored, 1):
+                # pause every 8 colors
                 if counter%8 == 0 and counter != len(guild.colors):
-                    await asyncio.sleep(5)#wait 5 sec to avoid api abuse
+                    await asyncio.sleep(5)
 
+                # keep index in range
                 if index > len(guild.colors):
                     index = 1
-                await color_user(ctx, name, (str(index),), trace=False)#color user
+
+                await color_user(ctx, name, (str(index),), trace=False)
+
+                # increment index
                 if not color:
                     index += 1
 
+        # report success
         if trace:
             await ctx.send("Success! Everyone visible has been colored")
         await update_prefs([guild])

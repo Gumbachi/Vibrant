@@ -23,7 +23,7 @@ from vars import preset_names
 async def update_prefs(guilds=None):
     """Updates the linked mongoDB database. Updates all if arg is left blank
 
-    Args:\n
+    Args:
         guilds (list of Guild): list of guild to update
     """
     if not guilds:
