@@ -233,6 +233,5 @@ class BaseCommands(commands.Cog):
         else:
             await ctx.send("Message sent.")
 
-
 def setup(bot):
     bot.add_cog(BaseCommands(bot))

@@ -201,7 +201,7 @@ def pfp_analysis(URL):
 
 def rgb_to_hex(rgb):
     """Converts rgb tuple to hexcode string"""
-    return '%02x%02x%02x' % rgb
+    return '#%02x%02x%02x' % rgb
 
 
 def hex_to_rgb(value):
