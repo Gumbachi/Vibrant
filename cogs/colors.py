@@ -74,7 +74,7 @@ class Colors(commands.Cog):
     @commands.command(name="splash", aliases=["colorall", "colourall"])
     async def color_server(self, ctx, qcolor=None, trace=True):
         if is_disabled(ctx.channel):
-            await ctx.message.delete()#delete command if disabled
+            await ctx.message.delete()
             return await ctx.author.send(f"#{ctx.channel.name} is disabled")
 
         if not ctx.author.guild_permissions.manage_roles:
@@ -96,12 +96,12 @@ class Colors(commands.Cog):
         uncolored = [member.name for member in ctx.guild.members if not guild.get_color_role(member)]#list of members that need colors
 
         if trace:
-            await ctx.send(f"This command will take about {len(uncolored) * 1.5} seconds")
+            await ctx.send(f"Coloring everyone will take around {len(uncolored)/2 + (5 * (len(uncolored)//8))} seconds")
 
         async with ctx.channel.typing():
             index = 1 if not color else color.index
             for counter, name in enumerate(uncolored, 1):
-                if counter%10 == 0 and counter != len(guild.colors):
+                if counter%8 == 0 and counter != len(guild.colors):
                     await asyncio.sleep(5)#wait 5 sec to avoid api abuse
 
                 if index > len(guild.colors):
