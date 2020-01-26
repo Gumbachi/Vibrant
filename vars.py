@@ -39,12 +39,15 @@ def get_prefix(bot, message):
                 id = guild.id
     else:
         id = message.guild.id
-    data = coll.find_one({"id": id})
+    try:
+        data = coll.find_one({"id": id})
+    except:
+        return '$'
     if "prefix" not in data.keys():
         data["prefix"] = '$'
     return data["prefix"]
 
-bot = commands.Bot(command_prefix = get_prefix, help_command = None) #creates bot object
+bot = commands.Bot(command_prefix=get_prefix, help_command=None) # creates bot object
 
 none_embed = discord.Embed(title="No active colors", description=f"To add colors get someone with permission to perform the `set` or `add` command")
 
@@ -102,7 +105,7 @@ def get_help(p):
                                     `{p}disable <all>`: Disables the channel or all channels
                                     `{p}welcome <remove>`: Toggles the channel for welcoming and saying goodbye to users
                                     `{p}status`: displays disabled/enabled status for channel
-                                    `{p}data`: Shows disabled channels and welcome channel   
+                                    `{p}data`: Shows disabled channels and welcome channel
                                     """
         }
     }
