@@ -37,7 +37,7 @@ class BaseCommands(commands.Cog):
         # Table of contents
         if not arg:
             recipient = ctx.author if disabled else ctx
-            title = "ColorBOT Help"
+            title = "Vibrant Help"
             description = f"""Table of Contents.
                 To go to another page please use `{p}help <page number>`
                 Example `{p}help 1`"""
@@ -46,14 +46,14 @@ class BaseCommands(commands.Cog):
         # setup instructions/how to use
         elif arg == '1' or arg == 'setup':
             recipient = ctx.author
-            title = "ColorBOT Setup"
-            description = "Follow these steps to learn how to use ColorBOT"
+            title = "VIbrant Setup"
+            description = "Follow these steps to learn how to use Vibrant"
             fields = help_dict[1].items()
 
         # list of command and short descriptions
         elif arg == '2' or arg == 'commands':
             recipient = ctx.author
-            title = "ColorBOT Commands"
+            title = "Vibrant Commands"
             description = ("A list of commands the bot has. For more info "
                           f"on a specific command you can use `{p}help <command>`"
                           f"Example: `{p}help add`")
@@ -89,7 +89,7 @@ class BaseCommands(commands.Cog):
         else:
             await ctx.send(f"Howdy, {ctx.message.author.mention}!")
 
-    @commands.command(name='prefix', aliases=['colorbotprefix'])
+    @commands.command(name='prefix', aliases=['vibrantprefix'])
     async def change_prefix(self, ctx, new_prefix=None):
         """Changes the server prefix and updates the database
 
@@ -203,7 +203,7 @@ class BaseCommands(commands.Cog):
 
         # create and add to embed
         patch_embed = discord.Embed(
-            title=f"ColorBOT v{version} Patch Notes",
+            title=f"Vibrant v{version} Patch Notes",
             description=(f"Current Version: {latest}\n"
                          f"Versions: {', '.join(change_log.keys())}"),
             color=discord.Colour.blue())

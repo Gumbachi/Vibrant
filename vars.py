@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from cfg  import coll
+from cfg import coll
 
 #Cogs the bot loads
 extensions = ['cogs.errors',
@@ -43,6 +43,7 @@ def get_prefix(bot, message):
     try:
         data = coll.find_one({"id": id})
     except:
+        print("no coll found for prefix")
         return '$'
     if "prefix" not in data.keys():
         data["prefix"] = '$'
@@ -59,7 +60,7 @@ def get_help(p):
         None: {
             "1. Setup": "Shows you how to set up the bot easily and how to use basic commands",
             "2. Commands": "Shows a list of commands the bot has",
-            "-----------------------------": "[Vote for ColorBOT](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Colorbot)"
+            "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
         1: {
             "Set a Welcome Channel": f"""-Set a welcome channel for the bot to send a message in the channel when ever a new person joins your server
@@ -212,9 +213,9 @@ def get_commands(p):
         "prefix": {
             "Description": "Changes the server prefix",
             "Fields": """new prefix: this is a required field for the new prefix""",
-            "Usage": f"`{p}prefix $`: Will change prefix to $\n`{p}colorbotprefix $`: Does the same thing under a different alias",
-            "Aliases": "colorbotprefix",
-            "More Information": f"""if you have overlap issues then use `{p}colorbotprefix new_prefix` to dodge bot overlap"""
+            "Usage": f"`{p}prefix $`: Will change prefix to $\n`{p}vibrantprefix $`: Does the same thing under a different alias",
+            "Aliases": "vibrantprefix",
+            "More Information": f"""if you have overlap issues then use `{p}vibrantprefix new_prefix` to dodge bot overlap"""
         },
         "clear_all_colors": {
             "Description": "Will remove all colors from a colorset",
@@ -281,7 +282,7 @@ def get_commands(p):
 
 change_log = {
     "0.3": {
-        "@ColorBOT for help": "Users can mention the bot to give info about help",
+        "@Vibrant for help": "Users can mention the bot to give info about help",
         "Changeable Prefixes": "Users can change prefix with prefix command to avoid prefix conflict with other bots",
         "Added patch notes": "you can see what I'm doing and I can see what I've done",
         "Color adding prompts removed": "They no longer show up",
@@ -296,7 +297,7 @@ change_log = {
         "Overhauled help command": "Gave help a bunch of useful stuff like setup and individual command help",
         "`clear_all_colors` and `set` changed": "Commands now send a backup just incase",
         "Changed data command name": "Changed it to channels since it only shows channel data",
-        "Added a force prefix change": "can use colorbotprefix command to avoid overlap"
+        "Added a force prefix change": "can use vibrantprefix command to avoid overlap"
     },
     "0.6":{
         "Aliased Commands": "Gave a bunch of commands alternate names like add/remove can be create/delete if you want",
