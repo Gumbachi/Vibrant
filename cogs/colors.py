@@ -66,8 +66,6 @@ class Colors(commands.Cog):
         if not role:
             return await ctx.send("You don't have a color to remove")
 
-        removed_color = guild.get_color("role_id", role.id)
-        removed_color.members.remove(ctx.author.id)
         await ctx.author.remove_roles(role)#remove the role
         await ctx.send(f"{ctx.author.name} no longer has the **{role.name}** color role")
         await update_prefs([guild])
@@ -454,8 +452,6 @@ async def color_user(ctx, user, qcolor, trace=True):
     #remove user's current color roles
     role = guild.get_color_role(user)
     if role:
-        removed_color = guild.get_color("role_id", role.id)
-        removed_color.members.remove(user.id)
         await user.remove_roles(role)
 
     #check if role already exists and assigns then ends process if true
@@ -471,11 +467,8 @@ async def color_user(ctx, user, qcolor, trace=True):
         await user.add_roles(color_role)
 
     print(f"COLORING {user} -> {color.name}")
-    if user.id not in color.members:
-        color.members.append(user.id)
     if trace:
         await ctx.send(f"Gave **{user.name}** the **{color_role.name}** role")
-    await guild.clear_empty_roles()
     await update_prefs([guild])
 
 async def swap(ctx, name, action):

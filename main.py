@@ -115,6 +115,39 @@ async def on_member_remove(member):
 
 
 @bot.event
+async def on_member_update(before, after):
+    """updates color info if a users color role is manually removed"""
+    # check if any roles changed
+    if before.roles == after.roles:
+        return
+
+    guild = Guild.get_guild(before.guild.id)
+
+    # convert roles to set for comparison
+    roles_before = set(before.roles)
+    roles_after = set(after.roles)
+
+    # find difference between sets
+    removed_roles = roles_before - roles_after
+    added_roles = roles_after - roles_before
+
+    # role removed
+    if removed_roles:
+        for role in removed_roles:
+            if color := guild.get_color("role_id", role.id):
+                color.members.remove(before.id)
+
+    # role added
+    if added_roles:
+        for role in added_roles:
+            if color := guild.get_color("role_id", role.id):
+                color.members.append(before.id)
+
+    await guild.clear_empty_roles()
+    await update_prefs([guild])
+
+
+@bot.event
 async def on_guild_join(guild):
     """creates new object and updates database when the bot joins a guild"""
     guild = Guild(guild.id)
