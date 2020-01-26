@@ -146,7 +146,7 @@ class Colors(commands.Cog):
             return await ctx.send("You need `manage roles` permission to use this command")
 
         if set_name not in vars.preset_names:
-            return await ctx.send("Couldn't find that preset")
+            raise commands.UserInputError(f"Couldn't find **{set_name}**")
 
         #read the file into dict
         sep = os.path.sep
@@ -190,7 +190,7 @@ class Colors(commands.Cog):
 
         name = " ".join(name)
         if len(name) > 99:
-            return await ctx.send("The name of your color is too long")
+            raise commands.UserInputError(f"**{name}** is too long of a name")
 
         guild = Guild.get_guild(ctx.guild.id)
 
@@ -201,7 +201,7 @@ class Colors(commands.Cog):
         if re.search(r"[\S]+", name) is None:
             name = f"Color {len(guild.colors) + 1}"
         if re.search(r"[|]+", name):
-            return await ctx.send("You cannot use the `|` symbol in names")
+            raise commands.UserInputError("You cannot use the `|` symbol in color names")
 
         async with ctx.channel.typing():
             if check_hex(hexcode):
@@ -210,7 +210,7 @@ class Colors(commands.Cog):
                 color = Color(name, hexcode, ctx.guild.id)
                 guild.colors.append(color)
             else:
-                return await ctx.send("You gave an invalid hex value. Proper format is: #123abc\nhttps://www.google.com/search?q=color+picker")
+                raise commands.UserInputError(f"**{hexcode}** is an invalid hex value. Proper format is: #123abc")
 
         await ctx.send(f"**{color.name}** has been added in position **{color.index}**.")
         await ctx.invoke(bot.get_command("colors"))#show new set
@@ -235,7 +235,7 @@ class Colors(commands.Cog):
 
         color = guild.find_color(name, 95)
         if not color:
-            raise commands.UserInputError(f"invalid argument")
+            raise commands.UserInputError(f"Couldn't find **{name}**. Try using an index or type `{get_prefix(bot, ctx.message)}help remove` for more help")
         await color.delete()
 
         await ctx.send(f"**{color.name}** has been deleted!")
@@ -354,18 +354,18 @@ class Colors(commands.Cog):
 
         #check for attachments
         if not ctx.message.attachments or not ctx.message.attachments[0].filename.endswith(".json"):
-            return await ctx.send("Please include a formatted JSON file")
+            raise commands.UserInputError("Please include a formatted JSON file")
 
         json_data = json.loads(await ctx.message.attachments[0].read())#load data into a dictionary
 
         #check file formatting for colors as a list
         if not isinstance(json_data, list):
-            return await ctx.send('File is formatted improperly: The file is not structured as a list')
+            raise commands.UserInputError('File is formatted improperly: The file is not structured as a list')
 
         #check for dictionary type for colors in the list
         for item in json_data:
             if not isinstance(item, dict):
-                return await ctx.send('File is formatted improperly: An item in the list is not a python dictionary type')
+                raise commands.UserInputError('File is formatted improperly: An item in the list is not a python dictionary type')
 
         #create dictionary of colors
         for color in json_data:
@@ -374,7 +374,7 @@ class Colors(commands.Cog):
 
             #check for proper attrs
             if "hexcode" not in color.keys() or "name" not in color.keys():
-                return await ctx.send('File is formatted improperly: A color missing "name" or "hexcode" attribute in file')
+                raise commands.UserInputError('File is formatted improperly: A color missing "name" or "hexcode" attribute in file')
 
         guild = Guild.get_guild(ctx.guild.id)
         #send a backup json just in case :)
@@ -401,7 +401,7 @@ class Colors(commands.Cog):
                 return await ctx.send(f"Presets:", file=discord.File(fp, filename="presets.png"))
 
         if set_name not in vars.preset_names:
-            return await ctx.send(f"Couldn't find that preset")
+            raise commands.UserInputError(f"Couldn't find **{set_name}**")
 
         #read the file into dict
         #sep = os.path.sep
@@ -429,7 +429,8 @@ class Colors(commands.Cog):
         color = guild.find_color(color_name, threshold=0)
         print(color)
         if not color:
-            raise commands.UserInputError(f"Couldn't find that color")
+            raise commands.UserInputError(
+                f"Couldn't find {color_name}. Try using an index for more accurate results")
 
         rgb = color.rgb
         member_names = [bot.get_user(id).name for id in color.members]
@@ -452,7 +453,7 @@ class Colors(commands.Cog):
 def setup(bot):
     bot.add_cog(Colors(bot))
 
-async def color_user(ctx, user, qcolor, trace=True):
+async def color_user(ctx, quser, qcolor, trace=True):
     """Colors a specific user"""
 
     guild = Guild.get_guild(ctx.guild.id)
@@ -463,9 +464,9 @@ async def color_user(ctx, user, qcolor, trace=True):
     if not colors and trace:
         return await ctx.send(embed=vars.none_embed)
 
-    user = functions.find_user(ctx.message, user, ctx.guild)
+    user = functions.find_user(ctx.message, quser, ctx.guild)
     if not user:
-        raise commands.UserInputError(r"Invalid Input. You should @mention a user for a 100% success rate")
+        raise commands.UserInputError(f"Couldn't find **{quser}**. You should mention a user for a 100% success rate")
 
     color = guild.find_color(qcolor)
     print(color)
@@ -474,7 +475,7 @@ async def color_user(ctx, user, qcolor, trace=True):
             prompt = await ctx.send(f"Couldn't find that color. Would you like to add **{qcolor}**?")
             return await add_color_UX(prompt, ctx.author, qcolor)
         else:
-            raise commands.UserInputError("Couldn't find that color. Try again with an index or more precise name")
+            raise commands.UserInputError(f"Couldn't find **{qcolor}**. Try again with an index or more precise name")
 
     #remove user's current color roles
     role = guild.get_color_role(user)
@@ -514,11 +515,11 @@ async def swap(ctx, user_input, action):
 
     # verify input
     if not re.search(r"[\d\w\s]+[|]{1}[\d\w\s]+", user_input):
-        return await ctx.send("Invalid input")
+        raise commands.UserInputError(f"**{user_input}** is not a valid input")
     try:
         before, after = user_input.split("|")
     except:
-        raise commands.UserInputError("There are too many separators(|) in your input")
+        raise commands.UserInputError("There are too many separators in your input")
 
     # strip extraneous spaces
     before = before.strip()
@@ -527,7 +528,7 @@ async def swap(ctx, user_input, action):
     # find color to change
     color = guild.find_color(before, threshold=90)
     if not color:
-        raise commands.UserInputError("Couldn't find that color. Try using a color's index for better results")
+        raise commands.UserInputError(f"Couldn't find **{before}**. Try using a color's index for better results")
 
     #rename the color
     if action == "rename":
@@ -541,7 +542,7 @@ async def swap(ctx, user_input, action):
             color.hexcode = after
             color.rgb = hex_to_rgb(after)
         else:
-            raise commands.UserInputError(f"Invalid hex code (Proper Format: '#123' or  '#123abc')")
+            raise commands.UserInputError(f"**{after}** is an invalid hex code.Proper Format: #123abc")
 
     # adjust roles if color is changed
     if color.role_id:

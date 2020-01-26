@@ -33,6 +33,7 @@ preset_names = [
 ]
 
 def get_prefix(bot, message):
+    """Gets the prefix per server"""
     if isinstance(message.channel, discord.channel.DMChannel):
         for guild in bot.guilds:
             if guild.get_member(message.author.id) is not None:
