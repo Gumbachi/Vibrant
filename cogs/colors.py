@@ -11,7 +11,7 @@ from fuzzywuzzy import fuzz, process
 
 import functions as functions
 from functions import is_disabled, update_prefs, check_hex
-from functions import pfp_analysis, draw_presets
+from functions import pfp_analysis, draw_presets, hex_to_rgb
 import vars
 from vars import bot, get_prefix, waiting_on_reaction, waiting_on_pfp, waiting_on_hexcode
 from classes import Color, Guild
@@ -232,6 +232,7 @@ class Colors(commands.Cog):
         if not ctx.author.guild_permissions.manage_roles:
             return await ctx.send("You need `manage roles` permission to use this command")
 
+        name = " ".join(name)
         await swap(ctx, name, "rename")
 
     #change hexcode of a color
@@ -245,6 +246,7 @@ class Colors(commands.Cog):
         if not ctx.author.guild_permissions.manage_roles:
             return await ctx.send("You need `manage roles` permission to use this command")
 
+        name = " ".join(name)
         await swap(ctx, name, "recolor")
 
     #remove all colors
@@ -405,22 +407,27 @@ class Colors(commands.Cog):
         guild = Guild.get_guild(ctx.guild.id)
 
         color = guild.find_color(color_name, threshold=0)
+        print(color)
         if not color:
             raise commands.UserInputError(f"Couldn't find that color")
 
         rgb = color.rgb
-        members = [bot.get_user(id).name for id in color.members]
+        member_names = [bot.get_user(id).name for id in color.members]
         color_embed = discord.Embed(
             title=color.name,
-            description=f"Hexcode: {color.hexcode}\nRGB: {rgb}\nMembers: {', '.join(members)}\nIndex: {color.index}",
-            color=discord.Color.from_rgb(*color.rgb)
-            )
+            description=(f"Hexcode: {color.hexcode}\n"
+                         f"RGB: {rgb}\n"
+                         f"Members: {', '.join(member_names)}\n"
+                         f"Index: {color.index}\n"
+                         f"Role ID: {color.role_id}"),
+            color=discord.Color.from_rgb(*color.rgb))
 
+        # manage recipient and cleanup if needed
         if is_disabled(ctx.channel):
-            await ctx.message.delete() #delete message if channel is disabled
-            await ctx.author.send(embed=color_embed)#to user
+            await ctx.message.delete()
+            await ctx.author.send(embed=color_embed)# to user
         else:
-            await ctx.send(embed=color_embed)#to channel
+            await ctx.send(embed=color_embed)
 
 def setup(bot):
     bot.add_cog(Colors(bot))
@@ -431,7 +438,7 @@ async def color_user(ctx, user, qcolor, trace=True):
     guild = Guild.get_guild(ctx.guild.id)
     colors = guild.colors
     qcolor = " ".join(qcolor)
-    print(qcolor)
+
     #check for empty colors
     if not colors and trace:
         return await ctx.send(embed=vars.none_embed)
@@ -471,44 +478,54 @@ async def color_user(ctx, user, qcolor, trace=True):
         await ctx.send(f"Gave **{user.name}** the **{color_role.name}** role")
     await update_prefs([guild])
 
-async def swap(ctx, name, action):
-    name = " ".join(name)
+async def swap(ctx, user_input, action):
+    """
+    Swaps the color or name of a Color object
+
+    Args:
+        user_input (str): The input string containing before and after
+        action (str): The action to perform
+    """
     guild = Guild.get_guild(ctx.guild.id)
-    colors = guild.colors
 
-    #verify input and prep
-    if not colors:
-        return await ctx.send(embed=vars.none_embed)#set is empty
+    # check if there are colors
+    if not guild.colors:
+        return await ctx.send(embed=vars.none_embed)
 
-    if not re.search(r"[\d\w\s]+[|]{1}[\d\w\s]+", name):
+    # verify input
+    if not re.search(r"[\d\w\s]+[|]{1}[\d\w\s]+", user_input):
         return await ctx.send("Invalid input")
     try:
-        before, after = name.split("|")
+        before, after = user_input.split("|")
     except:
-        return await ctx.send("There are too many separators in your input")
+        raise commands.UserInputError("There are too many separators(|) in your input")
+
+    # strip extraneous spaces
     before = before.strip()
     after = after.strip()
 
+    # find color to change
     color = guild.find_color(before, threshold=90)
     if not color:
-        raise commands.UserInputError("Couldn't find that color")
+        raise commands.UserInputError("Couldn't find that color. Try using a color's index for better results")
 
     #rename the color
     if action == "rename":
         await ctx.send(f"**{color.name}** is now named **{after}**")
         color.name = after
 
-    #change the hexcode of the color
+    # change the hexcode of the color
     if action == "recolor":
         if check_hex(after):
             await ctx.send(f"Recolored **{color.name}**'s color to **{after}**")
             color.hexcode = after
+            color.rgb = hex_to_rgb(after)
         else:
-            return await ctx.send(f"Invalid hex code (Proper Format: '#123' or  '#123abc')")
+            raise commands.UserInputError(f"Invalid hex code (Proper Format: '#123' or  '#123abc')")
 
-    #adjust roles if color is changed
+    # adjust roles if color is changed
     if color.role_id:
-        role = bot.get_guild(color.guild_id).get_role(color.role_id)
+        role = guild.get_role(color.role_id)
         await role.edit(name=color.name, color=discord.Color.from_rgb(*color.rgb))
 
     await update_prefs([guild])#update mongoDB

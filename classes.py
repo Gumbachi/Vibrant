@@ -54,6 +54,26 @@ class Guild():
         self.color_limit = color_limit
         Guild._guilds[id] = self # add guild to the dict
 
+    def __repr__(self):
+        """
+        Output a string that represents the guild object and
+        cleanly displays data
+        """
+        out = (f"Name: {self.name}\nID: {self.id}\nPrefix: {self.prefix}\n"
+               f"Welcome: {self.welcome_channel}\n"
+               f"Theme Limit: {self.theme_limit}\n"
+               f"Color Limit: {self.color_limit}\n"
+               f"Disabled Channels\n")
+        for channel in self.disabled_channels:
+            out += f"    {channel}\n"
+
+        out += "Colors\n"
+        for color in self.colors:
+            out += f"    {repr(color)}\n"
+
+        return out
+
+
 
     def get_role(self, role_id):
         """returns a discord.Role"""

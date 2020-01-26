@@ -14,6 +14,25 @@ class UtilityCommands(commands.Cog):
     async def update_mongo(self, ctx):
         await update_prefs()
 
+    @commands.command(name="guildinfo")
+    async def show_guild_info(self, ctx):
+        """Shows guild info in an embed and in terminal"""
+        guild = Guild.get_guild(ctx.guild.id)
+        print(guild)
+        embed = discord.Embed(title="Guild info", description=repr(guild))
+        await ctx.send(embed=embed)
+
+    @commands.command(name="colorinfo")
+    async def show_all_color_info(self, ctx):
+        """Shows the info of all colors in a guild"""
+        guild = Guild.get_guild(ctx.guild.id)
+        s = "Colors\n"
+        for color in guild.colors:
+            s += f"    {repr(color)}\n"
+        embed = discord.Embed(title="Colors info", description=s)
+        print(s)
+        await ctx.send(embed=embed)
+
     @commands.command(name='purge')
     async def delete_messages(self, ctx, amount):
         verified_ids = [
