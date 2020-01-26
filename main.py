@@ -17,7 +17,7 @@ async def on_ready():
     """Changes presence and collects data from mongo database"""
     await bot.change_presence(
         activity=discord.Activity(type=discord.ActivityType.playing,
-                                  name=f"@ColorBOT for help"))
+                                  name=f"@Vibrant for help"))
     print("Generating Objects...")
 
     await get_prefs()
@@ -101,10 +101,10 @@ async def on_member_remove(member):
     guild = Guild.get_guild(member.guild.id)
 
     # check if welcome channel exists
-    if not guild.welcome:
+    if not guild.welcome_channel:
         return
 
-    welcome_channel = bot.get_channel(guild.welcome)
+    welcome_channel = guild.get_welcome()
 
     # generate and send goodbye message
     embed = discord.Embed(title=f"{member.name} has left the server!",
