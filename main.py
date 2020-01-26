@@ -20,7 +20,7 @@ async def on_ready():
                                   name=f"@ColorBOT for help"))
     print("Generating Objects...")
 
-    if coll.count_documents():
+    if coll.count_documents({}):
         await get_prefs()
 
     # gather new guild ids the bot can see and create Guild objects for them
