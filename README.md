@@ -1,4 +1,4 @@
-# ColorBOT
+# Vibrant
 
 A discord bot that can make a server fun and colorful.  
 This bot manages colorful roles for a discord server ie. creation, deletion, editing of roles in a server.  
@@ -82,5 +82,5 @@ The bot stores information about your colors in a MongoDB database so if the bot
 If you couldn't find what you were looking for with the help command, have any general questions you need answered, or just want to see the bot in action before you invite it then join the [Support Server](https://discord.gg/rhvyup5)
 
 <a href="https://top.gg/bot/589685258841096206" >
-  <img src="https://top.gg/api/widget/589685258841096206.svg" alt="ColorBOT" />
+  <img src="https://top.gg/api/widget/589685258841096206.svg" alt="Vibrant" />
 </a>
