@@ -19,7 +19,9 @@ async def on_ready():
         activity=discord.Activity(type=discord.ActivityType.playing,
                                   name=f"@ColorBOT for help"))
     print("Generating Objects...")
-    await get_prefs()
+
+    if coll.count():
+        await get_prefs()
 
     # gather new guild ids the bot can see and create Guild objects for them
     new_ids = list(set([guild.id for guild in bot.guilds])
