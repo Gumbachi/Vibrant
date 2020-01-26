@@ -116,7 +116,7 @@ class Colors(commands.Cog):
             await ctx.send("Success! Everyone visible has been colored")
         await update_prefs([guild])
 
-    #set a preset
+
     @commands.command(name="set", aliases=["preset", "load"])
     async def set_colors(self, ctx, set_name=None):
         if is_disabled(ctx.channel):
@@ -136,7 +136,7 @@ class Colors(commands.Cog):
             with open(f"presets{sep}{set_name}.json") as data_file:
                 color_data = json.load(data_file)
         except:
-            raise Exception(f"Couldn't open preset")
+            raise Exception("Couldn't open preset")
 
         guild = Guild.get_guild(ctx.guild.id)
         colors = guild.colors
@@ -217,7 +217,7 @@ class Colors(commands.Cog):
 
         color = guild.find_color(name, 95)
         if not color:
-            raise Exception("Input Error. Couldn't find that color")
+            raise commands.UserInputError(f"invalid argument")
         await color.delete()
 
         await ctx.send(f"**{color.name}** has been deleted!")
@@ -408,7 +408,7 @@ class Colors(commands.Cog):
 
         color = guild.find_color(color_name, threshold=0)
         if not color:
-            raise Exception("Bad Input. Couldn't find that color")
+            raise commands.UserInputError(f"Couldn't find that color")
 
         rgb = color.rgb
         members = [bot.get_user(id).name for id in color.members]
@@ -440,7 +440,7 @@ async def color_user(ctx, user, qcolor, trace=True):
 
     user = functions.find_user(ctx.message, user, ctx.guild)
     if not user:
-        raise Exception(r"Invalid Input. You should @mention a user for a 100% success rate")
+        raise commands.UserInputError(r"Invalid Input. You should @mention a user for a 100% success rate")
 
     color = guild.find_color(qcolor)
     print(color)
@@ -449,7 +449,7 @@ async def color_user(ctx, user, qcolor, trace=True):
             prompt = await ctx.send(f"Couldn't find that color. Would you like to add **{qcolor}**?")
             return await add_color_UX(prompt, ctx.author, qcolor)
         else:
-            raise Exception("Couldn't find that color. Try again with an index or more precise name")
+            raise commands.UserInputError("Couldn't find that color. Try again with an index or more precise name")
 
     #remove user's current color roles
     role = guild.get_color_role(user)
@@ -498,7 +498,7 @@ async def swap(ctx, name, action):
 
     color = guild.find_color(before, threshold=90)
     if not color:
-        raise Exception("Couldn't find color")
+        raise commands.UserInputError("Couldn't find that color")
 
     #rename the color
     if action == "rename":

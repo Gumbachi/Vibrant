@@ -6,13 +6,10 @@ from vars import bot, get_prefix
 class CommandErrorHandler(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-    # https://gist.github.com/EvieePy/7822af90858ef65012ea500bcecf1612
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        """The event triggered when an error is raised while invoking a command.
-        ctx   : Context
-        error : Exception"""
+        """The event triggered when an error is raised while invoking a command."""
 
         print(error)
         print(type(error))
