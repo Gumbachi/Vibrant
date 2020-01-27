@@ -377,13 +377,22 @@ class Guild():
 
 
     async def clear_empty_roles(self):
-        """Deletes a guilds empty roles"""
+        """Deletes a guilds unoccupied roles"""
         for color in self.colors:
             if color.role_id and not color.members:
                 role = self.get_role(color.role_id)
                 if role:
-                    await role.delete()
-                    print(f"deleted {role.name}")
+                    # try 3 times to make sure role is gone
+                    for _ in range(3):
+                        try:
+                            await role.delete()
+                        except:
+                            pass
+
+                        #check if role still exists
+                        if role not in bot.get_guild(self.id).roles:
+                            print(f"deleted {role.name}")
+                            break
 
 
     @classmethod
