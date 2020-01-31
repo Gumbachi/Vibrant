@@ -85,7 +85,12 @@ class Guild():
         roles_to_delete = self.get_color_role_ids()
         for id in roles_to_delete:
             try:
-                await self.get_role(id).delete()
+                await self.get_role(id)
+                for role in roles_to_delete:
+                    try:
+                        await role.delete()
+                    except:
+                        pass
             except:
                 pass
         self.colors = []
@@ -381,17 +386,15 @@ class Guild():
             if color.role_id and not color.members:
                 role = self.get_role(color.role_id)
                 if role:
-                    # try 3 times to make sure role is gone
-                    for _ in range(3):
-                        try:
-                            await role.delete()
-                        except:
-                            pass
+                    try:
+                        await role.delete()
+                    except:
+                        pass
 
-                        #check if role still exists
-                        if role not in bot.get_guild(self.id).roles:
-                            print(f"deleted {role.name}")
-                            break
+                    #check if role still exists
+                    if role not in bot.get_guild(self.id).roles:
+                        print(f"deleted {role.name}")
+                        break
 
 
     @classmethod
@@ -443,16 +446,18 @@ class Color():
         self.index = len(self.find_guild().colors) + 1
 
     def __repr__(self):
-        "Method for cleaner printing"
+        """Method for cleaner printing."""
         has_role = True if self.role_id else False
         return (f"{self.index}.{self.name} {self.hexcode} "
                 f"Active:{has_role} Members:{len(self.members)}")
 
 
     async def delete(self):
-        """Removes a color from the colors attribute of a guild
+        """
+        Remove a color from the colors attribute of a guild
         and deletes any roles associated with the color as well
-        as reindexing the colors in the guild"""
+        as reindexing the colors in the guild.
+        """
         colors = self.find_guild().colors
         colors.remove(self)
 

@@ -254,58 +254,76 @@ class Colors(commands.Cog):
 
     @commands.command("rename")
     async def rename_color(self, ctx, *name):
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()  # delete command if disabled
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
+        """
+        Rename a color in the Guild's active colors.
 
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need `manage roles` permission to use this command")
-
-        name = " ".join(name)
-        await swap(ctx, name, "rename")
-
-    # change hexcode of a color
-    @commands.command(name="recolor", aliases=["recolour"])
-    async def recolor(self, ctx, *name):
-        if is_disabled(ctx.channel):
-            try:
-                await ctx.message.delete()  # delete command if disabled
-            except:
-                pass
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need `manage roles` permission to use this command")
-
-        name = " ".join(name)
-        await swap(ctx, name, "recolor")
-
-    # remove all colors
-    @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
-    async def clear_colors(self, ctx, trace=True):
+        Args:
+            color (tuple of str): The color to change the name of
+        """
+        # check channel status
         if is_disabled(ctx.channel):
             await ctx.message.delete()
             return await ctx.author.send(f"#{ctx.channel.name} is disabled")
 
+        # verify author permissions
+        if not ctx.author.guild_permissions.manage_roles:
+            return await ctx.send(
+                "You need `manage roles` permission to use this command")
+
+        # swap name
+        name = " ".join(name)
+        await swap(ctx, name, "rename")
+
+    @commands.command(name="recolor", aliases=["recolour"])
+    async def recolor(self, ctx, *name):
+        """
+        Change a color's hexcode in the Guild's active colors.
+
+        Args:
+            color (tuple of str): The color to change the hexcode of
+        """
+        # check channel status
+        if is_disabled(ctx.channel):
+            await ctx.message.delete()
+            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
+
+        # verify author's permissions
+        if not ctx.author.guild_permissions.manage_roles:
+            return await ctx.send(
+                "You need `manage roles` permission to use this command")
+
+        # change the hexcode
+        name = " ".join(name)
+        await swap(ctx, name, "recolor")
+
+    @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
+    async def clear_colors(self, ctx, backup=True):
+        """
+        Remove all colors from the Guild's colors.
+
+        Args:
+            backup (bool): Whether or not to send a backup JSON
+        """
+        # check channel status
+        if is_disabled(ctx.channel):
+            await ctx.message.delete()
+            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
+
+        # verify author's permissions
         if not ctx.author.guild_permissions.manage_roles:
             return await ctx.send("You need `manage roles` permission to use this command")
 
         guild = Guild.get_guild(ctx.guild.id)
-        if trace:
-            # show new set
+
+        # provide backup JSON
+        if backup:
             await ctx.invoke(bot.get_command("export"), trace=False)
 
+        # remove all colors and clear roles
         async with ctx.channel.typing():
-            # loop through all colors and delete
-            while guild.colors:
-                # delete colors
-                for color in guild.colors:
-                    await color.delete()
-            if trace:
-                await ctx.send(f"Success! All colors have been removed.")
-        await update_prefs([guild])
+            await guild.clear_colors()
+        await ctx.send(f"Success! All colors have been removed.")
 
-    # attempts to find most prevalent color in a users profile picutre
     @commands.command("pfp")
     async def get_pfp_color(self, ctx, *name):
 
