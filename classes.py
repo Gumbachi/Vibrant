@@ -74,7 +74,6 @@ class Guild():
         return out
 
 
-
     def get_role(self, role_id):
         """returns a discord.Role"""
         guild = bot.get_guild(self.id) # discord.Guild
@@ -398,8 +397,7 @@ class Guild():
     @classmethod
     def get_guild(cls, id):
         """Finds guild in the dictionary"""
-        if id in cls._guilds.keys():
-            return cls._guilds[id]
+        return cls._guilds.get(id)
 
 
     @classmethod
@@ -473,8 +471,7 @@ class Color():
 
     def find_guild(self):
         """Find and return the Guild object the color belongs to"""
-        if self.guild_id in Guild._guilds.keys():
-            return Guild._guilds[self.guild_id]
+        return Guild._guilds.get(self.guild_id)
 
 
     @classmethod
@@ -514,8 +511,7 @@ class Theme():
 
     def find_guild(self):
         """Find and return the Guild object the theme belongs to"""
-        if self.guild_id in Guild._guilds.keys():
-            return Guild._guilds[self.guild_id]
+        return Guild._guilds.get(self.guild_id)
 
 
     def delete(self):
@@ -523,7 +519,7 @@ class Theme():
         themes = self.find_guild().themes
         themes.remove(self)
 
-        #reindex themes
+        # reindex themes
         for i, theme in enumerate(themes, 1):
             theme.index = i
 
