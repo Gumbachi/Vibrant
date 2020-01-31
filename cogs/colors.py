@@ -7,13 +7,14 @@ import re
 import asyncio
 import discord
 from discord.ext import commands, tasks
-from fuzzywuzzy import fuzz, process
+from fuzzywuzzy import process
 
-import functions as functions
+import functions
 from functions import is_disabled, update_prefs, check_hex
 from functions import pfp_analysis, draw_presets, hex_to_rgb
 import vars
-from vars import bot, get_prefix, waiting_on_reaction, waiting_on_pfp, waiting_on_hexcode
+from vars import bot, get_prefix, waiting_on_reaction
+from vars import waiting_on_pfp, waiting_on_hexcode
 from classes import Color, Guild
 from cfg import coll
 
@@ -21,9 +22,9 @@ class Colors(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    #Draws an image of colors and names to display and sends to channel or user
     @commands.command(name="colors", aliases=["colorset", "colourset", "colours"])
     async def show_colors(self, ctx):
+        """Displays an image of equipped colors"""
         guild = Guild.get_guild(ctx.guild.id)
         fp = io.BytesIO(guild.draw_colors())#get a bytearray and convert to sendable
         if is_disabled(ctx.channel):
