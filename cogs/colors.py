@@ -209,15 +209,29 @@ class Colors(commands.Cog):
         await ctx.invoke(bot.get_command("colors")) # show new set
         await update_prefs([guild])
 
+    # TODO need to rename the params to color instead of name for some
+    # TODO something about having to write permissions in every single command
+    # TODO also need to do something about the none_embed
+
     @commands.command(name="remove", aliases=["delete"])
     async def remove_color(self, ctx, *name):
+        """
+        Remove a color from the Guild's colors
+
+        Args:
+            color (tuple of str): The search query for color to remove
+        """
+        # check channel status
         if is_disabled(ctx.channel):
-            await ctx.message.delete()  # delete command if disabled
+            await ctx.message.delete()
             return await ctx.author.send(f"#{ctx.channel.name} is disabled")
 
+        # verify user permissions
         if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need `manage roles` permission to use this command")
+            return await ctx.send(
+                "You need `manage roles` permission to use this command")
 
+        # get name and colors
         guild = Guild.get_guild(ctx.guild.id)
         colors = guild.colors
         name = " ".join(name)
@@ -226,17 +240,18 @@ class Colors(commands.Cog):
         if not colors:
             return await ctx.send(embed=vars.none_embed)
 
+        # find color
         color = guild.find_color(name, 95)
         if not color:
             raise commands.UserInputError(
                 f"Couldn't find **{name}**. Try using an index or type `{get_prefix(bot, ctx.message)}help remove` for more help")
+
+        # remove color and response
         await color.delete()
-
         await ctx.send(f"**{color.name}** has been deleted!")
-        await ctx.invoke(bot.get_command("colors"))  # show new set
-        await update_prefs([guild])
 
-    # rename a color
+        await ctx.invoke(bot.get_command("colors"))  # show updated set
+
     @commands.command("rename")
     async def rename_color(self, ctx, *name):
         if is_disabled(ctx.channel):
