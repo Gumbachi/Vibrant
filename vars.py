@@ -282,50 +282,50 @@ def get_commands(p):
     return command_dict
 
 change_log = {
-    "0.3": {
+    "0.1": {
         "@Vibrant for help": "Users can mention the bot to give info about help",
         "Changeable Prefixes": "Users can change prefix with prefix command to avoid prefix conflict with other bots",
         "Added patch notes": "you can see what I'm doing and I can see what I've done",
         "Color adding prompts removed": "They no longer show up",
         "Changed some help command things": "Made it so they show default prefixes"
     },
-    "0.4": {
+    "0.2": {
         "Optimization": "Made many functions like prefix run faster",
         "Optimized Data storage": "improved function input to be more specific to make it faster",
         "Optimized splash command": "Splash runs faster due to better math",
     },
-    "0.5":{
+    "0.3":{
         "Overhauled help command": "Gave help a bunch of useful stuff like setup and individual command help",
         "`clear_all_colors` and `set` changed": "Commands now send a backup just incase",
         "Changed data command name": "Changed it to channels since it only shows channel data",
         "Added a force prefix change": "can use vibrantprefix command to avoid overlap"
     },
-    "0.6":{
+    "0.4":{
         "Aliased Commands": "Gave a bunch of commands alternate names like add/remove can be create/delete if you want",
         "Removed redundant commands": "removed redundant commands because I figured out how to alias commands",
         "Better Error Handling": "ignores things like command not found and has specific error handling for add command",
     },
-    "0.7":{
+    "0.5":{
         "Black color now works": "black no longer shows up as transparent because hex value is auto converted to #000001",
         "Added more presets": "presets work differently and thus there are many more like Bootstrap, Metro, and Icecream",
         "Better Drawing": "Made drawing images for commands like colors look better and more open",
         "Preview command": "new command to show preset colors"
     },
-    "0.8":{
+    "0.6":{
         "Changed the look of channels and expose": "Commands are simpler and easier to read",
         "DM Commands": "Some commands like help and howdy work in a DM channel now",
         "Less verbose": "Some commands are less verbose to clear up clutter",
         "More error handling": "Some more errors are handled",
         "Destroyed some bugs": "General stuff like me being stupid"
     },
-    "0.9":{
+    "0.7":{
         "The return of reaction based UX": "Reaction based UX is back and works this time",
         "updated pfp algorithm": "Algorithm is more accurate now",
         "DBL integration": "better integration with the API",
         "Hyperlinks": "inline links for help to clean things up"
     },
-    "1.0":{
-        "Themes": "Themes allow you to save presets which allows switching the feel of the server",
+    "0.8":{
+        "Themes(alpha)": "Themes allow you to save presets which allows switching the feel of the server",
         "Housekeeping": "Cleaned up a bunch of things that weren't necessary",
         "Added some functions to classes": "less imports, better looking",
         "Code documentation": "I can see what everything does easier. so can you if you care",

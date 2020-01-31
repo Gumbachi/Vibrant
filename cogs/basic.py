@@ -192,7 +192,7 @@ class BaseCommands(commands.Cog):
     @commands.command(name="version", aliases=["patchnotes"])
     async def patchnotes(self, ctx, version=None):
         """generate formatted embed of patchnotesto send to user"""
-        latest = "1.0"
+        latest = "0.8"
 
         # get correct version
         if version in change_log.keys():
@@ -212,6 +212,7 @@ class BaseCommands(commands.Cog):
 
         patch_embed.set_thumbnail(url=bot.user.avatar_url)
 
+        # send to recipient
         if is_disabled(ctx.channel):
             await ctx.message.delete()
             await ctx.author.send(embed=patch_embed)
