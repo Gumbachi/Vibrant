@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from classes import Guild
-from functions import update_prefs
+from functions import update_prefs, rgb_to_hex, is_disabled
 from vars import bot
 
 
@@ -76,6 +76,37 @@ class UtilityCommands(commands.Cog):
             title="Test", description="* One\n* Two\n* One\n* Two")
         await ctx.send(embed=embed)
 
+    @commands.command(name="convert", aliases=["hex", "tohex"])
+    async def convert_to_hex(self, ctx, *rgb):
+        """Converts RGB input to hex and send in channel"""
+        input_error = commands.UserInputError(
+            f"**{' '.join(rgb)}** is invalid. Should look like '24 32 134'")
+
+        # check for all channels
+        if len(rgb) != 3:
+            raise input_error
+
+        # veryify the inputs
+        for val in rgb:
+            if not val.isdigit():
+                raise input_error
+            val = int(val)
+            if val > 255 or val < 0:
+                raise input_error
+
+        r, g, b = (int(val) for val in rgb)
+        print(r, g, b)
+
+        hexcode = rgb_to_hex((r, g, b))
+
+        # check if channel is enabled
+        if is_disabled(ctx.channel):
+            await ctx.message.delete()
+            await ctx.author.send(f"**{hexcode}**")
+        else:
+            await ctx.send(f"**{hexcode}**")
+
 
 def setup(bot):
     bot.add_cog(UtilityCommands(bot))
+
