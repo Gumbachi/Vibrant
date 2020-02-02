@@ -26,7 +26,7 @@ class Colors(commands.Cog):
     @commands.command(name="colors", aliases=["colours", "c"])
     async def show_colors(self, ctx):
         """Display an image of equipped colors."""
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
         fp = io.BytesIO(guild.draw_colors())  # convert to sendable
 
         # send info to channel or user
@@ -49,6 +49,7 @@ class Colors(commands.Cog):
             return
 
         await color_user(ctx, user, " ".join(color), trace=True)
+        await update_prefs([Guild.get(ctx.guild.id)])
 
     @commands.command(name="colorme", aliases=['me', "colourme"])
     async def colorme(self, ctx, *color):
@@ -62,6 +63,7 @@ class Colors(commands.Cog):
             return
 
         await color_user(ctx, ctx.author.name, " ".join(color))
+        await update_prefs([Guild.get(ctx.guild.id)])
 
     @commands.command(name="uncolorme", aliases=["uncolourme"])
     async def uncolor_me(self, ctx):
@@ -70,7 +72,7 @@ class Colors(commands.Cog):
             return
 
         # get role to remove
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
         role = guild.get_color_role(ctx.author)
         if not role:
             return await ctx.send("You don't have a color to remove")
@@ -91,7 +93,7 @@ class Colors(commands.Cog):
         if not await authorize(ctx):
             return
 
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         # check if there are colors
         if not guild.colors and trace:
@@ -131,7 +133,7 @@ class Colors(commands.Cog):
         # report success
         if trace:
             await ctx.send("Success! Everyone visible has been colored")
-        #await update_prefs([guild])
+        await update_prefs([guild])
 
 
     @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
@@ -145,7 +147,7 @@ class Colors(commands.Cog):
         if not await authorize(ctx):
             return
 
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         # provide backup JSON
         if backup:
@@ -176,7 +178,7 @@ class Colors(commands.Cog):
         if len(name) > 99:
             raise commands.UserInputError(f"**{name}** is too long")
 
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         # check color limit
         if len(guild.colors) >= guild.color_limit:
@@ -222,7 +224,7 @@ class Colors(commands.Cog):
             return
 
         # get name and colors
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
         colors = guild.colors
         name = " ".join(name)
 
@@ -310,7 +312,7 @@ class Colors(commands.Cog):
     @commands.command("export")
     async def export_colors(self, ctx, trace=True):
         # check for colors
-        if not Guild.get_guild(ctx.guild.id).colors:
+        if not Guild.get(ctx.guild.id).colors:
             return await ctx.send(embed=vars.none_embed)
 
         # find guild in database and convert to bytes
@@ -365,7 +367,7 @@ class Colors(commands.Cog):
 
     @commands.command(name="info", aliases=["about"])
     async def show_color_info(self, ctx, color_name):
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         color = guild.find_color(color_name, threshold=0)
         print(color)
@@ -404,7 +406,7 @@ async def color_user(ctx, quser, qcolor, trace=True):
         qcolor (str): The name or index of the color to look up
         trace (bool): Whether to print anything to user
     """
-    guild = Guild.get_guild(ctx.guild.id)
+    guild = Guild.get(ctx.guild.id)
 
     # check for empty colors
     if not guild.colors and trace:
@@ -448,9 +450,6 @@ async def color_user(ctx, quser, qcolor, trace=True):
     if trace:
         await ctx.send(f"Gave **{user.name}** the **{color_role.name}** role")
 
-    # update DB
-    await update_prefs([guild])
-
 #TODO NEED TO OPT THIS COMMAND
 async def swap(ctx, user_input, action):
     """
@@ -460,7 +459,7 @@ async def swap(ctx, user_input, action):
         user_input (str): The input string containing before and after
         action (str): The action to perform
     """
-    guild = Guild.get_guild(ctx.guild.id)
+    guild = Guild.get(ctx.guild.id)
 
     # check if there are colors
     if not guild.colors:

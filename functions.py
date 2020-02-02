@@ -83,7 +83,7 @@ def is_disabled(channel):
     """
     if isinstance(channel, discord.DMChannel):
         return True
-    if channel.id in c.Guild.get_guild(channel.guild.id).disabled_channels:
+    if channel.id in c.Guild.get(channel.guild.id).disabled_channels:
         return True
     else:
         return False

@@ -399,7 +399,7 @@ class Guild():
 
 
     @classmethod
-    def get_guild(cls, id):
+    def get(cls, id):
         """Finds guild in the dictionary"""
         return cls._guilds.get(id)
 

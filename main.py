@@ -70,7 +70,7 @@ async def on_message(message):
 async def on_member_join(member):
     """Sends a welcome message and attempts to randomly color a user when a
     member joins a server the bot is in"""
-    guild = Guild.get_guild(member.guild.id)
+    guild = Guild.get(member.guild.id)
     channel = guild.get_welcome()
 
     # check if welcome channel exists
@@ -96,12 +96,13 @@ async def on_member_join(member):
     if guild.colors:
         ctx = await bot.get_context(msg)
         await color_user(ctx, member.name, color.name, trace=False)
+        await update_prefs([guild])
 
 
 @bot.event
 async def on_member_remove(member):
     """Sends a goodbye message when a member leaves a server the bot is in"""
-    guild = Guild.get_guild(member.guild.id)
+    guild = Guild.get(member.guild.id)
 
     # check if welcome channel exists
     if not guild.welcome_channel:
@@ -124,7 +125,7 @@ async def on_member_update(before, after):
     if before.roles == after.roles:
         return
 
-    guild = Guild.get_guild(before.guild.id)
+    guild = Guild.get(before.guild.id)
 
     # convert roles to set for comparison
     roles_before = set(before.roles)
@@ -164,7 +165,7 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_guild_update(before, after):
     """Updates Guild object name if changed"""
-    guild = Guild.get_guild(before.id)
+    guild = Guild.get(before.id)
     guild.name = after.name  # change name
     await update_prefs([guild])  # update mongoDB
 
@@ -172,7 +173,7 @@ async def on_guild_update(before, after):
 @bot.event
 async def on_guild_channel_delete(channel):
     """Removes a channel from the Guild object if user deletes it"""
-    guild = Guild.get_guild(channel.guild.id)
+    guild = Guild.get(channel.guild.id)
 
     # remove from disabled channels
     if channel.id in guild.disabled_channels:
@@ -188,7 +189,7 @@ async def on_guild_channel_delete(channel):
 @bot.event
 async def on_guild_role_delete(role):
     """Removes a role from the Guild object if user deletes it"""
-    guild = Guild.get_guild(role.guild.id)
+    guild = Guild.get(role.guild.id)
 
     # sets color role id to none if it is deleted
     if color := guild.get_color("role_id", role.id):
@@ -200,7 +201,7 @@ async def on_guild_role_delete(role):
 @bot.event
 async def on_guild_role_update(before, after):
     """Removes a role from the Guild object if user deletes it"""
-    guild = Guild.get_guild(before.guild.id)
+    guild = Guild.get(before.guild.id)
 
     # checks if color has role and change color name and hex to reflect change
     if color := guild.get_color('role_id', before.id):

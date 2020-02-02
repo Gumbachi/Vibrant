@@ -106,7 +106,7 @@ class BaseCommands(commands.Cog):
         if is_disabled(ctx.channel):
             return await ctx.message.delete()
 
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
         if not new_prefix:
             return await ctx.send(f"Current Prefix: `{guild.prefix}`")
 
@@ -118,7 +118,7 @@ class BaseCommands(commands.Cog):
     async def expose_user(self, ctx, *name):
         """Displays and embed giving simple information about a user"""
         user = " ".join(name)
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         # find a user
         if user == "":
@@ -162,7 +162,7 @@ class BaseCommands(commands.Cog):
     @commands.command("channels", aliases=["data"])
     async def channel_data(self, ctx):
         """Displays a list of channels that are enabled and disabled"""
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         #get welcome channel name
         if guild.welcome_channel:

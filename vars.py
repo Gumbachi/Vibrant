@@ -52,7 +52,10 @@ def get_prefix(bot, message):
 
 bot = commands.Bot(command_prefix=get_prefix, help_command=None) # creates bot object
 
-none_embed = discord.Embed(title="No active colors", description=f"To add colors get someone with permission to perform the `set` or `add` command")
+none_embed = discord.Embed(
+    title="No active colors",
+    description=f"To add colors use the `add` command or import a theme",
+    color=discord.Color.blurple())
 
 disabled_embed = discord.Embed(title="Channel is Disabled", description=f"The channel you tried to use is disabled")
 
