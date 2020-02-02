@@ -23,7 +23,7 @@ preset_names = [
     "icecream",
     "neon",
     "pastel",
-    "vaporwave",
+    "outrun",
     "sunset",
     "downtown",
     "discord",

@@ -65,47 +65,43 @@ class Themes(commands.Cog):
         await update_prefs([guild])
 
 
-    @commands.command(name="theme", aliases=["st"])
-    async def change_theme(self, ctx, query):
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()  # delete command if disabled
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need the `manage roles` permission to use this command")
+    @commands.command(name="load", aliases=["st"])
+    async def change_theme(self, ctx, *query):
+        """Change the active colors to a theme."""
+        if not await authorize(ctx):
+            return
 
         guild = Guild.get_guild(ctx.guild.id)
 
         if not guild.themes:
             return await ctx.send("There are no themes to switch to")
 
-        theme = guild.find_theme(query, threshold=90)
+        theme = guild.find_theme(" ".join(query), threshold=90)
 
         if not theme:
-            return await ctx.send("Couldn't find that theme!")
+            raise commands.UserInputError("Couldn't find that theme!")
+
+        print("Loading theme")
 
         await guild.clear_colors()
         theme.activate()
         async with ctx.channel.typing():
             for color in guild.colors:
-                print(color)
                 if color.members:
                     for id in color.members:
                         user = bot.get_user(id)
                         if user:
-                            await color_user(ctx, user.name, (color.name,), False)
+                            await color_user(ctx, user.name, color.name, False)
+        await ctx.send(
+            f"Loaded **{theme.name}**. Use the splash command to apply it")
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    # remove themes
-    @commands.command(name="removetheme", aliases=["deletetheme", "deltheme", "dt"])
+    @commands.command(name="removetheme", aliases=["deletetheme", "dt"])
     async def remove_theme(self, ctx, query):
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()  # delete command if disabled
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need the `manage roles` permission to use this command")
+        """Remove a theme."""
+        if not await authorize(ctx):
+            return
 
         guild = Guild.get_guild(ctx.guild.id)
 
@@ -120,18 +116,14 @@ class Themes(commands.Cog):
         theme.delete()
 
         await ctx.send("Theme Deleted")
-        await update_prefs([guild])
         await ctx.invoke(bot.get_command("themes"))
+        await update_prefs([guild])
 
-    # rename themes
     @commands.command(name="renametheme", aliases=["trename"])
     async def rename_theme(self, ctx, *query):
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()  # delete command if disabled
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need the `manage roles` permission to use this command")
+        """Rename a theme in the guild."""
+        if not await authorize(ctx):
+            return
 
         guild = Guild.get_guild(ctx.guild.id)
 
@@ -140,18 +132,19 @@ class Themes(commands.Cog):
 
         query = " ".join(query)
         if not re.search(r"[\d\w\s]+[|]{1}[\d\w\s]+", query):
-            return await ctx.send("Invalid input")
+            raise commands.UserInputError("Invalid input")
         try:
             before, after = query.split("|")
         except:
-            return await ctx.send("There are too many separators in your input")
+            raise commands.UserInputError(
+                "There are too many separators in your input")
 
         before = before.strip()
         after = after.strip()
 
         theme = guild.find_theme(before, threshold=80)
         if not theme:
-            return await ctx.send("couldn't find that theme")
+            raise commands.UserInputError("couldn't find that theme")
 
         await ctx.send(f"**{theme.name}** has been renamed to **{after}**")
         theme.name = after
@@ -192,7 +185,27 @@ class Themes(commands.Cog):
             f"Preset has been saved as **{theme.name}** in your themes")
         await update_prefs([guild])  # update MongoDB
 
-    # info
+    @commands.command(name="themeinfo")
+    async def theme_info(self, ctx, query):
+        guild = Guild.get_guild(ctx.guild.id)
+        query = " ".join(query)
+        theme = guild.find_theme(query, threshold=0)
+        if not theme:
+            raise commands.UserInputError(
+                f"Couldn't find {query}. Try using an index for more accurate results")
+
+        theme_embed = discord.Embed(
+            title=theme.name,
+            description=(f"Description: {theme.description}\n"
+                         f"Index: {theme.index}\n"
+                         f"Colors: {', '.join([color.name for color in theme.colors])}"),
+            color=discord.Color.blurple())
+
+        # manage recipient and cleanup if needed
+        if not await authorize(ctx, checks=["disabled"], trace=False):
+            await ctx.author.send(embed=theme_embed)
+        else:
+            await ctx.send(embed=theme_embed)
 
 
 def setup(bot):

@@ -160,6 +160,8 @@ class Colors(commands.Cog):
             await guild.clear_colors()
         await ctx.send(f"Success! All colors have been removed.")
 
+        await update_prefs([guild])
+
 
     @commands.command(name="add", aliases=["new", "create", "addcolor"])
     async def add_color(self, ctx, hexcode, *name):

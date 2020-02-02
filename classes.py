@@ -84,12 +84,11 @@ class Guild():
 
     async def clear_colors(self):
         """Remove all colors from the guild."""
-        print(self.colors)
         for color in self.colors:
             # deletes role associated with color
             if color.role_id:
                 try:
-                    role = self.find_guild().get_role(self.role_id)
+                    role = bot.get_guild(self.id).get_role(color.role_id)
                     await role.delete()
                 except:
                     self.role_id = None
@@ -320,6 +319,11 @@ class Guild():
         return imgByteArr
 
 
+    def find_guild(self):
+        """Find and return the Guild object the theme belongs to"""
+        return Guild._guilds.get(self.id)
+
+
     def find_color(self, query, threshold=90):
         """
         Find a color in the guild's colors based on index or name.
@@ -531,12 +535,10 @@ class Theme():
 
     def delete(self):
         """Removes theme from guild and reindexes themes"""
-        themes = self.find_guild().themes
-        themes.remove(self)
+        guild = self.find_guild()
+        guild.themes.remove(self)
 
-        # reindex themes
-        for i, theme in enumerate(themes, 1):
-            theme.index = i
+        guild.reindex_themes()
 
 
     def activate(self):
