@@ -10,7 +10,7 @@ from fuzzywuzzy import process
 from PIL import Image, ImageDraw, ImageFont
 
 from vars import bot
-import functions as fn
+from functions import hex_to_rgb
 
 
 class Guild():
@@ -39,19 +39,20 @@ class Guild():
     _guilds = {}  # dict of guilds that have been created
 
     def __init__(self, id, prefix='$', welcome_channel=None,
-                 disabled_channels=[], theme_limit=3, color_limit=25):
-        if not bot.get_guild(id):
-            self.name = "ABANDONED"
-        else:
+                 disabled_channels=set(), theme_limit=3, color_limit=25,
+                 themes=[], colors=[]):
+        if bot.get_guild(id):
             self.name = bot.get_guild(id).name
+        else:
+            self.name = "ABANDONED"
         self.id = id
         self.prefix = prefix
         self.welcome_channel = welcome_channel
         self.disabled_channels = disabled_channels
-        self.colors = []
-        self.themes = []
         self.theme_limit = theme_limit
         self.color_limit = color_limit
+        self.themes = themes
+        self.colors = colors
         Guild._guilds[id] = self # add guild to the dict
 
     def __repr__(self):
@@ -75,29 +76,29 @@ class Guild():
 
 
     def get_role(self, role_id):
-        """returns a discord.Role"""
+        """get a discord.Role."""
         guild = bot.get_guild(self.id) # discord.Guild
         if guild:
             return guild.get_role(role_id)
 
 
     async def clear_colors(self):
-        roles_to_delete = self.get_color_role_ids()
-        for id in roles_to_delete:
-            try:
-                await self.get_role(id)
-                for role in roles_to_delete:
-                    try:
-                        await role.delete()
-                    except:
-                        pass
-            except:
-                pass
-        self.colors = []
+        """Remove all colors from the guild."""
+        print(self.colors)
+        for color in self.colors:
+            # deletes role associated with color
+            if color.role_id:
+                try:
+                    role = self.find_guild().get_role(self.role_id)
+                    await role.delete()
+                except:
+                    self.role_id = None
+        self.colors.clear()
 
 
     def get_color(self, attr, value):
-        """Search for a color in the guild via attribute
+        """
+        Search for a color in the guild via attribute.
 
         Args:
             attr (str): The name of the attribute of the color
@@ -105,7 +106,6 @@ class Guild():
 
         Returns:
             color (Color): if color is found returns the Color object
-            None (NoneType): returns None if color is not found
         """
         for color in self.colors:
             if color.__getattribute__(attr) == value:
@@ -113,7 +113,8 @@ class Guild():
 
 
     def get_theme(self, attr, value):
-        """Search for a color in the guild via attribute
+        """
+        Search for a color in the guild via attribute.
 
         Args:
             attr (str): The name of the attribute of the color
@@ -121,7 +122,6 @@ class Guild():
 
         Returns:
             theme (Theme): if theme is found returns the Theme object
-            None (NoneType): returns None if color is not found
         """
         for theme in self.themes:
             if theme.__getattribute__(attr) == value:
@@ -129,22 +129,21 @@ class Guild():
 
 
     def rand_color(self):
-        """Returns a random color object"""
+        """Return a random color object."""
         try:
-            color = random.choice(self.colors)
+            return random.choice(self.colors)
         except IndexError:
             return None
-        return color
 
 
     def get_welcome(self):
-        """returns discord.Channel object of welcome channel"""
+        """Return discord.Channel object of welcome channel."""
         guild = bot.get_guild(self.id)
         return guild.get_channel(self.welcome_channel)
 
 
     def get_enabled(self):
-        """returns discord.Channel objects of enabled channels"""
+        """Return a list of discord.Channel objects of enabled channels."""
         guild = bot.get_guild(self.id)
         if guild:
             return [channel for channel in guild.text_channels
@@ -154,7 +153,7 @@ class Guild():
 
 
     def get_disabled(self):
-        """returns discord.Channel objects of disabled channels"""
+        """Return a list of discord.Channel objects of disabled channels."""
         guild = bot.get_guild(self.id)
         if guild:
             return [channel for channel in guild.text_channels
@@ -163,48 +162,37 @@ class Guild():
             return []
 
 
-    def color_names(self):
-        """Generates a list of names of the colors"""
-        return [color.name for color in self.colors]
+    def list_colors_by(self, attr):
+        """Compile a list of an attribute."""
+        return [color.__getattribute__(attr) for color in self.colors]
 
 
-    def theme_names(self):
-        """Generates a list of names of the themes"""
-        return [theme.name for theme in self.themes]
-
-
-    def get_color_role_ids(self):
-        """gets a list of roles created by the bot
-
-        Args:
-            guild (discord.Guild): The guild to use
-
-        Returns:
-            list of int: The role ids
-        """
-        return [color.role_id for color in self.colors if color.role_id]
+    def list_themes_by(self, attr):
+        """Compile a list of an attribute."""
+        l = [theme.__getattribute__(attr) for theme in self.themes]
+        return list(filter(None, l)) # filter out None values
 
 
     def get_color_role(self, user):
-        """gets a list of roles created by the bot
+        """
+        Get a users color role if it exists.
 
         Args:
             user (discord.User): The user to get roles from
             guild (discord.Guild): The guild to use
 
         Returns:
-            discord.Role: The color role
-            None: If user is uncolored
+            role = discord.Role: The color role
         """
-        color_roles = self.get_color_role_ids()
-        for role in user.roles:
-            if role.id in color_roles:
-                return self.get_role(role.id)
-        return None
+        ids = {role.id for role in user.roles}
+        role = ids & set(self.list_colors_by("role_id"))
+        if role:
+            return self.get_role(role.pop())
 
 
     def draw_colors(self):
-        """Draws colored boxes based on a colors
+        """
+        Draw colored boxes based on a colors.
 
         Returns:
             A byte array of the image
@@ -223,7 +211,7 @@ class Guild():
                         color=discord)
         draw = ImageDraw.Draw(img) # set image for drawing
         fnt = ImageFont.truetype(
-            font=f'.{sep}assets{sep}Montserrat-Regular.ttf', size=30)
+            font=f'.{sep}assets{sep}Roboto.ttf', size=30)
 
         #draws and labels boxes
         for i, color in enumerate(self.colors):
@@ -235,7 +223,7 @@ class Guild():
             x2 = row_height * div
             y1 = column_width * (rem+1)
             y2 = row_height*(div+1)
-            draw.rectangle([x1, x2, y1, y2], fill=color.rgb,
+            draw.rectangle([x1, x2, y1, y2], fill=color.rgb(),
                            outline=discord, width=2)
 
             W, H = column_width*rem, row_height*div+10 #origin to draw boxes
@@ -251,7 +239,7 @@ class Guild():
                     msg = msg + "..."
 
             #Make text readable
-            r, g, b = color.rgb
+            r, g, b = color.rgb()
             luminance = (0.299 * r + 0.587 * g + 0.114 * b)/255
             text_color = (0, 0, 0) if luminance > 0.5 else (255, 255, 255)
 
@@ -291,19 +279,20 @@ class Guild():
                         size=(canvas_width, cols * row_height),
                         color=(54,57,63))
         draw = ImageDraw.Draw(img) # set image for drawing
+
+        # set font
         fnt = ImageFont.truetype(
-            f'.{os.path.sep}assets{os.path.sep}Montserrat-Regular.ttf',
-            size=30)#set font
+            f'.{os.path.sep}assets{os.path.sep}Roboto.ttf',
+            size=30)
 
         text_color = (255,255,255) # white
-
 
         # draws themes
         for i, theme in enumerate(self.themes):
 
             #draw text
             draw.text((20, i*row_height + 15), f"{theme.name}: ",
-                      font=fnt, fill=text_color) # draw text on rectangles
+                      font=fnt, fill=text_color)
             w, _ = draw.textsize(f"{theme.name}: ", fnt)
             w += 20 # include margin
 
@@ -313,7 +302,7 @@ class Guild():
 
             #draw color preview
             for j, color in enumerate(theme.colors, 0):
-                rgb = color.rgb
+                rgb = color.rgb()
                 x1 = j * width_of_rect + text_width + margin
                 x2 = i * row_height + margin
                 y1 = (j+1) * width_of_rect + text_width
@@ -332,7 +321,8 @@ class Guild():
 
 
     def find_color(self, query, threshold=90):
-        """Find a color in the guild's colors based on index or name
+        """
+        Find a color in the guild's colors based on index or name.
 
         Args:
             query (str): The term to search for
@@ -341,16 +331,19 @@ class Guild():
             (Color): returns a color object if found
             None (NoneType): returns None if color not found
         """
+        # random color
         if query == "":
-            return self.rand_color() #random color
+            return self.rand_color()
+
+        # get color by index
         elif query.isdigit() and 0 < int(query) < len(self.colors) + 1:
             return self.get_color('index', int(query))
+
+        # get color by name
         else:
-            best_color, rating = process.extractOne(query, self.color_names())
-            if rating <= threshold:
-                return None
-            else:
-                return self.get_color('name', best_color)
+            name, rating = process.extractOne(query, self.list_colors_by("name"))
+            if rating >= threshold:
+                return self.get_color('name', name)
 
 
     def find_theme(self, query, threshold=80):
@@ -363,38 +356,42 @@ class Guild():
             (Theme): returns a theme object if found
             None (NoneType): returns None if theme not found
         """
+        # get theme by index
         if query.isdigit() and 0 < int(query) < len(self.themes) + 1:
             return self.get_theme('index', int(query))
+
+        # get theme by name
         else:
-            best_theme, rating = process.extractOne(query, self.theme_names())
-            print(best_theme, rating)
-            if rating < threshold:
-                return None
-            else:
+            best_theme, rating = process.extractOne(query, self.list_themes_by("name"))
+            if rating >= threshold:
                 return self.get_theme('name', best_theme)
 
 
-    def reindex(self):
+    def reindex_colors(self):
         """Reindexes all of the guilds colors """
         for i, color in enumerate(self.colors, 1):
             color.index = i
 
 
-    async def clear_empty_roles(self):
-        """Deletes a guilds unoccupied roles"""
-        for color in self.colors:
-            if color.role_id and not color.members:
-                role = self.get_role(color.role_id)
-                if role:
-                    try:
-                        await role.delete()
-                    except:
-                        pass
+    def reindex_themes(self):
+        """Reindexes all of the guilds themes """
+        for i, theme in enumerate(self.themes, 1):
+            theme.index = i
 
-                    #check if role still exists
-                    if role not in bot.get_guild(self.id).roles:
-                        print(f"deleted {role.name}")
-                        break
+
+    def to_json(self):
+        """Convert Guild object to valid JSON."""
+        return {
+            "name": self.name,
+            "id": self.id,
+            "prefix": self.prefix,
+            "welcome_channel": self.welcome_channel,
+            "disabled_channels": self.disabled_channels,
+            "theme_limit": self.theme_limit,
+            "color_limit": self.color_limit,
+            "themes": [theme.to_json() for theme in self.themes],
+            "colors": [color.to_json() for color in self.colors]
+        }
 
 
     @classmethod
@@ -405,16 +402,16 @@ class Guild():
 
     @classmethod
     def from_json(cls, data):
-        """Converts valid JSON to guild object"""
-        guild = cls(data["id"], data['prefix'], data["welcome_channel"],
-                    data["disabled_channels"], data["theme_limit"],
-                    data["color_limit"])
-        for color in data["colors"]:
-            guild.colors.append(Color.from_json(color))
-        for theme in data["themes"]:
-            guild.themes.append(Theme.from_json(theme))
-        return guild
-
+        """Convert valid JSON to guild object."""
+        return cls(
+            id=data["id"],
+            prefix=data['prefix'],
+            welcome_channel=data["welcome_channel"],
+            disabled_channels=data["disabled_channels"],
+            theme_limit=data["theme_limit"],
+            color_limit=data["color_limit"],
+            themes=[Theme.from_json(theme) for theme in data["themes"]],
+            colors=[Color.from_json(color) for color in data["colors"]])
 
 class Color():
     """A color object that stores color data
@@ -432,18 +429,17 @@ class Color():
         guild_id (int): The id of the guild the color belongs to
         role_id (int): the discord role id of the color if created
     """
-    def __init__(self, name, hexcode, guild_id, role_id=None):
+    def __init__(self, name, hexcode, guild_id, role_id=None, members=set()):
         self.name = name
         self.hexcode = hexcode
-        self.rgb = fn.hex_to_rgb(hexcode)
         self.guild_id = guild_id
         self.role_id = role_id
-        try:
-            self.members = [member.id for member
-                in bot.get_guild(guild_id).get_role(role_id).members]
-        except:
-            self.members = []
-        self.index = len(self.find_guild().colors) + 1
+        self.members = members
+        if self.find_guild():
+            self.index = len(self.find_guild().colors) + 1
+        else:
+            self.index = 1
+
 
     def __repr__(self):
         """Method for cleaner printing."""
@@ -452,7 +448,12 @@ class Color():
                 f"Active:{has_role} Members:{len(self.members)}")
 
 
-    async def delete(self):
+    def rgb(self):
+        """Convert hexcode into RGB tuple."""
+        return hex_to_rgb(self.hexcode)
+
+
+    async def delete(self, delete_role=True):
         """
         Remove a color from the colors attribute of a guild
         and deletes any roles associated with the color as well
@@ -461,17 +462,12 @@ class Color():
         colors = self.find_guild().colors
         colors.remove(self)
 
-        # reindex all other colors
-        for i, color in enumerate(colors, 1):
-            color.index = i
-
-        # deletes role associated with color
-        if self.role_id:
-            try:
-                role = self.find_guild().get_role(self.role_id)
-                await role.delete()
-            except:
-                pass
+        # deletes role associated with color if specified
+        if delete_role and self.role_id:
+            print(f"Removing {self.name}")
+            role = self.find_guild().get_role(self.role_id)
+            await role.delete()
+            self.role_id = None
 
 
     def find_guild(self):
@@ -479,14 +475,26 @@ class Color():
         return Guild._guilds.get(self.guild_id)
 
 
+    def to_json(self):
+        """Convert Color object to valid JSON."""
+        return {
+            "name": self.name,
+            "hexcode": self.hexcode,
+            "guild_id": self.guild_id,
+            "role_id": self.role_id,
+            "members": list(self.members)
+        }
+
+
     @classmethod
     def from_json(cls, color):
         """Create Color object from valid JSON"""
-        obj = cls(color["name"], color["hexcode"],
-                   color["guild_id"], color["role_id"])
-        if color["members"]:
-            obj.members = color["members"]
-        return obj
+        return cls(
+            name=color["name"],
+            hexcode=color["hexcode"],
+            guild_id=color["guild_id"],
+            role_id=color["role_id"],
+            members={member for member in color["members"]})
 
 
 class Theme():
@@ -505,13 +513,15 @@ class Theme():
         active (boolean): Determines if theme is in use (unused)
         index (int): The location in the list of themes in the guild
     """
-    def __init__(self, name, guild_id, description=""):
+    def __init__(self, name, guild_id, description="", colors=[]):
         self.name = name
-        self.description = description
         self.guild_id = guild_id
-        self.colors = []
-        self.active = True
-        self.index = len(self.find_guild().themes) + 1
+        self.description = description
+        self.colors = colors
+        if self.find_guild():
+            self.index = len(self.find_guild().themes) + 1
+        else:
+            self.index = 1
 
 
     def find_guild(self):
@@ -534,7 +544,7 @@ class Theme():
         guild = self.find_guild()
         new_colors = copy.deepcopy(self.colors)
         guild.colors = new_colors
-        guild.reindex()
+        guild.reindex_colors()
 
 
     def rand_color(self):
@@ -544,12 +554,21 @@ class Theme():
         except IndexError:
             return None
 
+    def to_json(self):
+        """Convert Color object to valid JSON."""
+        return {
+            "name": self.name,
+            "description": self.description,
+            "guild_id": self.guild_id,
+            "colors": [color.to_json() for color in self.colors],
+        }
+
 
     @classmethod
     def from_json(cls, theme):
-        """Creates a Theme object from valid JSON"""
-        new_theme = cls(theme["name"], theme["guild_id"],
-                        theme["description"])
-        for color in theme["colors"]:
-            new_theme.colors.append(Color.from_json(color))
-        return new_theme
+        """Create Theme object from valid JSON"""
+        return cls(
+            name=theme["name"],
+            description=theme["description"],
+            guild_id=theme["guild_id"],
+            colors=[Color.from_json(color) for color in theme["colors"]])

@@ -25,13 +25,12 @@ class Colors(commands.Cog):
 
     @commands.command(name="colors", aliases=["colours", "c"])
     async def show_colors(self, ctx):
-        """Displays an image of equipped colors"""
+        """Display an image of equipped colors."""
         guild = Guild.get_guild(ctx.guild.id)
         fp = io.BytesIO(guild.draw_colors())  # convert to sendable
 
         # send info to channel or user
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
+        if not await authorize(ctx, checks=["disabled"], trace=False):
             await ctx.author.send(content=f"**{ctx.guild.name}**:",
                                   file=discord.File(fp, filename="colors.png"))
         else:
@@ -46,16 +45,10 @@ class Colors(commands.Cog):
             user (str): The name of the user or a mention
             color (tuple of str): The name of the desired color
         """
-        # check permissions and channel availability
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
+        if not await authorize(ctx):
+            return
 
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send(
-                "You need the `manage roles` permission to use this command")
-
-        await color_user(ctx, user, color, trace=True)
+        await color_user(ctx, user, " ".join(color), trace=True)
 
     @commands.command(name="colorme", aliases=['me', "colourme"])
     async def colorme(self, ctx, *color):
@@ -65,20 +58,16 @@ class Colors(commands.Cog):
         Args:
             color (tuple of str): The name of the color
         """
-        # check channel status
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
+        if not await authorize(ctx, checks=["disabled"]):
+            return
 
-        await color_user(ctx, ctx.author.name, color, trace=True) # color user
+        await color_user(ctx, ctx.author.name, " ".join(color))
 
     @commands.command(name="uncolorme", aliases=["uncolourme"])
     async def uncolor_me(self, ctx):
         """Remove an existing Color from the author"""
-        # check channel status
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"{ctx.channel.mention} is disabled")
+        if not await authorize(ctx, checks=["disabled"]):
+            return
 
         # get role to remove
         guild = Guild.get_guild(ctx.guild.id)
@@ -99,15 +88,8 @@ class Colors(commands.Cog):
             color (str): An optional arg for coloring everyone a single color
             trace (bool): Whether or not the function should print anything
         """
-        # check channel status
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        # check permissions
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send(
-                "You need the `manage roles` permission to use this command")
+        if not await authorize(ctx):
+            return
 
         guild = Guild.get_guild(ctx.guild.id)
 
@@ -144,7 +126,7 @@ class Colors(commands.Cog):
                 if index > len(guild.colors):
                     index = 1
 
-                await color_user(ctx, name, (str(index),), trace=False)
+                await color_user(ctx, name, str(index), trace=False)
 
                 # increment index
                 if not color:
@@ -155,6 +137,30 @@ class Colors(commands.Cog):
             await ctx.send("Success! Everyone visible has been colored")
         #await update_prefs([guild])
 
+
+    @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
+    async def clear_colors(self, ctx, backup=True):
+        """
+        Remove all colors from the Guild's colors.
+
+        Args:
+            backup (bool): Whether or not to send a backup JSON
+        """
+        if not await authorize(ctx):
+            return
+
+        guild = Guild.get_guild(ctx.guild.id)
+
+        # provide backup JSON
+        if backup:
+            await ctx.invoke(bot.get_command("export"), trace=False)
+
+        # remove all colors and clear roles
+        async with ctx.channel.typing():
+            await guild.clear_colors()
+        await ctx.send(f"Success! All colors have been removed.")
+
+
     @commands.command(name="add", aliases=["new", "create", "addcolor"])
     async def add_color(self, ctx, hexcode, *name):
         """
@@ -164,15 +170,8 @@ class Colors(commands.Cog):
             hexcode (str): The hexcode of the new color
             name (tuple of str): The name of the new color
         """
-        # check channel status
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        # check permissions
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send(
-                "You need `manage roles` permission to use this command")
+        if not await authorize(ctx):
+            return
 
         # check name length
         name = " ".join(name)
@@ -221,15 +220,8 @@ class Colors(commands.Cog):
         Args:
             color (tuple of str): The search query for color to remove
         """
-        # check channel status
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        # verify user permissions
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send(
-                "You need `manage roles` permission to use this command")
+        if not await authorize(ctx):
+            return
 
         # get name and colors
         guild = Guild.get_guild(ctx.guild.id)
@@ -260,15 +252,8 @@ class Colors(commands.Cog):
         Args:
             color (tuple of str): The color to change the name of
         """
-        # check channel status
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        # verify author permissions
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send(
-                "You need `manage roles` permission to use this command")
+        if not await authorize(ctx):
+            return
 
         # swap name
         name = " ".join(name)
@@ -295,34 +280,6 @@ class Colors(commands.Cog):
         # change the hexcode
         name = " ".join(name)
         await swap(ctx, name, "recolor")
-
-    @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
-    async def clear_colors(self, ctx, backup=True):
-        """
-        Remove all colors from the Guild's colors.
-
-        Args:
-            backup (bool): Whether or not to send a backup JSON
-        """
-        # check channel status
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        # verify author's permissions
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need `manage roles` permission to use this command")
-
-        guild = Guild.get_guild(ctx.guild.id)
-
-        # provide backup JSON
-        if backup:
-            await ctx.invoke(bot.get_command("export"), trace=False)
-
-        # remove all colors and clear roles
-        async with ctx.channel.typing():
-            await guild.clear_colors()
-        await ctx.send(f"Success! All colors have been removed.")
 
     @commands.command("pfp")
     async def get_pfp_color(self, ctx, *name):
@@ -372,57 +329,6 @@ class Colors(commands.Cog):
         else:
             return Exception("Couldn't find guild. Must be a database error")
 
-    # import data from JSON file
-    @commands.command("import")
-    async def import_colors(self, ctx):
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()  # delete command if disabled
-            return await ctx.author.send(f"#{ctx.channel.name} is disabled")
-
-        if not ctx.author.guild_permissions.manage_roles:
-            return await ctx.send("You need `manage roles` permission to use this command")
-
-        # check for attachments
-        if not ctx.message.attachments or not ctx.message.attachments[0].filename.endswith(".json"):
-            raise commands.UserInputError(
-                "Please include a formatted JSON file")
-
-        # load data into a dictionary
-        json_data = json.loads(await ctx.message.attachments[0].read())
-
-        # check file formatting for colors as a list
-        if not isinstance(json_data, list):
-            raise commands.UserInputError(
-                'File is formatted improperly: The file is not structured as a list')
-
-        # check for dictionary type for colors in the list
-        for item in json_data:
-            if not isinstance(item, dict):
-                raise commands.UserInputError(
-                    'File is formatted improperly: An item in the list is not a python dictionary type')
-
-        # create dictionary of colors
-        for color in json_data:
-            color["role_id"] = None
-            color["guild_id"] = ctx.guild.id
-
-            # check for proper attrs
-            if "hexcode" not in color.keys() or "name" not in color.keys():
-                raise commands.UserInputError(
-                    'File is formatted improperly: A color missing "name" or "hexcode" attribute in file')
-
-        guild = Guild.get_guild(ctx.guild.id)
-        # send a backup json just in case :)
-        if guild.colors:
-            await ctx.send("**Backup:**")
-
-        # remove all current colors
-        await ctx.invoke(bot.get_command("clear_all_colors"), trace=False)
-
-        for color in json_data:
-            guild.colors.append(Color.from_json(color))  # create new color
-        await ctx.invoke(bot.get_command("colors"))  # display new set
-        await update_prefs([guild])  # update MongoDB
 
     @commands.command(name="presets", aliases=["show", "preview"])
     async def preview_colors(self, ctx, set_name=None):
@@ -469,16 +375,15 @@ class Colors(commands.Cog):
             raise commands.UserInputError(
                 f"Couldn't find {color_name}. Try using an index for more accurate results")
 
-        rgb = color.rgb
         member_names = [bot.get_user(id).name for id in color.members]
         color_embed = discord.Embed(
             title=color.name,
             description=(f"Hexcode: {color.hexcode}\n"
-                         f"RGB: {rgb}\n"
+                         f"RGB: {color.rgb()}\n"
                          f"Members: {', '.join(member_names)}\n"
                          f"Index: {color.index}\n"
                          f"Role ID: {color.role_id}"),
-            color=discord.Color.from_rgb(*color.rgb))
+            color=discord.Color.from_rgb(*color.rgb()))
 
         # manage recipient and cleanup if needed
         if is_disabled(ctx.channel):
@@ -493,23 +398,28 @@ def setup(bot):
 
 
 async def color_user(ctx, quser, qcolor, trace=True):
-    """Colors a specific user"""
+    """
+    Color a specific user.
 
+    Args:
+        quser (str): The username to look for
+        qcolor (str): The name or index of the color to look up
+        trace (bool): Whether to print anything to user
+    """
     guild = Guild.get_guild(ctx.guild.id)
-    colors = guild.colors
-    qcolor = " ".join(qcolor)
 
     # check for empty colors
-    if not colors and trace:
+    if not guild.colors and trace:
         return await ctx.send(embed=vars.none_embed)
 
+    # find user
     user = functions.find_user(ctx.message, quser, ctx.guild)
     if not user:
         raise commands.UserInputError(
             f"Couldn't find **{quser}**. You should mention a user for a 100% success rate")
 
+    # find color
     color = guild.find_color(qcolor)
-    print(color)
     if not color:
         if ctx.author.guild_permissions.manage_roles:
             prompt = await ctx.send(f"Couldn't find that color. Would you like to add **{qcolor}**?")
@@ -531,16 +441,19 @@ async def color_user(ctx, quser, qcolor, trace=True):
         else:
             color.role_id = None  # fix role assignment
     if not color.role_id:
-        color_role = await ctx.guild.create_role(name=color.name, color=discord.Color.from_rgb(*color.rgb))
+        color_role = await ctx.guild.create_role(name=color.name, color=discord.Color.from_rgb(*color.rgb()))
         color.role_id = color_role.id
         await user.add_roles(color_role)
 
-    print(f"COLORING {user} -> {color.name}")
+    # Report success
+    print(f"COLORED {user} -> {color.name}")
     if trace:
         await ctx.send(f"Gave **{user.name}** the **{color_role.name}** role")
+
+    # update DB
     await update_prefs([guild])
 
-
+#TODO NEED TO OPT THIS COMMAND
 async def swap(ctx, user_input, action):
     """
     Swaps the color or name of a Color object
@@ -584,7 +497,6 @@ async def swap(ctx, user_input, action):
         if check_hex(after):
             await ctx.send(f"Recolored **{color.name}**'s color to **{after}**")
             color.hexcode = after
-            color.rgb = hex_to_rgb(after)
         else:
             raise commands.UserInputError(
                 f"**{after}** is an invalid hex code.Proper Format: #123abc")
@@ -592,7 +504,7 @@ async def swap(ctx, user_input, action):
     # adjust roles if color is changed
     if color.role_id:
         role = guild.get_role(color.role_id)
-        await role.edit(name=color.name, color=discord.Color.from_rgb(*color.rgb))
+        await role.edit(name=color.name, color=discord.Color.from_rgb(*color.rgb()))
 
     await update_prefs([guild])  # update mongoDB
 
@@ -610,6 +522,24 @@ async def add_color_UX(message, author, color, hexcode=None):
         waiting_on_pfp[author.id] = {
             "message": message, "color": color, "hexcode": hexcode}
 
+
+async def authorize(ctx, checks=["disabled", "manage_roles"], trace=True):
+    """Check channel status and verify manage role perms"""
+    # check channel status
+    if "disabled" in checks:
+        if is_disabled(ctx.channel):
+            await ctx.message.delete()
+            if trace:
+                await ctx.author.send(f"#{ctx.channel.name} is disabled")
+            return False
+
+    # verify author's permissions
+    if "manage_roles" in checks:
+        if not ctx.author.guild_permissions.manage_roles:
+            if trace:
+                await ctx.send("You need `manage roles` permission to use this command")
+            return False
+    return True
 
 @bot.event
 async def on_reaction_add(reaction, user):

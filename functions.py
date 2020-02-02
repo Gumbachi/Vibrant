@@ -21,7 +21,8 @@ from vars import preset_names
 
 
 async def update_prefs(guilds=None):
-    """Updates the linked mongoDB database. Updates all if arg is left blank
+    """
+    Update the linked mongoDB database. Updates all if arg is left blank.
 
     Args:
         guilds (list of Guild): list of guild to update
@@ -30,7 +31,7 @@ async def update_prefs(guilds=None):
         guilds = list(c.Guild._guilds.values())
 
     for guild in guilds:
-        json_data = serialize(guild) # serialize objects
+        json_data = guild.to_json() # serialize objects
 
         # find a document based on ID and update update
         if coll.find_one({"id": guild.id}):
@@ -51,17 +52,19 @@ async def get_prefs():
     if not data:
         return
 
-    for dictionary in data:
-        c.Guild.from_json(dictionary)  # builds guild objects from dictionaries
+    for guild_dict in data:
+        guild = c.Guild.from_json(guild_dict)  # build guild
+        guild.reindex_colors()
 
 
 def check_hex(search):
-    """Verify that a string is a valid hexcode
+    """
+    Verify that a string is a valid hexcode.
 
-    Args:\n
+    Args:
         search (string): The string to be validated
 
-    Returns:\n
+    Returns:
         bool: if search was valid hex or not
     """
     valid = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', search)
@@ -69,12 +72,13 @@ def check_hex(search):
 
 
 def is_disabled(channel):
-    """Evaluates if a channel is disabled
+    """
+    Evaluate if a channel is disabled
 
-    Args:\n
+    Args:
         channel (discord.channel): The channel to get info from
 
-    Returns:\n
+    Returns:
         bool: if the channel is enabled
     """
     if isinstance(channel, discord.DMChannel):
@@ -83,23 +87,6 @@ def is_disabled(channel):
         return True
     else:
         return False
-
-
-def serialize(obj):
-    """Convert an object into valid json
-
-    Args:\n
-        obj (Snowflake): The object you want to be serialized
-
-    Returns:\n
-        dict: The dictionary of the object
-    """
-    # dic = copy.deepcopy(guild).__dict__
-    # dic["colors"] = [color.__dict__ for color in dic["colors"]]
-    # return dic
-
-    data = json.loads(json.dumps(obj, default=lambda o: o.__dict__))
-    return data
 
 
 def find_user(message, query, guild, threshold=80):

@@ -1,6 +1,8 @@
 import copy
 import io
 import re
+import json
+from os.path import sep
 
 import discord
 from discord.ext import commands
@@ -9,7 +11,7 @@ from cogs.colors import color_user
 
 from classes import Color, Guild, Theme
 from functions import is_disabled, update_prefs
-from vars import bot
+from vars import bot, preset_names
 
 
 class Themes(commands.Cog):
@@ -155,8 +157,61 @@ class Themes(commands.Cog):
         theme.name = after
         await update_prefs([guild])
 
+
+    @commands.command("import")
+    async def import_colors(self, ctx, name):
+        """Save a preset as a theme"""
+        if not await authorize(ctx):
+            return
+
+        # check if preset exists
+        if name not in preset_names:
+            raise commands.UserInputError(
+                f"**{name}** is not the name of a preset")
+
+        guild = Guild.get_guild(ctx.guild.id)
+
+        # make sure guild is not at theme limit
+        if len(guild.themes) >= guild.theme_limit:
+            return await ctx.send(
+                "You have too many themes delete one and try again")
+
+        # create dictionary of colors
+        with open(f"presets{sep}{name}.json") as preset_data:
+            preset = json.load(preset_data)
+
+        # create theme and associate it with the guild
+        theme = Theme.from_json(preset)
+        theme.guild_id = ctx.guild.id
+        for color in theme.colors:
+            color.guild_id = ctx.guild.id
+        guild.themes.append(theme)
+        guild.reindex_themes()
+
+        await ctx.send(
+            f"Preset has been saved as **{theme.name}** in your themes")
+        await update_prefs([guild])  # update MongoDB
+
     # info
 
 
 def setup(bot):
     bot.add_cog(Themes(bot))
+
+async def authorize(ctx, checks=["disabled", "manage_roles"], trace=True):
+    """Check channel status and verify manage role perms"""
+    # check channel status
+    if "disabled" in checks:
+        if is_disabled(ctx.channel):
+            await ctx.message.delete()
+            if trace:
+                await ctx.author.send(f"#{ctx.channel.name} is disabled")
+            return False
+
+    # verify author's permissions
+    if "manage_roles" in checks:
+        if not ctx.author.guild_permissions.manage_roles:
+            if trace:
+                await ctx.send("You need `manage roles` permission to use this command")
+            return False
+    return True
