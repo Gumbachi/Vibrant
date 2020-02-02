@@ -117,11 +117,7 @@ class Colors(commands.Cog):
         async with ctx.channel.typing():
             amt_colors = len(guild.colors)
             index = randint(1, amt_colors) if not color else color.index
-            for counter, name in enumerate(uncolored, 1):
-                # pause every 8 colors
-                if counter%8==0 and counter!=amt_colors:
-                    await asyncio.sleep(5)
-
+            for name in uncolored:
                 # keep index in range
                 if index > len(guild.colors):
                     index = 1
