@@ -34,34 +34,39 @@ class Themes(commands.Cog):
 
     @commands.command(name="theme.save")
     async def save_theme(self, ctx, *name):
+        """Save a theme if there is available space"""
         if not await authorize(ctx):
             return
 
         guild = Guild.get(ctx.guild.id)
 
+        # check if guild is at limit
         if len(guild.themes) >= guild.theme_limit:
             return await ctx.send(("You've reached the max amount of themes."
                                    "You can remove unwanted themes by using"
                                    "the `removetheme` command"))
 
+        # check color availability
         if not guild.colors:
             return await ctx.send("There are no colors to save!")
 
+        # create Theme and add to Guild's themes
         description = "A discord color theme by " + ctx.guild.name
         name = " ".join(name)
         if name == "":
             name = f"Theme {len(guild.themes) + 1}"
-        theme = Theme(name, guild.id, description)
         color_copy = copy.deepcopy(guild.colors)
-        theme.colors = color_copy
+        theme = Theme(name, guild.id, description, color_copy)
         guild.themes.append(theme)
+
+        # report success
         await ctx.send(f"Theme has been saved as **{name}**")
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
     @commands.command(name="theme.overwrite")
     async def overwrite_theme(self, ctx, *query):
-        """Overwrite one of the Guild's themes with another"""
+        """Overwrite one of the Guild's themes with another."""
         if not await authorize(ctx):
             return
 
@@ -106,8 +111,6 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-
-
     @commands.command(name="theme.load", aliases=["st"])
     async def load_theme(self, ctx, *query):
         """Change the active colors to a theme."""
@@ -119,14 +122,17 @@ class Themes(commands.Cog):
         if not guild.themes:
             return await ctx.send("There are no themes to switch to")
 
+        # try to find theme
         theme = guild.find_theme(" ".join(query), threshold=90)
-
         if not theme:
             raise commands.UserInputError("Couldn't find that theme!")
 
         print("Loading theme")
 
+        # clear colors
         await guild.clear_colors()
+
+        # apply colors
         theme.activate()
         async with ctx.channel.typing():
             for color in guild.colors:
@@ -135,8 +141,10 @@ class Themes(commands.Cog):
                         user = bot.get_user(id)
                         if user:
                             await color_user(ctx, user.name, color.name, False)
+
+        # report success and update DB
         await ctx.send(
-            f"Loaded **{theme.name}**. Use the splash command to apply it")
+            f"Loaded **{theme.name}**")
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
@@ -151,14 +159,15 @@ class Themes(commands.Cog):
         if not guild.themes:
             return await ctx.send("There are no themes to remove")
 
+        # try to find theme
         theme = guild.find_theme(" ".join(query), threshold=90)
-
         if not theme:
             return await ctx.send("Couldn't find that theme!")
 
         theme.delete()
 
-        await ctx.send("Theme Deleted")
+        # report success
+        await ctx.send(f"Deleted **{theme.name}**")
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
@@ -173,6 +182,7 @@ class Themes(commands.Cog):
         if not guild.themes:
             return await ctx.send("There are no themes to rename")
 
+        # verify input
         query = " ".join(query)
         if not re.search(r"[\d\w\s]+[|]{1}[\d\w\s]+", query):
             raise commands.UserInputError("Invalid input")
@@ -182,17 +192,19 @@ class Themes(commands.Cog):
             raise commands.UserInputError(
                 "There are too many separators in your input")
 
+        # strip extraneous spaces
         before = before.strip()
         after = after.strip()
 
+        # try to find theme
         theme = guild.find_theme(before, threshold=80)
         if not theme:
             raise commands.UserInputError("couldn't find that theme")
 
+        # report success
         await ctx.send(f"**{theme.name}** has been renamed to **{after}**")
         theme.name = after
         await update_prefs([guild])
-
 
     @commands.command("import")
     async def import_colors(self, ctx, name):
@@ -230,13 +242,17 @@ class Themes(commands.Cog):
 
     @commands.command(name="theme.info")
     async def theme_info(self, ctx, query):
+        """Get general info about a theme."""
         guild = Guild.get(ctx.guild.id)
         query = " ".join(query)
+
+        # try to find theme
         theme = guild.find_theme(query, threshold=0)
         if not theme:
             raise commands.UserInputError(
                 f"Couldn't find {query}. Try using an index for more accurate results")
 
+        # generate embed
         theme_embed = discord.Embed(
             title=theme.name,
             description=(f"Description: {theme.description}\n"

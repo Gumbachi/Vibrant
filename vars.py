@@ -328,7 +328,7 @@ change_log = {
         "Hyperlinks": "inline links for help to clean things up"
     },
     "0.8":{
-        "Themes(alpha)": "Themes allow you to save presets which allows switching the feel of the server",
+        "Themes(alpha)": "Themes not ready yet but kind of work",
         "Housekeeping": "Cleaned up a bunch of things that weren't necessary",
         "Added some functions to classes": "less imports, better looking",
         "Code documentation": "I can see what everything does easier. so can you if you care",
@@ -336,7 +336,14 @@ change_log = {
         "Patchnotes": "Patchnotes doesnt bypass disabled channels now",
         "Help works": "help wont give setup every time",
     },
-
+    "0.9":{
+        "Themes": "Themes allow you to save presets which allows switching the feel of the server",
+        "Serialization": "Custom serialization per object to allow for the use of sets",
+        "The use of python sets": "No more duplicate role members",
+        "Clearing colors faster": "Fixed a bug that massively slowed down clearing colors",
+        "Smarter updates": "The database is updated less but at better times to save your time",
+        "Changed some functions": "Some functions within the code are now faster and smarter",
+    },
 }
 
 #wait lists with for reaction based UX
