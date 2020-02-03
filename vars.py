@@ -73,7 +73,7 @@ def get_help(p):
             "Disable/Enable Channels": f"""-Disable a channel by typing `{p}disable` in the desired channel
                                            -Enable a channel by typing `{p}enable` in the desired channel
                                            -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
-            "Add Some Color": f"""-Get started quickly by using a default set by typing `{p}set vibrant`
+            "Add Some Color": f"""-Get started quickly by using a default set by typing `{p}import vibrant`
                                   -Or add a custom color by typing `{p}add #ff0000 My First Color`
                                   -Add a few more colors if you'd like using the `add` command and view them by typing `{p}colors`""",
             "Coloring People": f"""-Color yourself by typing `{p}colorme` This will assign you a random color. To get a specific color type `{p}colorme <index/color>`
@@ -101,8 +101,6 @@ def get_help(p):
                                   `{p}recolor <name/index> | <new hexcode>`: Changes a color's value
                                   """,
             "Other Color Commands": f"""`{p}splash`: Gives a color to everyone in the server without one
-                                  `{p}set <palete name>`:Changes colors to a preset
-                                  `{p}presets <preset name>`:previews a preset palette
                                   `{p}info <name/index>`:shows info about a color
                                   `{p}export`: Returns a json file of the pallete
                                   `{p}import`: Adds a palette of colors based on an attached json file

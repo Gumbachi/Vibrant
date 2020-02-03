@@ -18,7 +18,7 @@ class Themes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="themes")
+    @commands.command(name="themes", aliases=["temes"])
     async def show_themes(self, ctx):
         """Draw the guild's themes and send in channel"""
         guild = Guild.get(ctx.guild.id)
@@ -32,7 +32,7 @@ class Themes(commands.Cog):
         else:
             await ctx.send(file=discord.File(fp, filename="themes.png"))
 
-    @commands.command(name="theme.save")
+    @commands.command(name="theme.save", aliases=["theme.add"])
     async def save_theme(self, ctx, *name):
         """Save a theme if there is available space"""
         if not await authorize(ctx):
@@ -64,7 +64,7 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.overwrite")
+    @commands.command(name="theme.overwrite", aliases=["theme.replace"])
     async def overwrite_theme(self, ctx, *query):
         """Overwrite one of the Guild's themes with another."""
         if not await authorize(ctx):
@@ -111,7 +111,7 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.load", aliases=["st"])
+    @commands.command(name="theme.load", aliases=["lt"])
     async def load_theme(self, ctx, *query):
         """Change the active colors to a theme."""
         if not await authorize(ctx):
@@ -148,7 +148,7 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.remove", aliases=["deletetheme", "dt"])
+    @commands.command(name="theme.remove", aliases=["theme.delete", "dt"])
     async def remove_theme(self, ctx, *query):
         """Remove a theme."""
         if not await authorize(ctx):
@@ -171,7 +171,7 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.rename", aliases=["trename"])
+    @commands.command(name="theme.rename")
     async def rename_theme(self, ctx, *query):
         """Rename a theme in the guild."""
         if not await authorize(ctx):
@@ -206,7 +206,7 @@ class Themes(commands.Cog):
         theme.name = after
         await update_prefs([guild])
 
-    @commands.command("import")
+    @commands.command(name="import")
     async def import_colors(self, ctx, name):
         """Save a preset as a theme"""
         if not await authorize(ctx):
