@@ -18,7 +18,7 @@ class Themes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="themes", aliases=["t"])
+    @commands.command(name="themes", aliases=["temes", "t"])
     async def show_themes(self, ctx):
         """Draw the guild's themes and send in channel"""
         guild = Guild.get(ctx.guild.id)
