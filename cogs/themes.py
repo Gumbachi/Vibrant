@@ -18,7 +18,7 @@ class Themes(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="themes", aliases=["temes"])
+    @commands.command(name="themes", aliases=["t"])
     async def show_themes(self, ctx):
         """Draw the guild's themes and send in channel"""
         guild = Guild.get(ctx.guild.id)
@@ -32,7 +32,7 @@ class Themes(commands.Cog):
         else:
             await ctx.send(file=discord.File(fp, filename="themes.png"))
 
-    @commands.command(name="theme.save", aliases=["theme.add"])
+    @commands.command(name="theme.save", aliases=["theme.add", "t.save", "t.add", "t.s"])
     async def save_theme(self, ctx, *name):
         """Save a theme if there is available space"""
         if not await authorize(ctx):
@@ -64,7 +64,30 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.overwrite", aliases=["theme.replace"])
+    @commands.command(name="theme.remove", aliases=["theme.delete", "t.remove", "t.delete", "t.d", "t.r"])
+    async def remove_theme(self, ctx, *query):
+        """Remove a theme."""
+        if not await authorize(ctx):
+            return
+
+        guild = Guild.get(ctx.guild.id)
+
+        if not guild.themes:
+            return await ctx.send("There are no themes to remove")
+
+        # try to find theme
+        theme = guild.find_theme(" ".join(query), threshold=90)
+        if not theme:
+            return await ctx.send("Couldn't find that theme!")
+
+        theme.delete()
+
+        # report success
+        await ctx.send(f"Deleted **{theme.name}**")
+        await ctx.invoke(bot.get_command("themes"))
+        await update_prefs([guild])
+
+    @commands.command(name="theme.overwrite", aliases=["theme.replace", "t.overwrite", "t.replace", "t.o"])
     async def overwrite_theme(self, ctx, *query):
         """Overwrite one of the Guild's themes with another."""
         if not await authorize(ctx):
@@ -111,7 +134,7 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.load", aliases=["lt"])
+    @commands.command(name="theme.load", aliases=["t.load", "t.l"])
     async def load_theme(self, ctx, *query):
         """Change the active colors to a theme."""
         if not await authorize(ctx):
@@ -148,30 +171,7 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.remove", aliases=["theme.delete", "dt"])
-    async def remove_theme(self, ctx, *query):
-        """Remove a theme."""
-        if not await authorize(ctx):
-            return
-
-        guild = Guild.get(ctx.guild.id)
-
-        if not guild.themes:
-            return await ctx.send("There are no themes to remove")
-
-        # try to find theme
-        theme = guild.find_theme(" ".join(query), threshold=90)
-        if not theme:
-            return await ctx.send("Couldn't find that theme!")
-
-        theme.delete()
-
-        # report success
-        await ctx.send(f"Deleted **{theme.name}**")
-        await ctx.invoke(bot.get_command("themes"))
-        await update_prefs([guild])
-
-    @commands.command(name="theme.rename")
+    @commands.command(name="theme.rename", aliases=["t.rename", "t.rn"])
     async def rename_theme(self, ctx, *query):
         """Rename a theme in the guild."""
         if not await authorize(ctx):
@@ -240,7 +240,7 @@ class Themes(commands.Cog):
             f"Preset has been saved as **{theme.name}** in your themes")
         await update_prefs([guild])  # update MongoDB
 
-    @commands.command(name="theme.info")
+    @commands.command(name="theme.info", aliases=["t.info", "t.i"])
     async def theme_info(self, ctx, query):
         """Get general info about a theme."""
         guild = Guild.get(ctx.guild.id)

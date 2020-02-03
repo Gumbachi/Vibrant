@@ -51,7 +51,7 @@ class Colors(commands.Cog):
         await color_user(ctx, user, " ".join(color), trace=True)
         await update_prefs([Guild.get(ctx.guild.id)])
 
-    @commands.command(name="colorme", aliases=['me', "colourme"])
+    @commands.command(name="colorme", aliases=["me", "colourme", "cm"])
     async def colorme(self, ctx, *color):
         """
         Assign a Color to the author of the command.
@@ -65,7 +65,7 @@ class Colors(commands.Cog):
         await color_user(ctx, ctx.author.name, " ".join(color))
         await update_prefs([Guild.get(ctx.guild.id)])
 
-    @commands.command(name="uncolorme", aliases=["uncolourme"])
+    @commands.command(name="uncolorme", aliases=["uncolourme", "ucm"])
     async def uncolor_me(self, ctx):
         """Remove an existing Color from the author"""
         if not await authorize(ctx, checks=["disabled"]):
@@ -161,7 +161,7 @@ class Colors(commands.Cog):
         await update_prefs([guild])
 
 
-    @commands.command(name="add", aliases=["new", "create", "addcolor"])
+    @commands.command(name="add", aliases=["new", "create", "addcolor", "a"])
     async def add_color(self, ctx, hexcode, *name):
         """
         Add a color to the Guild's active colors.
@@ -212,7 +212,7 @@ class Colors(commands.Cog):
     # TODO something about having to write permissions in every single command
     # TODO also need to do something about the none_embed
 
-    @commands.command(name="remove", aliases=["delete"])
+    @commands.command(name="remove", aliases=["delete", "r"])
     async def remove_color(self, ctx, *query):
         """
         Remove a color from the Guild's colors
@@ -244,7 +244,7 @@ class Colors(commands.Cog):
 
         await ctx.invoke(bot.get_command("colors"))  # show updated set
 
-    @commands.command("rename")
+    @commands.command(name="rename", aliases=["rn"])
     async def rename_color(self, ctx, *query):
         """
         Rename a color in the Guild's active colors.
@@ -281,7 +281,7 @@ class Colors(commands.Cog):
         await ctx.send(response)
         await update_prefs([guild])
 
-    @commands.command(name="recolor", aliases=["recolour"])
+    @commands.command(name="recolor", aliases=["recolour", "rc"])
     async def recolor(self, ctx, *query):
         """
         Change a color's hexcode in the Guild's active colors.
