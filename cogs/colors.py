@@ -265,18 +265,20 @@ class Colors(commands.Cog):
         # verify input
         if not re.search(r"[\d\w\s]+[|]{1}[\d\w\s]+", query):
             raise commands.UserInputError(f"**{query}** is not a valid input")
+
         try:
-            before, after = user_input.split("|")
+            before, after = query.split("|")
         except:
             raise commands.UserInputError(
-                "There are too many separators in your input")
+                f"There are too many separators in **{query}**")
 
         # strip extraneous spaces
         before = before.strip()
         after = after.strip()
 
         # change color and update preferences
-        await change_color(guild, before, after, "name")
+        response = await change_color(guild, before, after, "name")
+        await ctx.send(response)
         await update_prefs([guild])
 
     @commands.command(name="recolor", aliases=["recolour"])
@@ -301,19 +303,19 @@ class Colors(commands.Cog):
         if not re.search(r"[\d\w\s]+[|]{1}[\d\w\s]+", query):
             raise commands.UserInputError(f"**{query}** is not a valid input")
         try:
-            before, after = user_input.split("|")
+            before, after = query.split("|")
         except:
             raise commands.UserInputError(
-                "There are too many separators in your input")
+                f"There are too many separators in **{query}**")
 
         # strip extraneous spaces
         before = before.strip()
         after = after.strip()
 
         # change color and update preferences
-        await change_color(guild, before, after, "color")
+        response = await change_color(guild, before, after, "color")
+        await ctx.send(response)
         await update_prefs([guild])
-
 
 
     @commands.command("pfp")
@@ -501,14 +503,16 @@ async def change_color(guild, q1, q2, action):
         raise commands.UserInputError(
             f"Couldn't find **{q1}**. Try using a color's index for better results")
 
+    response = None
     # rename the color
     if action == "name":
+        response = f"Renamed **{color.name}** to **{q2}**"
         color.name = q2
 
     # change the hexcode of the color
     if action == "color":
         if check_hex(q2):
-            await ctx.send(f"Recolored **{color.name}**'s color to **{after}**")
+            response = f"**{color.name}** is now colored **{q2}**"
             color.hexcode = q2
         else:
             raise commands.UserInputError(
@@ -517,7 +521,9 @@ async def change_color(guild, q1, q2, action):
     # adjust roles if color is changed
     if color.role_id:
         role = guild.get_role(color.role_id)
-        await role.edit(name=color.name, color=discord.Color.from_rgb(*color.rgb()))
+        await role.edit(name=color.name,
+                        color=discord.Color.from_rgb(*color.rgb()))
+    return response
 
 async def add_color_UX(message, author, color, hexcode=None):
     await message.add_reaction(vars.emoji_dict["checkmark"])
@@ -531,7 +537,6 @@ async def add_color_UX(message, author, color, hexcode=None):
     else:
         waiting_on_pfp[author.id] = {
             "message": message, "color": color, "hexcode": hexcode}
-
 
 async def authorize(ctx, checks=["disabled", "manage_roles"], trace=True):
     """Check channel status and verify manage role perms"""
