@@ -132,6 +132,7 @@ class Themes(commands.Cog):
         color_copy = copy.deepcopy(guild.colors)
         new_theme = Theme(after, guild.id, description, color_copy)
         guild.themes.insert(index, new_theme)
+        guild.reindex_themes()
 
         # report success and update DB
         await ctx.send(
@@ -173,7 +174,7 @@ class Themes(commands.Cog):
         # report success and update DB
         await ctx.send(
             f"Loaded **{theme.name}**")
-        await ctx.invoke(bot.get_command("themes"))
+        await ctx.invoke(bot.get_command("colors"))
         await update_prefs([guild])
 
     @commands.command(name="theme.rename", aliases=["t.rename", "t.rn"])

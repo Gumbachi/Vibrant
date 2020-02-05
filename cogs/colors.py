@@ -113,7 +113,7 @@ class Colors(commands.Cog):
         if trace:
             await ctx.send(
                 ("Coloring everyone will take around "
-                 f"{len(uncolored)/2 + (5 * (len(uncolored)//8))} seconds"))
+                 f"{len(uncolored)/2 + (10 * (len(uncolored)//10))} seconds"))
 
         # loop through and color members
         async with ctx.channel.typing():
