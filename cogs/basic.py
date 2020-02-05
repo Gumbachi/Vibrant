@@ -39,8 +39,8 @@ class BaseCommands(commands.Cog):
             recipient = ctx.author if disabled else ctx
             title = "Vibrant Help"
             description = f"""Table of Contents.
-                To go to another page please use `{p}help <page number>`
-                Example `{p}help 1`"""
+                To go to another page please use `{p}help <page>`
+                Example `{p}help 1`, `{p}help setup`"""
             fields = help_dict[None].items()
 
         # setup instructions/how to use
@@ -58,6 +58,15 @@ class BaseCommands(commands.Cog):
                           f"on a specific command you can use `{p}help <command>`"
                           f"Example: `{p}help add`")
             fields = help_dict[2].items()
+
+        # list of theme commands and short descriptions
+        # elif arg == '3' or arg == 'themes':
+        #     recipient = ctx.author
+        #     title = "Vibrant Commands"
+        #     description = ("A list of commands the bot has. For more info "
+        #                   f"on a specific command you can use `{p}help <command>`"
+        #                   f"Example: `{p}help add`")
+        #     fields = help_dict[3].items()
 
         # individual command help
         elif arg in [command.name for command in bot.commands]:

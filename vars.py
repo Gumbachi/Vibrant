@@ -67,15 +67,9 @@ def get_help(p):
             "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
         1: {
-            "Set a Welcome Channel": f"""-Set a welcome channel for the bot to send a message in the channel when ever a new person joins your server
-                                         -Go to your desired channel and type `{p}welcome` to set it as the welcome channel
-                                         -This can be reverted by typing `{p}welcome remove`""",
-            "Disable/Enable Channels": f"""-Disable a channel by typing `{p}disable` in the desired channel
-                                           -Enable a channel by typing `{p}enable` in the desired channel
-                                           -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
-            "Add Some Color": f"""-Get started quickly by using a default set by typing `{p}import vibrant`
-                                  -Or add a custom color by typing `{p}add #ff0000 My First Color`
-                                  -Add a few more colors if you'd like using the `add` command and view them by typing `{p}colors`""",
+            "Add Custom Color": f"""-add a custom color by typing `{p}add #ff0000 My Color`
+                                  -Add a few more colors if you'd like using `{p}add` and view them by typing `{p}colors`""",
+            "Setting Themes": f"""Learn how to save your colors, use presets and hot swap the way your server looks by using themes. Type `{p}help themes`""",
             "Coloring People": f"""-Color yourself by typing `{p}colorme` This will assign you a random color. To get a specific color type `{p}colorme <index/color>`
                                    -Color others by typing `{p}color <user>` This will try to find a user and assigning a random color. To get a specific color type `{p}color <user> <index/color>`
                                    -Color everyone that isn't colored by typing `{p}splash`. This command may take some time depending on the amount of members who are uncolored""",
@@ -84,6 +78,12 @@ def get_help(p):
                                  -[Color Picker](https://www.google.com/search?q=color+picker)""",
             "Remove Colors": f"""-Remove a color by typing `{p}remove <index/color>`
                                  -Remove all colors by typing `{p}clear_all_colors`. This is made difficult to type on purpose""",
+            "Set a Welcome Channel": f"""-Set a welcome channel for the bot to send a message in the channel when ever a new person joins your server
+                                         -Go to your desired channel and type `{p}welcome` to set it as the welcome channel
+                                         -This can be reverted by typing `{p}welcome remove`""",
+            "Disable/Enable Channels": f"""-Disable a channel by typing `{p}disable` in the desired channel
+                                           -Enable a channel by typing `{p}enable` in the desired channel
+                                           -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
         },
         2: {
             "General Commands": f"""`{p}howdy`: You've got a friend in me
