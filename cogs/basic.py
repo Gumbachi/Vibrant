@@ -6,7 +6,7 @@ from discord.ext import commands
 from fuzzywuzzy import fuzz, process
 
 from classes import Color, Guild
-from functions import check_hex, is_disabled, update_prefs, find_user
+from functions import check_hex, is_disabled, update_prefs
 from vars import bot, change_log, get_commands, get_help, get_prefix
 
 
@@ -124,7 +124,7 @@ class BaseCommands(commands.Cog):
         if user == "":
             user = ctx.author
         else:
-            user = find_user(ctx.message, user, ctx.guild, 0)
+            user = guild.find_user(user, ctx.message, 0)
 
         if not user:
             return await ctx.send("Couldn't find user")

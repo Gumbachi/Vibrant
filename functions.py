@@ -55,6 +55,7 @@ async def get_prefs():
     for guild_dict in data:
         guild = c.Guild.from_json(guild_dict)  # build guild
         guild.reindex_colors()
+        guild.reindex_themes()
 
 
 def check_hex(search):
@@ -87,33 +88,6 @@ def is_disabled(channel):
         return True
     else:
         return False
-
-
-def find_user(message, query, guild, threshold=80):
-    """Searches for a user in the guild with a query
-
-    Args:
-        message (discord.Message): the message with command
-        query (str): the name to search for
-        guild (discord.Guild): the guild the member is in
-        threshold (int): the fuzzy matching threshold
-
-    Returns:
-        discord.User: the user if found
-    """
-    if message.mentions:
-        user = message.mentions[0]
-    else:
-        member_names = [member.name for member in guild.members]
-        best_user, rating = process.extractOne(query, member_names)
-        for member in guild.members:
-            if member.name == best_user:
-                if rating <= threshold:
-                    user = None
-                else:
-                    user = member
-                    break
-    return user
 
 
 def draw_presets():

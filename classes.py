@@ -55,6 +55,7 @@ class Guild():
         self.colors = colors
         Guild._guilds[id] = self # add guild to the dict
 
+
     def __repr__(self):
         """
         Output a string that represents the guild object and
@@ -262,55 +263,68 @@ class Guild():
 
 
     def draw_themes(self):
-        """Draws guild themes
+        """
+        Draws guild themes.
 
         Returns:
-            imgByteArray(bytes): byte array of the image
+            imgByteArray (bytes): byte array of the image
         """
-        row_height = 60
+        color_height = 44 # height of color boxes
+        cont_height = 112 + 7 # container height
         canvas_width = 900
-        text_width = 250
-        margin = 5
+        padding_above_text = 20
+        padding_below_text = 10
+        box_margin = 5
 
-        cols = 1 if not self.themes else len(self.themes)
+        rows = 1 if not self.themes else len(self.themes)
 
         img = Image.new(mode='RGB',
-                        size=(canvas_width, cols * row_height),
+                        size=(canvas_width, cont_height * rows),
                         color=(54,57,63))
         draw = ImageDraw.Draw(img) # set image for drawing
 
         # set font
         fnt = ImageFont.truetype(
             f'.{os.path.sep}assets{os.path.sep}Roboto.ttf',
-            size=30)
+            size=40)
 
-        text_color = (255,255,255) # white
+        white = (255,255,255) # white
 
         # draws themes
         for i, theme in enumerate(self.themes):
 
             #draw text
-            draw.text((20, i*row_height + 15), f"{theme.name}: ",
-                      font=fnt, fill=text_color)
-            w, _ = draw.textsize(f"{theme.name}: ", fnt)
-            w += 20 # include margin
+            msg = f"{theme.index}. {theme.name}"
+            text_width, text_height = draw.textsize(msg, fnt)
+            print(text_height)
 
-            amt_colors = len(theme.colors)
-            rem_space = canvas_width - text_width - margin
-            width_of_rect = rem_space/amt_colors
+            # text coords
+            x = (canvas_width/2)-(text_width/2) # center
+            y = i * cont_height + padding_above_text
+
+            text_height += padding_above_text + padding_below_text
+
+            draw.text((x, y), msg, font=fnt, fill=white)
+
+            width_of_rect = canvas_width/len(theme.colors)
 
             #draw color preview
             for j, color in enumerate(theme.colors, 0):
                 rgb = color.rgb()
-                x1 = j * width_of_rect + text_width + margin
-                x2 = i * row_height + margin
-                y1 = (j+1) * width_of_rect + text_width
-                y2 = (i+1) * row_height - margin
-                draw.rectangle([x1, x2, y1, y2], fill=rgb)
+
+                # top left corner
+                x0 = j * width_of_rect
+                y0 = i * cont_height + text_height
+
+                # bottom right corner
+                x1 = x0 + width_of_rect - box_margin
+                y1 = y0 + color_height
+
+                draw.rectangle([(x0, y0), (x1, y1)], fill=rgb)
 
         # different drawing if no themes
         if not self.themes:
-            draw.text((20, 0), f"No Themes", font=fnt, fill=text_color)
+            draw.text((20, 0), f"No Themes", font=fnt, fill=white)
 
         #return binary data
         imgByteArr = io.BytesIO()
@@ -319,9 +333,12 @@ class Guild():
         return imgByteArr
 
 
-    def find_guild(self):
-        """Find and return the Guild object the theme belongs to"""
-        return Guild._guilds.get(self.id)
+    def discord_guild(self):
+        """Get the discord.guild that matches this one"""
+        try:
+            return bot.get_guild(self.id)
+        except:
+            return None
 
 
     def find_color(self, query, threshold=90):
@@ -371,6 +388,39 @@ class Guild():
                 return self.get_theme('name', best_theme)
 
 
+    def find_user(self, query, message=None, threshold=80):
+        """Search for a user in the guild with a query.
+
+        Args:
+            message (discord.Message): the message with command
+            query (str): the name to search for
+            guild (discord.Guild): the guild the member is in
+            threshold (int): the fuzzy matching threshold
+
+        Returns:
+            discord.User: the user if found
+        """
+
+        guild = self.discord_guild()
+
+        # check mentions
+        if message and message.mentions:
+            user = message.mentions[0]
+
+        # try fuzzy matching
+        else:
+            member_names = [member.name for member in guild.members]
+            best_user, rating = process.extractOne(query, member_names)
+            for member in guild.members:
+                if member.name == best_user:
+                    if rating <= threshold:
+                        user = None
+                    else:
+                        user = member
+                        break
+        return user
+
+
     def reindex_colors(self):
         """Reindexes all of the guilds colors """
         for i, color in enumerate(self.colors, 1):
@@ -416,6 +466,7 @@ class Guild():
             color_limit=data["color_limit"],
             themes=[Theme.from_json(theme) for theme in data["themes"]],
             colors=[Color.from_json(color) for color in data["colors"]])
+
 
 class Color():
     """A color object that stores color data
@@ -555,6 +606,7 @@ class Theme():
             return random.choice(self.colors)
         except IndexError:
             return None
+
 
     def to_json(self):
         """Convert Color object to valid JSON."""

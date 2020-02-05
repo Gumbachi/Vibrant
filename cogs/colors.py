@@ -37,7 +37,7 @@ class Colors(commands.Cog):
             await ctx.send(file=discord.File(fp, filename="colors.png"))
 
     @commands.command(name="color", aliases=["colour", "cu"])
-    async def color_specific_person(self, ctx, user, *color):
+    async def color(self, ctx, user, *color):
         """
         Color a specified user a specified color.
 
@@ -135,7 +135,6 @@ class Colors(commands.Cog):
             await ctx.send("Success! Everyone visible has been colored")
         await update_prefs([guild])
 
-
     @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
     async def clear_colors(self, ctx, backup=True):
         """
@@ -159,7 +158,6 @@ class Colors(commands.Cog):
         await ctx.send(f"Success! All colors have been removed.")
 
         await update_prefs([guild])
-
 
     @commands.command(name="add", aliases=["new", "create", "addcolor", "a"])
     async def add_color(self, ctx, hexcode, *name):
@@ -207,10 +205,6 @@ class Colors(commands.Cog):
             f"**{color.name}** has been added at index **{color.index}**.")
         await ctx.invoke(bot.get_command("colors")) # show new set
         await update_prefs([guild])
-
-    # TODO need to rename the params to color instead of name for some
-    # TODO something about having to write permissions in every single command
-    # TODO also need to do something about the none_embed
 
     @commands.command(name="remove", aliases=["delete", "r"])
     async def remove_color(self, ctx, *query):
@@ -317,30 +311,53 @@ class Colors(commands.Cog):
         await ctx.send(response)
         await update_prefs([guild])
 
+    @commands.command(name="info", aliases=["about"])
+    async def show_color_info(self, ctx, color_name):
+        guild = Guild.get(ctx.guild.id)
+
+        color = guild.find_color(color_name, threshold=0)
+        print(color)
+        if not color:
+            raise commands.UserInputError(
+                f"Couldn't find {color_name}. Try using an index for more accurate results")
+
+        member_names = [bot.get_user(id).name for id in color.members]
+        color_embed = discord.Embed(
+            title=color.name,
+            description=(f"Hexcode: {color.hexcode}\n"
+                         f"RGB: {color.rgb()}\n"
+                         f"Members: {', '.join(member_names)}\n"
+                         f"Index: {color.index}\n"
+                         f"Role ID: {color.role_id}"),
+            color=discord.Color.from_rgb(*color.rgb()))
+
+        # manage recipient and cleanup if needed
+        if not await authorize(ctx, checks=["disabled"], trace=False):
+            await ctx.author.send(embed=color_embed)  # to user
+        else:
+            await ctx.send(embed=color_embed)
+
 
     @commands.command("pfp")
     async def get_pfp_color(self, ctx, *name):
-
-        # find the right user
+        """Use an algorithm to find the most prominent color in a pfp."""
+        guild = Guild.get(ctx.guild.id)
         user = " ".join(name)
+
+        # get the best user
         if user == "":
             user = ctx.author
-
-        # check mentions
-        elif ctx.message.mentions:
-            user = ctx.message.mentions[0]
-
-        # try fuzzy matching
         else:
-            member_names = [member.name for member in ctx.guild.members]
-            best_user, _ = process.extractOne(user, member_names)
-            for member in ctx.guild.members:
-                if member.name == best_user:
-                    user = member
-                    break
+            user = guild.find_user(user, ctx.message, 0)
 
-        hexcode = pfp_analysis(user.avatar_url)  # try to get the best color
-        await ctx.send(f"**{hexcode}** matches {user.name}'s profile picture.")
+        hexcode = pfp_analysis(user.avatar_url)
+
+        if not await authorize(ctx, checks=["disabled"], trace=False):
+            await ctx.author.send(f"**{hexcode}** matches {user.name}'s profile picture.")
+        else:
+            await ctx.send(f"**{hexcode}** matches {user.name}'s profile picture.")
+
+        # prompt to add to colors
         if ctx.author.guild_permissions.manage_roles:
             prompt = await ctx.send(f"Would you like to add {hexcode} to your colors?")
             return await add_color_UX(prompt, ctx.author, user.name, hexcode=hexcode)
@@ -402,32 +419,6 @@ class Colors(commands.Cog):
         # else:
         #     await ctx.send(file=discord.File(fp, filename="colors.png"))#to channel
 
-    @commands.command(name="info", aliases=["about"])
-    async def show_color_info(self, ctx, color_name):
-        guild = Guild.get(ctx.guild.id)
-
-        color = guild.find_color(color_name, threshold=0)
-        print(color)
-        if not color:
-            raise commands.UserInputError(
-                f"Couldn't find {color_name}. Try using an index for more accurate results")
-
-        member_names = [bot.get_user(id).name for id in color.members]
-        color_embed = discord.Embed(
-            title=color.name,
-            description=(f"Hexcode: {color.hexcode}\n"
-                         f"RGB: {color.rgb()}\n"
-                         f"Members: {', '.join(member_names)}\n"
-                         f"Index: {color.index}\n"
-                         f"Role ID: {color.role_id}"),
-            color=discord.Color.from_rgb(*color.rgb()))
-
-        # manage recipient and cleanup if needed
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            await ctx.author.send(embed=color_embed)  # to user
-        else:
-            await ctx.send(embed=color_embed)
 
 
 def setup(bot):
@@ -450,7 +441,7 @@ async def color_user(ctx, quser, qcolor, trace=True):
         return await ctx.send(embed=vars.none_embed)
 
     # find user
-    user = functions.find_user(ctx.message, quser, ctx.guild)
+    user = guild.find_user(quser, ctx.message)
     if not user:
         raise commands.UserInputError(
             f"Couldn't find **{quser}**. You should mention a user for a 100% success rate")

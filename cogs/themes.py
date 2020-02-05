@@ -32,7 +32,8 @@ class Themes(commands.Cog):
         else:
             await ctx.send(file=discord.File(fp, filename="themes.png"))
 
-    @commands.command(name="theme.save", aliases=["theme.add", "t.save", "t.add", "t.s"])
+    @commands.command(name="theme.save",
+                      aliases=["theme.add", "t.save", "t.add", "t.s"])
     async def save_theme(self, ctx, *name):
         """Save a theme if there is available space"""
         if not await authorize(ctx):
@@ -64,7 +65,9 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.remove", aliases=["theme.delete", "t.remove", "t.delete", "t.d", "t.r"])
+    @commands.command(
+        name="theme.remove",
+        aliases=["theme.delete", "t.remove", "t.delete", "t.d", "t.r"])
     async def remove_theme(self, ctx, *query):
         """Remove a theme."""
         if not await authorize(ctx):
@@ -87,7 +90,9 @@ class Themes(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         await update_prefs([guild])
 
-    @commands.command(name="theme.overwrite", aliases=["theme.replace", "t.overwrite", "t.replace", "t.o"])
+    @commands.command(
+        name="theme.overwrite",
+        aliases=["theme.replace", "t.overwrite", "t.replace", "t.o"])
     async def overwrite_theme(self, ctx, *query):
         """Overwrite one of the Guild's themes with another."""
         if not await authorize(ctx):
