@@ -60,13 +60,11 @@ class BaseCommands(commands.Cog):
             fields = help_dict[2].items()
 
         # list of theme commands and short descriptions
-        # elif arg == '3' or arg == 'themes':
-        #     recipient = ctx.author
-        #     title = "Vibrant Commands"
-        #     description = ("A list of commands the bot has. For more info "
-        #                   f"on a specific command you can use `{p}help <command>`"
-        #                   f"Example: `{p}help add`")
-        #     fields = help_dict[3].items()
+        elif arg == '3' or arg == 'themes':
+            recipient = ctx.author
+            title = "Vibrant Themes"
+            description = "All you need to know about using themes with Vibrant"
+            fields = help_dict[3].items()
 
         # individual command help
         elif arg in [command.name for command in bot.commands]:
