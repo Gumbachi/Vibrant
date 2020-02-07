@@ -32,6 +32,9 @@ async def update_prefs(guilds=None):
 
     for guild in guilds:
         json_data = guild.to_json() # serialize objects
+        print()
+        print()
+        print(json_data)
 
         # find a document based on ID and update update
         if coll.find_one({"id": guild.id}):

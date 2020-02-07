@@ -46,6 +46,8 @@ def get_prefix(bot, message):
     except:
         print("no coll found for prefix")
         return '$'
+    if not data:
+        return '$'
     if "prefix" not in data.keys():
         data["prefix"] = '$'
     return data["prefix"]
