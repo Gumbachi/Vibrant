@@ -1,37 +1,42 @@
-[
-  {
-    "name": "Chocolate",
-    "hexcode": "#6b3e26",
-    "guild_id": null,
-    "role_id": null,
-    "index": 1
-  },
-  {
-    "name": "Strawberry",
-    "hexcode": "#ffc5d9",
-    "guild_id": null,
-    "role_id": null,
-    "index": 2
-  },
-  {
-    "name": "Mint",
-    "hexcode": "#c2f2d0",
-    "guild_id": null,
-    "role_id": null,
-    "index": 3
-  },
-  {
-    "name": "Vanilla",
-    "hexcode": "#fdf5c9",
-    "guild_id": null,
-    "role_id": null,
-    "index": 4
-  },
-  {
-    "name": "Peanut Butter",
-    "hexcode": "#ffcb85",
-    "guild_id": null,
-    "role_id": null,
-    "index": 5
-  }
-]
+{
+  "name": "Ice Cream",
+  "description": "Colors that resemble ice cream flavors",
+  "guild_id": null,
+  "colors": [
+    {
+      "name": "Chocolate",
+      "hexcode": "#6b3e26",
+      "guild_id": null,
+      "role_id": null,
+      "members": []
+    },
+    {
+      "name": "Strawberry",
+      "hexcode": "#ffc5d9",
+      "guild_id": null,
+      "role_id": null,
+      "members": []
+    },
+    {
+      "name": "Mint",
+      "hexcode": "#c2f2d0",
+      "guild_id": null,
+      "role_id": null,
+      "members": []
+    },
+    {
+      "name": "Vanilla",
+      "hexcode": "#fdf5c9",
+      "guild_id": null,
+      "role_id": null,
+      "members": []
+    },
+    {
+      "name": "Peanut Butter",
+      "hexcode": "#ffcb85",
+      "guild_id": null,
+      "role_id": null,
+      "members": []
+    }
+  ]
+}

@@ -6,7 +6,7 @@ from discord.ext import commands
 from fuzzywuzzy import fuzz, process
 
 from classes import Color, Guild
-from functions import check_hex, is_disabled, update_prefs, find_user
+from functions import check_hex, is_disabled, update_prefs
 from vars import bot, change_log, get_commands, get_help, get_prefix
 
 
@@ -39,8 +39,8 @@ class BaseCommands(commands.Cog):
             recipient = ctx.author if disabled else ctx
             title = "Vibrant Help"
             description = f"""Table of Contents.
-                To go to another page please use `{p}help <page number>`
-                Example `{p}help 1`"""
+                To go to another page please use `{p}help <page>`
+                Example `{p}help 1`, `{p}help setup`"""
             fields = help_dict[None].items()
 
         # setup instructions/how to use
@@ -50,14 +50,39 @@ class BaseCommands(commands.Cog):
             description = "Follow these steps to learn how to use Vibrant"
             fields = help_dict[1].items()
 
-        # list of command and short descriptions
-        elif arg == '2' or arg == 'commands':
+        # list of theme commands and short descriptions
+        elif arg == '2' or arg == 'themes':
             recipient = ctx.author
-            title = "Vibrant Commands"
+            title = "Vibrant Themes Tutorial"
+            description = "All you need to know about using themes with Vibrant"
+            fields = help_dict[2].items()
+
+        # list of command and short descriptions
+        elif arg == '3' or arg == 'general':
+            recipient = ctx.author
+            title = "Vibrant General Commands"
             description = ("A list of commands the bot has. For more info "
                           f"on a specific command you can use `{p}help <command>`"
+                          f"Example: `{p}help prefix`")
+            fields = help_dict[3].items()
+
+        # list of theme commands and short descriptions
+        elif arg == '4' or arg == 'color':
+            recipient = ctx.author
+            title = "Vibrant Color Commands"
+            description = ("A list of color commands the bot has. For more info "
+                          f"on a specific command you can use `{p}help <command>`"
                           f"Example: `{p}help add`")
-            fields = help_dict[2].items()
+            fields = help_dict[4].items()
+
+        # list of theme commands and short descriptions
+        elif arg == '5' or arg == 'theme':
+            recipient = ctx.author
+            title = "Vibrant Theme Commands"
+            description = ("A list of theme commands the bot has. For more info "
+                          f"on a specific command you can use `{p}help <command>`"
+                          f"Example: `{p}help theme.overwrite`")
+            fields = help_dict[5].items()
 
         # individual command help
         elif arg in [command.name for command in bot.commands]:
@@ -106,7 +131,7 @@ class BaseCommands(commands.Cog):
         if is_disabled(ctx.channel):
             return await ctx.message.delete()
 
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
         if not new_prefix:
             return await ctx.send(f"Current Prefix: `{guild.prefix}`")
 
@@ -118,13 +143,13 @@ class BaseCommands(commands.Cog):
     async def expose_user(self, ctx, *name):
         """Displays and embed giving simple information about a user"""
         user = " ".join(name)
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         # find a user
         if user == "":
             user = ctx.author
         else:
-            user = find_user(ctx.message, user, ctx.guild, 0)
+            user = guild.find_user(user, ctx.message, 0)
 
         if not user:
             return await ctx.send("Couldn't find user")
@@ -162,7 +187,7 @@ class BaseCommands(commands.Cog):
     @commands.command("channels", aliases=["data"])
     async def channel_data(self, ctx):
         """Displays a list of channels that are enabled and disabled"""
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         #get welcome channel name
         if guild.welcome_channel:

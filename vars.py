@@ -23,7 +23,7 @@ preset_names = [
     "icecream",
     "neon",
     "pastel",
-    "vaporwave",
+    "outrun",
     "sunset",
     "downtown",
     "discord",
@@ -52,7 +52,10 @@ def get_prefix(bot, message):
 
 bot = commands.Bot(command_prefix=get_prefix, help_command=None) # creates bot object
 
-none_embed = discord.Embed(title="No active colors", description=f"To add colors get someone with permission to perform the `set` or `add` command")
+none_embed = discord.Embed(
+    title="No active colors",
+    description=f"To add colors use the `add` command or import a theme",
+    color=discord.Color.blurple())
 
 disabled_embed = discord.Embed(title="Channel is Disabled", description=f"The channel you tried to use is disabled")
 
@@ -60,19 +63,16 @@ def get_help(p):
     help_dict = {
         None: {
             "1. Setup": "Shows you how to set up the bot easily and how to use basic commands",
-            "2. Commands": "Shows a list of commands the bot has",
+            "2. Themes": "Learn how to use themes",
+            "3. General Commands": "Shows a list of general commands the bot has",
+            "4. Color Commands": "Shows a list of color related commands the bot has",
+            "5. Theme Commands": "Shows a list of theme related commands the bot has",
             "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
         1: {
-            "Set a Welcome Channel": f"""-Set a welcome channel for the bot to send a message in the channel when ever a new person joins your server
-                                         -Go to your desired channel and type `{p}welcome` to set it as the welcome channel
-                                         -This can be reverted by typing `{p}welcome remove`""",
-            "Disable/Enable Channels": f"""-Disable a channel by typing `{p}disable` in the desired channel
-                                           -Enable a channel by typing `{p}enable` in the desired channel
-                                           -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
-            "Add Some Color": f"""-Get started quickly by using a default set by typing `{p}set vibrant`
-                                  -Or add a custom color by typing `{p}add #ff0000 My First Color`
-                                  -Add a few more colors if you'd like using the `add` command and view them by typing `{p}colors`""",
+            "Add Custom Color": f"""-add a custom color by typing `{p}add #ff0000 My Color`
+                                  -Add a few more colors if you'd like using `{p}add` and view them by typing `{p}colors`""",
+            "Setting Themes": f"""Learn how to save your colors, use presets and hot swap the way your server looks by using themes. Type `{p}help themes`""",
             "Coloring People": f"""-Color yourself by typing `{p}colorme` This will assign you a random color. To get a specific color type `{p}colorme <index/color>`
                                    -Color others by typing `{p}color <user>` This will try to find a user and assigning a random color. To get a specific color type `{p}color <user> <index/color>`
                                    -Color everyone that isn't colored by typing `{p}splash`. This command may take some time depending on the amount of members who are uncolored""",
@@ -81,36 +81,62 @@ def get_help(p):
                                  -[Color Picker](https://www.google.com/search?q=color+picker)""",
             "Remove Colors": f"""-Remove a color by typing `{p}remove <index/color>`
                                  -Remove all colors by typing `{p}clear_all_colors`. This is made difficult to type on purpose""",
+            "Set a Welcome Channel": f"""-Set a welcome channel for the bot to send a message in the channel when ever a new person joins your server
+                                         -Go to your desired channel and type `{p}welcome` to set it as the welcome channel
+                                         -This can be reverted by typing `{p}welcome remove`""",
+            "Disable/Enable Channels": f"""-Disable a channel by typing `{p}disable` in the desired channel
+                                           -Enable a channel by typing `{p}enable` in the desired channel
+                                           -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
         },
         2: {
+            "Importing Themes": f"""Import a preset theme by using `{p}import vibrant`.
+                                    This will import a preset called "Vibrant"
+                                    After importing, color everyone with `{p}splash`.""",
+            "Managing your Themes": f"""Add a custom color by typing `{p}add #ffffff White`
+                                        You can save this new preset by typing `{p}theme.save My Custom Theme`
+                                        Remove your first theme by using `{p}theme.remove 1` or `{p}t.r 1`
+                                        Load your custom theme by typing `{p}theme.load 1` or `{p}t.l 1`
+                                        If you want to replace one theme with another then use `{p}theme.overwrite <index/name> | <name of new theme>` or `{p}t.o` for short.
+                                        If you would like to rename your theme then do so by using `{p}theme.rename` or `{p}t.rn`. For more help on this command type `{p}help theme.rename`.""",
+            "Viewing your themes": f"""View all of your themes by typing `{p}themes` or `{p}t`."""
+        },
+        3: {
             "General Commands": f"""`{p}howdy`: You've got a friend in me
                                     `{p}prefix <new prefix>`: changes the prefix the bot uses
                                     `{p}expose <name>`: Shows some info about a member
                                     `{p}pfp <user>`: sends a hexcode that matches the user's pfp
                                     `{p}report <issue>`: sends a message to the developer with your problem
                                     """,
-            "Main Color Commands": f"""`{p}colorme <color/index>`: Gives you your desired color or a random color if index isn't given
-                                  `{p}color <user> <color/index>`: Gives a specific user a color
+            "Channel Commands": f"""`{p}enable <all>`: Enables the channel or all channels
+                                    `{p}disable <all>`: Disables the channel or all channels
+                                    `{p}welcome <remove>`: Toggles the channel for greeting users
+                                    `{p}status`: displays disabled/enabled status for channel
+                                    `{p}channels`: Shows disabled channels and welcome channel
+                                    """
+        },
+        4: {
+            "Color Commands": f"""`{p}colorme <name/index>`: Gives you your desired color or a random one
+                                  `{p}color <user> <name/index>`: Gives a specific user a color
                                   `{p}colors`: Shows available colors
                                   `{p}add <hexcode> <name>`: Adds a color to the palette
                                   `{p}remove <name/index>`: Removes a color from the palette
                                   `{p}rename <name/index> | <new name>`: Changes a color's name
                                   `{p}recolor <name/index> | <new hexcode>`: Changes a color's value
-                                  """,
-            "Other Color Commands": f"""`{p}splash`: Gives a color to everyone in the server without one
-                                  `{p}set <palete name>`:Changes colors to a preset
-                                  `{p}presets <preset name>`:previews a preset palette
+                                  `{p}splash`: Gives a color to everyone in the server without one
                                   `{p}info <name/index>`:shows info about a color
-                                  `{p}export`: Returns a json file of the pallete
-                                  `{p}import`: Adds a palette of colors based on an attached json file
-                                  """,
-            "Channel Commands": f"""`{p}enable <all>`: Enables the channel or all channels
-                                    `{p}disable <all>`: Disables the channel or all channels
-                                    `{p}welcome <remove>`: Toggles the channel for welcoming and saying goodbye to users
-                                    `{p}status`: displays disabled/enabled status for channel
-                                    `{p}data`: Shows disabled channels and welcome channel
-                                    """
-        }
+                                """
+        },
+        5: {
+            "Theme Commands": f"""`{p}themes`: Draws a pretty list of themes
+                                  `{p}theme.save <name>`: Saves your theme
+                                  `{p}theme.remove <name/index>`: Deletes a theme
+                                  `{p}theme.overwrite <name/index> | <name of new theme>`: Replaces a theme
+                                  `{p}theme.load <name/index>`: Applies a saved theme to your server
+                                  `{p}theme.rename <name/index> | <new name>`: Changes a theme's name
+                                  `{p}theme.info <name/index>`: Shows info about a given theme
+                                  `{p}import <name>`: Adds a preset as a theme
+                                """
+        },
     }
     return help_dict
 
@@ -170,12 +196,6 @@ def get_commands(p):
             "More Information": """-This commands takes time because of API abuse. Everytime a person gets colored, a role may be created and a role is assigned which require
                                    API calls and spamming it is considered abuse. To avoid this the bot will color 5 people, wait 5 seconds and then repeat until done
                                    -The bot sends an estimated time message for how long the commands will take"""
-        },
-        "set": {
-            "Description": "Changes the entire colorset to a preset",
-            "Fields": "set name: this is a required field where you can input a preset name (vibrant, basic)",
-            "Usage": f"`{p}set vibrant`: equips vibrant set\n`{p}set basic`: equips basic set",
-            "More Information": """This will overwrite the current colorset you have in place but will send a backup that can be used with the import command if accidental"""
         },
         "add": {
             "Description": "Adds a custom color to the colorset",
@@ -242,9 +262,9 @@ def get_commands(p):
             "Aliases": "patchnotes",
         },
         "import": {
-            "Description": "Imports a color set from an attached json file",
-            "Usage": f"`{p}import`",
-            "More Information": f"""This command may be tricky to use so I would recommend uploading the file and then typing `{p}import` in the upload prompt"""
+            "Description": "Imports a theme from from a preset",
+            "Fields": "name: The name of the preset you want to import",
+            "Usage": f"`{p}import vibrant`: Imports the vibrant preset as a theme",
         },
         "disable": {
             "Description": "Disables the channel it is typed in",
@@ -253,7 +273,7 @@ def get_commands(p):
         },
         "report": {
             "Description": "Sends a message to me(Gumbachi). you can just say 'Hi' if you want to:).",
-            "Fields": """message: this is a required containing your message""",
+            "Fields": "message: this is a required containing your message",
             "Usage": f"`{p}report Hi Gum`: Sends 'Hi Gum' to me",
             "More Information": """Support Server if its urgent: https://discord.gg/rhvyup5"""
         },
@@ -266,18 +286,61 @@ def get_commands(p):
             "Fields": """remove: this is an optional field where you can specify if you want to remove the welcome channel""",
             "Usage": f"`{p}welcome`: sets the channel\n`{p}welcome remove`: removes the welcome channel"
         },
-        "presets": {
-            "Description": "Shows a preview of a  preset",
-            "Fields": """set_name: this is an optional field where you can specify which palette you want to see""",
-            "Usage": f"`{p}preview`: shows list of presets\n`{p}preview metro`: shows metro preset",
-            "Aliases": "preview\nshow",
-        },
         "info": {
             "Description": "Shows info about a color",
             "Fields": """name/index: this is an required field where you can specify which color you want to know about""",
             "Usage": f"`{p}info red`: shows info if red exists in your set\n`{p}info 2`: shows info about your second color",
             "Aliases": "about",
-        }
+        },
+        "themes": {
+            "Description": "Shows a list of themes to the user",
+            "Usage": f"`{p}themes`: will show a picture of the themes",
+            "Aliases": f"`{p}t`, `{p}temes`(for carlos)",
+        },
+        "theme.save": {
+            "Description": "Saves the users active colors as a theme",
+            "Fields": "name: The name you want the new theme to be called",
+            "Usage": f"`{p}theme.save My Theme`: Saves a new theme called 'My Theme'",
+            "Aliases": f"`{p}t.s`, `{p}t.save`, `{p}theme.add`, `{p}t.add`",
+        },
+        "theme.overwrite": {
+            "Description": "Overwrites a theme with another one",
+            "Fields": """name/index: The name or index of the theme you want to replace
+                         name: The name of the new theme you are adding""",
+            "Usage": f"`{p}theme.overwrite 1 | My new Theme`: Overwrite the first theme with a new theme called 'My new Theme'",
+            "Aliases": f"`{p}t.o`, `{p}t.replace`, `{p}t.overwrite`",
+        },
+        "theme.remove": {
+            "Description": "Deletes a theme",
+            "Fields": """name/index: The name or index of the theme you want to remove""",
+            "Usage": f"`{p}theme.remove 2`: Removes the second theme",
+            "Aliases": f"`{p}t.remove`, `{p}t.r`, `{p}theme.delete`, `{p}t.delete`, `{p}t.d`",
+        },
+        "theme.load": {
+            "Description": "Applies a theme to the server",
+            "Fields": """name/index: The name or index of the theme you want to load""",
+            "Usage": f"`{p}theme.load Vibrant`: Loads a theme called 'Vibrant' if there is one",
+            "Aliases": f"`{p}t.load`, `{p}t.l`",
+        },
+        "theme.info": {
+            "Description": "Shows info about a given theme",
+            "Fields": """name/index: The name or index of the theme you want to see""",
+            "Usage": f"`{p}theme.info 1`: Shows info about the first theme",
+            "Aliases": f"`{p}t.i`, `{p}t.info`",
+        },
+        "theme.rename": {
+            "Description": "Renames a theme",
+            "Fields": """name/index: The name or index of the theme you want to rename
+                         name: The new name of the theme""",
+            "Usage": f"`{p}theme.rename 1 | Happy colors`: rename the first theme to 'Happy colors'",
+            "Aliases": f"`{p}t.rename`, `{p}t.rn`",
+        },
+
+
+
+
+
+
     }
     return command_dict
 
@@ -325,7 +388,7 @@ change_log = {
         "Hyperlinks": "inline links for help to clean things up"
     },
     "0.8":{
-        "Themes(alpha)": "Themes allow you to save presets which allows switching the feel of the server",
+        "Themes(alpha)": "Themes not ready yet but kind of work",
         "Housekeeping": "Cleaned up a bunch of things that weren't necessary",
         "Added some functions to classes": "less imports, better looking",
         "Code documentation": "I can see what everything does easier. so can you if you care",
@@ -333,7 +396,19 @@ change_log = {
         "Patchnotes": "Patchnotes doesnt bypass disabled channels now",
         "Help works": "help wont give setup every time",
     },
-
+    "0.9":{
+        "Themes": "Themes allow you to save presets which allows switching the feel of the server",
+        "Serialization": "Custom serialization per object to allow for the use of sets",
+        "The use of python sets": "No more duplicate role members",
+        "Clearing colors faster": "Fixed a bug that massively slowed down clearing colors",
+        "Smarter updates": "The database is updated less but at better times to save your time",
+        "Changed some functions": "Some functions within the code are now faster and smarter",
+    },
+    "1.0":{
+        "Themes Documentation": "Get help with using themes",
+        "Segmented help": "More help categories",
+        "Importing presets": "Can import named presets as themes"
+    },
 }
 
 #wait lists with for reaction based UX

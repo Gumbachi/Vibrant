@@ -14,27 +14,30 @@ from vars import bot, extensions, get_prefix, waiting_on_hexcode
 
 @bot.event
 async def on_ready():
-    """Changes presence and collects data from mongo database"""
+    """Change presence and collects data from mongo database"""
     await bot.change_presence(
         activity=discord.Activity(type=discord.ActivityType.playing,
-                                  name=f"@Vibrant for help"))
-    print("Generating Objects...")
+                                  name="@Vibrant for help"))
 
+    # get preferences from DB
+    print("Fetching Preferences...")
     await get_prefs()
 
-    # gather new guild ids the bot can see and create Guild objects for them
-    new_ids = list(set([guild.id for guild in bot.guilds])
-                   -set(list(Guild._guilds.keys())))
-    new_guilds = [Guild(id) for id in new_ids]
+    # collect new guilds and create objects for them
+    print("Generating Objects...")
+    new_ids = {guild.id for guild in bot.guilds} - set(Guild._guilds.keys())
+    new_guilds = (Guild(id) for id in new_ids)
 
+    # update DB with new guilds
     print("Updating Database...")
-    await update_prefs(new_guilds)  # update mongodb with new guilds
+    await update_prefs(new_guilds)
+
     print("Ready Player One.")
 
 
 @bot.event
 async def on_message(message):
-    """Runs whenever a message is sent that the bot can see"""
+    """Message listener."""
     # make sure it doesnt run when bot writes message
     if message.author == bot.user:
         return
@@ -67,7 +70,7 @@ async def on_message(message):
 async def on_member_join(member):
     """Sends a welcome message and attempts to randomly color a user when a
     member joins a server the bot is in"""
-    guild = Guild.get_guild(member.guild.id)
+    guild = Guild.get(member.guild.id)
     channel = guild.get_welcome()
 
     # check if welcome channel exists
@@ -79,7 +82,7 @@ async def on_member_join(member):
     # make sure embed can be sent with or without colors
     if guild.colors:
         color = guild.rand_color()  # get random color
-        accent = discord.Color.from_rgb(*color.rgb)  # discord format
+        accent = discord.Color.from_rgb(*color.rgb())  # discord format
 
     # generate and send weclome embed message
     embed = discord.Embed(
@@ -93,12 +96,13 @@ async def on_member_join(member):
     if guild.colors:
         ctx = await bot.get_context(msg)
         await color_user(ctx, member.name, color.name, trace=False)
+        await update_prefs([guild])
 
 
 @bot.event
 async def on_member_remove(member):
     """Sends a goodbye message when a member leaves a server the bot is in"""
-    guild = Guild.get_guild(member.guild.id)
+    guild = Guild.get(member.guild.id)
 
     # check if welcome channel exists
     if not guild.welcome_channel:
@@ -121,7 +125,7 @@ async def on_member_update(before, after):
     if before.roles == after.roles:
         return
 
-    guild = Guild.get_guild(before.guild.id)
+    guild = Guild.get(before.guild.id)
 
     # convert roles to set for comparison
     roles_before = set(before.roles)
@@ -135,16 +139,13 @@ async def on_member_update(before, after):
     if removed_roles:
         for role in removed_roles:
             if color := guild.get_color("role_id", role.id):
-                color.members.remove(before.id)
+                color.members.discard(before.id)
 
     # role added
     if added_roles:
         for role in added_roles:
             if color := guild.get_color("role_id", role.id):
-                color.members.append(before.id)
-
-    await guild.clear_empty_roles()
-    await update_prefs([guild])
+                color.members.add(before.id)
 
 
 @bot.event
@@ -164,7 +165,7 @@ async def on_guild_remove(guild):
 @bot.event
 async def on_guild_update(before, after):
     """Updates Guild object name if changed"""
-    guild = Guild.get_guild(before.id)
+    guild = Guild.get(before.id)
     guild.name = after.name  # change name
     await update_prefs([guild])  # update mongoDB
 
@@ -172,7 +173,7 @@ async def on_guild_update(before, after):
 @bot.event
 async def on_guild_channel_delete(channel):
     """Removes a channel from the Guild object if user deletes it"""
-    guild = Guild.get_guild(channel.guild.id)
+    guild = Guild.get(channel.guild.id)
 
     # remove from disabled channels
     if channel.id in guild.disabled_channels:
@@ -188,10 +189,10 @@ async def on_guild_channel_delete(channel):
 @bot.event
 async def on_guild_role_delete(role):
     """Removes a role from the Guild object if user deletes it"""
-    guild = Guild.get_guild(role.guild.id)
+    guild = Guild.get(role.guild.id)
 
     # sets color role id to none if it is deleted
-    if color := guild.get_color('role_id', role.id):
+    if color := guild.get_color("role_id", role.id):
         color.role_id = None
 
     await update_prefs([guild])  # update MongoDB
@@ -200,14 +201,13 @@ async def on_guild_role_delete(role):
 @bot.event
 async def on_guild_role_update(before, after):
     """Removes a role from the Guild object if user deletes it"""
-    guild = Guild.get_guild(before.guild.id)
+    guild = Guild.get(before.guild.id)
 
     # checks if color has role and change color name and hex to reflect change
     if color := guild.get_color('role_id', before.id):
         color.name = after.name
         r, g, b = after.color.r, after.color.g, after.color.b
         color.hexcode = rgb_to_hex((r, g, b))
-        color.rgb = (r, g, b)
         await update_prefs([guild])  # update MongoDB
 
 # loads extensions(cogs) listed in vars.py

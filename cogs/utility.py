@@ -17,7 +17,7 @@ class UtilityCommands(commands.Cog):
     @commands.command(name="guildinfo")
     async def show_guild_info(self, ctx):
         """Shows guild info in an embed and in terminal"""
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
         print(guild)
         embed = discord.Embed(title="Guild info", description=repr(guild))
         await ctx.send(embed=embed)
@@ -25,7 +25,7 @@ class UtilityCommands(commands.Cog):
     @commands.command(name="colorinfo")
     async def show_all_color_info(self, ctx):
         """Shows the info of all colors in a guild"""
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
         s = "Colors\n"
         for color in guild.colors:
             s += f"    {repr(color)}\n"

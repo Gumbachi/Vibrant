@@ -15,7 +15,7 @@ class ChannelCommands(commands.Cog):
         if not ctx.author.guild_permissions.manage_channels:
             return await ctx.send("You need `manage channels` permission to use this command")
 
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
         guild.welcome_channel = ctx.channel.id
 
         if remove == "remove":
@@ -29,7 +29,7 @@ class ChannelCommands(commands.Cog):
     #enables a channel or all channels for command use
     @commands.command(name="enable")
     async def enable_channel(self, ctx, fill=None):
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         #check permissions
         if not ctx.author.guild_permissions.manage_channels:
@@ -55,7 +55,7 @@ class ChannelCommands(commands.Cog):
         if not ctx.author.guild_permissions.manage_channels:
             return await ctx.send("You need `manage channels` permission to use this command")
 
-        guild = Guild.get_guild(ctx.guild.id)
+        guild = Guild.get(ctx.guild.id)
 
         #disable all channels
         if fill == 'all':
@@ -77,7 +77,7 @@ class ChannelCommands(commands.Cog):
     #check status of a channel
     @commands.command(name="status")
     async def check_channel_status(self, ctx):
-        disabled = Guild.get_guild(ctx.guild.id).disabled_channels
+        disabled = Guild.get(ctx.guild.id).disabled_channels
 
         #returns status of channel
         if ctx.channel.id in disabled:
