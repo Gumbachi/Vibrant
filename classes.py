@@ -439,7 +439,7 @@ class Guild():
             "id": self.id,
             "prefix": self.prefix,
             "welcome_channel": self.welcome_channel,
-            "disabled_channels": self.disabled_channels,
+            "disabled_channels": list(self.disabled_channels),
             "theme_limit": self.theme_limit,
             "color_limit": self.color_limit,
             "themes": [theme.to_json() for theme in self.themes],
@@ -460,7 +460,7 @@ class Guild():
             id=data["id"],
             prefix=data['prefix'],
             welcome_channel=data["welcome_channel"],
-            disabled_channels=data["disabled_channels"],
+            disabled_channels=set(data["disabled_channels"]),
             theme_limit=data["theme_limit"],
             color_limit=data["color_limit"],
             themes=[Theme.from_json(theme) for theme in data["themes"]],
@@ -548,7 +548,7 @@ class Color():
             hexcode=color["hexcode"],
             guild_id=color["guild_id"],
             role_id=color["role_id"],
-            members={member for member in color["members"]})
+            members=set(color["members"]))
 
 
 class Theme():
