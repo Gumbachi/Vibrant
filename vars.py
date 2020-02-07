@@ -407,7 +407,7 @@ change_log = {
     "1.0":{
         "Themes Documentation": "Get help with using themes",
         "Segmented help": "More help categories",
-        "Importing presets": "Can import named presets as themes"
+        "Importing presets": "Can import named presets as themes",
     },
 }
 

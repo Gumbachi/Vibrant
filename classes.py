@@ -296,7 +296,6 @@ class Guild():
             #draw text
             msg = f"{theme.index}. {theme.name}"
             text_width, text_height = draw.textsize(msg, fnt)
-            print(text_height)
 
             # text coords
             x = (canvas_width/2)-(text_width/2) # center
