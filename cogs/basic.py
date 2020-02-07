@@ -50,21 +50,39 @@ class BaseCommands(commands.Cog):
             description = "Follow these steps to learn how to use Vibrant"
             fields = help_dict[1].items()
 
-        # list of command and short descriptions
-        elif arg == '2' or arg == 'commands':
+        # list of theme commands and short descriptions
+        elif arg == '2' or arg == 'themes':
             recipient = ctx.author
-            title = "Vibrant Commands"
-            description = ("A list of commands the bot has. For more info "
-                          f"on a specific command you can use `{p}help <command>`"
-                          f"Example: `{p}help add`")
+            title = "Vibrant Themes Tutorial"
+            description = "All you need to know about using themes with Vibrant"
             fields = help_dict[2].items()
 
-        # list of theme commands and short descriptions
-        elif arg == '3' or arg == 'themes':
+        # list of command and short descriptions
+        elif arg == '3' or arg == 'general':
             recipient = ctx.author
-            title = "Vibrant Themes"
-            description = "All you need to know about using themes with Vibrant"
+            title = "Vibrant General Commands"
+            description = ("A list of commands the bot has. For more info "
+                          f"on a specific command you can use `{p}help <command>`"
+                          f"Example: `{p}help prefix`")
             fields = help_dict[3].items()
+
+        # list of theme commands and short descriptions
+        elif arg == '4' or arg == 'color':
+            recipient = ctx.author
+            title = "Vibrant Color Commands"
+            description = ("A list of color commands the bot has. For more info "
+                          f"on a specific command you can use `{p}help <command>`"
+                          f"Example: `{p}help add`")
+            fields = help_dict[4].items()
+
+        # list of theme commands and short descriptions
+        elif arg == '5' or arg == 'theme':
+            recipient = ctx.author
+            title = "Vibrant Theme Commands"
+            description = ("A list of theme commands the bot has. For more info "
+                          f"on a specific command you can use `{p}help <command>`"
+                          f"Example: `{p}help theme.overwrite`")
+            fields = help_dict[5].items()
 
         # individual command help
         elif arg in [command.name for command in bot.commands]:

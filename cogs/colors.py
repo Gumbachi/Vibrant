@@ -337,7 +337,6 @@ class Colors(commands.Cog):
         else:
             await ctx.send(embed=color_embed)
 
-
     @commands.command("pfp")
     async def get_pfp_color(self, ctx, *name):
         """Use an algorithm to find the most prominent color in a pfp."""
@@ -362,6 +361,9 @@ class Colors(commands.Cog):
             prompt = await ctx.send(f"Would you like to add {hexcode} to your colors?")
             return await add_color_UX(prompt, ctx.author, user.name, hexcode=hexcode)
 
+
+
+
     # export colors data in json format
     @commands.command("export")
     async def export_colors(self, ctx, trace=True):
@@ -382,43 +384,6 @@ class Colors(commands.Cog):
                 return await ctx.send(file=discord.File(bytes_data, filename=f"{ctx.guild.name}_backup.json"))
         else:
             return Exception("Couldn't find guild. Must be a database error")
-
-
-    @commands.command(name="presets", aliases=["show", "preview"])
-    async def preview_colors(self, ctx, set_name=None):
-        if not set_name:
-            # get a bytearray and convert to sendable
-            fp = io.BytesIO(draw_presets())
-            if is_disabled(ctx.channel):
-                try:
-                    await ctx.message.delete()
-                    return await ctx.author.send(f"Presets:", file=discord.File(fp, filename="presets.png"))
-                except:
-                    pass
-            else:
-                return await ctx.send(f"Presets:", file=discord.File(fp, filename="presets.png"))
-
-        if set_name not in vars.preset_names:
-            raise commands.UserInputError(f"Couldn't find **{set_name}**")
-
-        # read the file into dict
-        #sep = os.path.sep
-        # try:
-        #     with open(f"presets{sep}{set_name}.json") as data_file:
-        #         json_data = json.load(data_file)
-        # except:
-        #     raise Exception(f"Couldn't open preset")
-
-            # need to rework this
-        # draw and send colors
-        # fp = io.BytesIO(draw_colors(json_data, obj_form=False))#get a bytearray and convert to sendable
-        # if is_disabled(ctx.channel):
-        #     try:await ctx.message.delete() #delete message if channel is disabled
-        #     except:pass
-        #     await ctx.author.send(f"**{ctx.guild.name}**:", file=discord.File(fp, filename="colors.png"))#to user
-        # else:
-        #     await ctx.send(file=discord.File(fp, filename="colors.png"))#to channel
-
 
 
 def setup(bot):

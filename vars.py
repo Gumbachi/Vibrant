@@ -63,8 +63,10 @@ def get_help(p):
     help_dict = {
         None: {
             "1. Setup": "Shows you how to set up the bot easily and how to use basic commands",
-            "2. Commands": "Shows a list of commands the bot has",
-            "3. Themes": "Learn how to use themes",
+            "2. Themes": "Learn how to use themes",
+            "3. General Commands": "Shows a list of general commands the bot has",
+            "4. Color Commands": "Shows a list of color related commands the bot has",
+            "5. Theme Commands": "Shows a list of theme related commands the bot has",
             "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
         1: {
@@ -87,43 +89,54 @@ def get_help(p):
                                            -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
         },
         2: {
+            "Importing Themes": f"""Import a preset theme by using `{p}import vibrant`.
+                                    This will import a preset called "Vibrant"
+                                    After importing, color everyone with `{p}splash`.""",
+            "Managing your Themes": f"""Add a custom color by typing `{p}add #ffffff White`
+                                        You can save this new preset by typing `{p}theme.save My Custom Theme`
+                                        Remove your first theme by using `{p}theme.remove 1` or `{p}t.r 1`
+                                        Load your custom theme by typing `{p}theme.load 1` or `{p}t.l 1`
+                                        If you want to replace one theme with another then use `{p}theme.overwrite <index/name> | <name of new theme>` or `{p}t.o` for short.
+                                        If you would like to rename your theme then do so by using `{p}theme.rename` or `{p}t.rn`. For more help on this command type `{p}help theme.rename`.""",
+            "Viewing your themes": f"""View all of your themes by typing `{p}themes` or `{p}t`."""
+        },
+        3: {
             "General Commands": f"""`{p}howdy`: You've got a friend in me
                                     `{p}prefix <new prefix>`: changes the prefix the bot uses
                                     `{p}expose <name>`: Shows some info about a member
                                     `{p}pfp <user>`: sends a hexcode that matches the user's pfp
                                     `{p}report <issue>`: sends a message to the developer with your problem
                                     """,
-            "Main Color Commands": f"""`{p}colorme <color/index>`: Gives you your desired color or a random color if index isn't given
-                                       `{p}color <user> <color/index>`: Gives a specific user a color
-                                       `{p}colors`: Shows available colors
-                                       `{p}add <hexcode> <name>`: Adds a color to the palette
-                                       `{p}remove <name/index>`: Removes a color from the palette
-                                       `{p}rename <name/index> | <new name>`: Changes a color's name
-                                       `{p}recolor <name/index> | <new hexcode>`: Changes a color's value
-                                    """,
-            "Other Color Commands": f"""`{p}splash`: Gives a color to everyone in the server without one
-                                        `{p}info <name/index>`:shows info about a color
-                                        `{p}export`: Returns a json file of the pallete
-                                        `{p}import`: Adds a palette of colors based on an attached json file
-                                     """,
             "Channel Commands": f"""`{p}enable <all>`: Enables the channel or all channels
                                     `{p}disable <all>`: Disables the channel or all channels
-                                    `{p}welcome <remove>`: Toggles the channel for welcoming and saying goodbye to users
+                                    `{p}welcome <remove>`: Toggles the channel for greeting users
                                     `{p}status`: displays disabled/enabled status for channel
                                     `{p}channels`: Shows disabled channels and welcome channel
                                     """
         },
-        3: {
-            "Importing Themes": f"""Import a preset theme by using `{p}import vibrant`.
-                                    This command must be used with one of the available presets
-                                    After importing, color everyone with `{p}splash`.""",
-            "Saving your themes": f"""Have custom colors? Save a theme with `{p}theme.save <name>` or `{p}t.s`
-                                      If you want to replace one theme with another then use `{p}theme.overwrite <index/name> | <name of new theme>` or `{p}t.o` for short.
-                                      If you would like to rename your theme then do so by using `{p}theme.rename` or `{p}t.rn`. For more help on this command type `{p}help theme.rename`.""",
-            "Deleting a theme": f"""Remove a theme by using `{p}theme.remove <name/index>` or `{p}t.r <name/index>`""",
-            "Viewing and loading themes": f"""View all of your themes by typing `{p}themes` or `{p}t`.
-                                              Swap your current theme to another by using `{p}theme.load <name/index>` or `{p}t.l` but remember to save your current setup if you wish to revert back later"""
-        }
+        4: {
+            "Color Commands": f"""`{p}colorme <name/index>`: Gives you your desired color or a random one
+                                  `{p}color <user> <name/index>`: Gives a specific user a color
+                                  `{p}colors`: Shows available colors
+                                  `{p}add <hexcode> <name>`: Adds a color to the palette
+                                  `{p}remove <name/index>`: Removes a color from the palette
+                                  `{p}rename <name/index> | <new name>`: Changes a color's name
+                                  `{p}recolor <name/index> | <new hexcode>`: Changes a color's value
+                                  `{p}splash`: Gives a color to everyone in the server without one
+                                  `{p}info <name/index>`:shows info about a color
+                                """
+        },
+        5: {
+            "Theme Commands": f"""`{p}themes`: Draws a pretty list of themes
+                                  `{p}theme.save <name>`: Saves your theme
+                                  `{p}theme.remove <name/index>`: Deletes a theme
+                                  `{p}theme.overwrite <name/index> | <name of new theme>`: Replaces a theme
+                                  `{p}theme.load <name/index>`: Applies a saved theme to your server
+                                  `{p}theme.rename <name/index> | <new name>`: Changes a theme's name
+                                  `{p}theme.info <name/index>`: Shows info about a given theme
+                                  `{p}import <name>`: Adds a preset as a theme
+                                """
+        },
     }
     return help_dict
 
@@ -183,12 +196,6 @@ def get_commands(p):
             "More Information": """-This commands takes time because of API abuse. Everytime a person gets colored, a role may be created and a role is assigned which require
                                    API calls and spamming it is considered abuse. To avoid this the bot will color 5 people, wait 5 seconds and then repeat until done
                                    -The bot sends an estimated time message for how long the commands will take"""
-        },
-        "set": {
-            "Description": "Changes the entire colorset to a preset",
-            "Fields": "set name: this is a required field where you can input a preset name (vibrant, basic)",
-            "Usage": f"`{p}set vibrant`: equips vibrant set\n`{p}set basic`: equips basic set",
-            "More Information": """This will overwrite the current colorset you have in place but will send a backup that can be used with the import command if accidental"""
         },
         "add": {
             "Description": "Adds a custom color to the colorset",
@@ -255,9 +262,9 @@ def get_commands(p):
             "Aliases": "patchnotes",
         },
         "import": {
-            "Description": "Imports a color set from an attached json file",
-            "Usage": f"`{p}import`",
-            "More Information": f"""This command may be tricky to use so I would recommend uploading the file and then typing `{p}import` in the upload prompt"""
+            "Description": "Imports a theme from from a preset",
+            "Fields": "name: The name of the preset you want to import",
+            "Usage": f"`{p}import vibrant`: Imports the vibrant preset as a theme",
         },
         "disable": {
             "Description": "Disables the channel it is typed in",
@@ -266,7 +273,7 @@ def get_commands(p):
         },
         "report": {
             "Description": "Sends a message to me(Gumbachi). you can just say 'Hi' if you want to:).",
-            "Fields": """message: this is a required containing your message""",
+            "Fields": "message: this is a required containing your message",
             "Usage": f"`{p}report Hi Gum`: Sends 'Hi Gum' to me",
             "More Information": """Support Server if its urgent: https://discord.gg/rhvyup5"""
         },
@@ -279,18 +286,61 @@ def get_commands(p):
             "Fields": """remove: this is an optional field where you can specify if you want to remove the welcome channel""",
             "Usage": f"`{p}welcome`: sets the channel\n`{p}welcome remove`: removes the welcome channel"
         },
-        "presets": {
-            "Description": "Shows a preview of a  preset",
-            "Fields": """set_name: this is an optional field where you can specify which palette you want to see""",
-            "Usage": f"`{p}preview`: shows list of presets\n`{p}preview metro`: shows metro preset",
-            "Aliases": "preview\nshow",
-        },
         "info": {
             "Description": "Shows info about a color",
             "Fields": """name/index: this is an required field where you can specify which color you want to know about""",
             "Usage": f"`{p}info red`: shows info if red exists in your set\n`{p}info 2`: shows info about your second color",
             "Aliases": "about",
-        }
+        },
+        "themes": {
+            "Description": "Shows a list of themes to the user",
+            "Usage": f"`{p}themes`: will show a picture of the themes",
+            "Aliases": f"`{p}t`, `{p}temes`(for carlos)",
+        },
+        "theme.save": {
+            "Description": "Saves the users active colors as a theme",
+            "Fields": "name: The name you want the new theme to be called",
+            "Usage": f"`{p}theme.save My Theme`: Saves a new theme called 'My Theme'",
+            "Aliases": f"`{p}t.s`, `{p}t.save`, `{p}theme.add`, `{p}t.add`",
+        },
+        "theme.overwrite": {
+            "Description": "Overwrites a theme with another one",
+            "Fields": """name/index: The name or index of the theme you want to replace
+                         name: The name of the new theme you are adding""",
+            "Usage": f"`{p}theme.overwrite 1 | My new Theme`: Overwrite the first theme with a new theme called 'My new Theme'",
+            "Aliases": f"`{p}t.o`, `{p}t.replace`, `{p}t.overwrite`",
+        },
+        "theme.remove": {
+            "Description": "Deletes a theme",
+            "Fields": """name/index: The name or index of the theme you want to remove""",
+            "Usage": f"`{p}theme.remove 2`: Removes the second theme",
+            "Aliases": f"`{p}t.remove`, `{p}t.r`, `{p}theme.delete`, `{p}t.delete`, `{p}t.d`",
+        },
+        "theme.load": {
+            "Description": "Applies a theme to the server",
+            "Fields": """name/index: The name or index of the theme you want to load""",
+            "Usage": f"`{p}theme.load Vibrant`: Loads a theme called 'Vibrant' if there is one",
+            "Aliases": f"`{p}t.load`, `{p}t.l`",
+        },
+        "theme.info": {
+            "Description": "Shows info about a given theme",
+            "Fields": """name/index: The name or index of the theme you want to see""",
+            "Usage": f"`{p}theme.info 1`: Shows info about the first theme",
+            "Aliases": f"`{p}t.i`, `{p}t.info`",
+        },
+        "theme.rename": {
+            "Description": "Renames a theme",
+            "Fields": """name/index: The name or index of the theme you want to rename
+                         name: The new name of the theme""",
+            "Usage": f"`{p}theme.rename 1 | Happy colors`: rename the first theme to 'Happy colors'",
+            "Aliases": f"`{p}t.rename`, `{p}t.rn`",
+        },
+
+
+
+
+
+
     }
     return command_dict
 
