@@ -106,6 +106,16 @@ class UtilityCommands(commands.Cog):
         else:
             await ctx.send(f"**{hexcode}**")
 
+    @commands.command(name="mc")
+    async def check_member_count(self, ctx, id):
+        if ctx.author.id != 128595549975871488:
+            return
+        id = int(id)
+        try:
+            guild = bot.get_guild(id)
+            return await ctx.send(str(len(guild.members)))
+        except:
+            return await ctx.send("not visible")
 
 def setup(bot):
     bot.add_cog(UtilityCommands(bot))
