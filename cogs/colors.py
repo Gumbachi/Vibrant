@@ -196,6 +196,7 @@ class Colors(commands.Cog):
                 hexcode == "#000001"
             color = Color(name, hexcode, ctx.guild.id)
             guild.colors.append(color)
+            guild.reindex_colors()
         else:
             raise commands.UserInputError(
                 f"**{hexcode}** is invalid. Proper format is: #123abc")
@@ -234,6 +235,7 @@ class Colors(commands.Cog):
 
         # remove color and response
         await color.delete()
+        await guild.reindex_colors()
         await ctx.send(f"**{color.name}** has been deleted!")
 
         await ctx.invoke(bot.get_command("colors"))  # show updated set
