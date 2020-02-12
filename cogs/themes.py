@@ -163,6 +163,8 @@ class Themes(commands.Cog):
 
         # apply colors
         theme.activate()
+
+        await ctx.send(f"Loading the **{theme.name}** theme. This may take a while...")
         async with ctx.channel.typing():
             for color in guild.colors:
                 if color.members:
