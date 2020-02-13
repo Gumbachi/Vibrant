@@ -235,7 +235,7 @@ class Colors(commands.Cog):
 
         # remove color and response
         await color.delete()
-        await guild.reindex_colors()
+        guild.reindex_colors()
         await ctx.send(f"**{color.name}** has been deleted!")
 
         await ctx.invoke(bot.get_command("colors"))  # show updated set
