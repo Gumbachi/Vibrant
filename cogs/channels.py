@@ -41,7 +41,7 @@ class ChannelCommands(commands.Cog):
             await ctx.send(f"All text channels are now enabled!")
         else:
             if ctx.channel.id in guild.disabled_channels:
-                guild.disabled_channels.remove(ctx.channel.id)
+                guild.disabled_channels.discard(ctx.channel.id)
                 await ctx.send(f"channel is now enabled!")
             else:
                 await ctx.send(f"channel is already enabled")
@@ -61,13 +61,13 @@ class ChannelCommands(commands.Cog):
         if fill == 'all':
             for channel in ctx.guild.text_channels:
                 if channel.id not in guild.disabled_channels:
-                    guild.disabled_channels = [channel.id for channel in ctx.guild.text_channels] #list comp of all channel ids
+                    guild.disabled_channels = {channel.id for channel in ctx.guild.text_channels} #list comp of all channel ids
             await ctx.send(f"Okay😞 all text channels are now disabled.\nThis message will self-destruct shortly", delete_after=7)
 
         #disabled a select channel
         else:
             if ctx.channel.id not in guild.disabled_channels:
-                guild.disabled_channels.append(ctx.channel.id)
+                guild.disabled_channels.add(ctx.channel.id)
                 await ctx.send(f"Okay😞 {ctx.channel.mention} is now disabled and the party has ended.\nThis message will self-destruct shortly", delete_after=7) #channel has been disabled
             else:
                 await ctx.send(f"{ctx.channel.mention} is already disabled.\nThis message will self-destruct shortly", delete_after=7)#channel was already disabled
