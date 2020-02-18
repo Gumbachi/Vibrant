@@ -526,7 +526,8 @@ class Color():
         if delete_role and self.role_id:
             print(f"Removing {self.name}")
             role = self.find_guild().get_role(self.role_id)
-            await role.delete()
+            if role:
+                await role.delete()
             self.role_id = None
 
 
