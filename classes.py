@@ -90,15 +90,15 @@ class Guild():
             theme.guild_id = self.id
 
 
-    def verify_color_members(self):
-        """Verify users only show up once"""
-        acc_for = []
-        for color in self.colors:
-            for id in color.members:
-                if id in acc_for:
-                    color.members.discard(id)
-                else:
-                    acc_for.append(id)
+    # def verify_color_members(self):
+    #     """Verify users only show up once"""
+    #     acc_for = []
+    #     for color in self.colors:
+    #         for id in color.members:
+    #             if id in acc_for:
+    #                 color.members.discard(id)
+    #             else:
+    #                 acc_for.append(id)
 
     async def clear_colors(self):
         """Remove all colors from the guild."""
