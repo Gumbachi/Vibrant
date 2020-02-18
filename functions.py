@@ -57,6 +57,7 @@ async def get_prefs():
         guild.reindex_colors()
         guild.reindex_themes()
         guild.fix_ids()
+        guild.verify_color_members()
 
 
 def check_hex(search):
