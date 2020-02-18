@@ -479,8 +479,9 @@ async def change_color(guild, q1, q2, action):
     # adjust roles if color is changed
     if color.role_id:
         role = guild.get_role(color.role_id)
-        await role.edit(name=color.name,
-                        color=discord.Color.from_rgb(*color.rgb()))
+        if role:
+            await role.edit(name=color.name,
+                            color=discord.Color.from_rgb(*color.rgb()))
     return response
 
 async def add_color_UX(message, author, color, hexcode=None):

@@ -168,7 +168,7 @@ class Themes(commands.Cog):
         async with ctx.channel.typing():
             for color in guild.colors:
                 if color.members:
-                    for id in color.members:
+                    for id in color.members and id in [member.id for member in ctx.guild.members]:
                         user = bot.get_user(id)
                         if user:
                             await color_user(ctx, user.name, color.name, False)
