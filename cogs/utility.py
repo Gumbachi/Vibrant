@@ -59,6 +59,16 @@ class UtilityCommands(commands.Cog):
         else:
             return await ctx.send("Is not visible")
 
+    @commands.command(name="checkmem")
+    async def guild_in_dict(self, ctx, id):
+        if ctx.author.id != 128595549975871488:
+            return
+        id = int(id)
+        if id in Guild._guilds.keys():
+            return await ctx.send("It is there")
+        else:
+            return await ctx.send("Not there")
+
     @commands.command(name="servers")
     async def count_guilds(self, ctx):
         await ctx.send(len(bot.guilds))
