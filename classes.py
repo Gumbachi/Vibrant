@@ -526,7 +526,7 @@ class Color():
 
     def find_guild(self):
         """Find and return the Guild object the color belongs to"""
-        return Guild._guilds.get(self.guild_id)
+        return Guild._guilds.get(int(self.guild_id))
 
 
     def to_json(self):
