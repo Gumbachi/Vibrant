@@ -56,6 +56,7 @@ async def get_prefs():
         guild = c.Guild.from_json(guild_dict)  # build guild
         guild.reindex_colors()
         guild.reindex_themes()
+        guild.fix_ids()
 
 
 def check_hex(search):

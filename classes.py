@@ -82,6 +82,12 @@ class Guild():
         if guild:
             return guild.get_role(role_id)
 
+    def fix_ids(self):
+        """Fix the ids so they line up"""
+        for color in self.colors:
+            color.guild_id = self.id
+        for theme in self.themes:
+            theme.guild_id = self.id
 
     async def clear_colors(self):
         """Remove all colors from the guild."""
@@ -585,7 +591,7 @@ class Theme():
 
     def find_guild(self):
         """Find and return the Guild object the theme belongs to"""
-        return Guild._guilds.get(self.guild_id)
+        return Guild._guilds.get(int(self.guild_id))
 
 
     def delete(self):
