@@ -323,7 +323,8 @@ class Colors(commands.Cog):
             raise commands.UserInputError(
                 f"Couldn't find {color_name}. Try using an index for more accurate results")
 
-        member_names = [bot.get_user(id).name for id in color.members]
+        visible_members = [mem.id for mem in ctx.guild.members]
+        member_names = [bot.get_user(id).name for id in color.members if id in visible_members]
         color_embed = discord.Embed(
             title=color.name,
             description=(f"Hexcode: {color.hexcode}\n"
