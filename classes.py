@@ -544,8 +544,7 @@ class Color():
 
     def find_guild(self):
         """Find and return the Guild object the color belongs to"""
-        id = int(self.guild_id)
-        return Guild._guilds.get(id)
+        return Guild._guilds.get(self.guild_id)
 
 
     def to_json(self):
@@ -599,7 +598,7 @@ class Theme():
 
     def find_guild(self):
         """Find and return the Guild object the theme belongs to"""
-        return Guild._guilds.get(int(self.guild_id))
+        return Guild._guilds.get(self.guild_id)
 
 
     def delete(self):
