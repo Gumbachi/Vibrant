@@ -166,12 +166,14 @@ class Themes(commands.Cog):
 
         await ctx.send(f"Loading the **{theme.name}** theme. This may take a while...")
         async with ctx.channel.typing():
+            guild_members = {member.id for member in ctx.guild.members}
             for color in guild.colors:
                 if color.members:
-                    for id in color.members and id in [member.id for member in ctx.guild.members]:
-                        user = bot.get_user(id)
-                        if user:
-                            await color_user(ctx, user.name, color.name, False)
+                    for id in color.members:
+                        if id in guild_members:
+                            user = bot.get_user(id)
+                            if user:
+                                await color_user(ctx, user.name, color.name, False)
 
         # report success and update DB
         await ctx.send(
