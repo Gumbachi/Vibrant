@@ -1,36 +1,44 @@
 import discord
 from discord.ext import commands
-from cfg import coll
+import database as db
 
-#Cogs the bot loads
-extensions = ['cogs.errors',
-              'cogs.basic',
-              'cogs.colors',
-              'cogs.themes',
-              'cogs.channels',
-              'cogs.utility',
-              'cogs.dbl']
+# Cogs the bot loads
+extensions = [
+    # General
+    "cogs.basic",
+    "cogs.channels",
+    "cogs.errors",
+    "cogs.utility",
+    "cogs.dbl",
 
-emoji_dict = {"checkmark":"✅",
-              "crossmark":"❌"}
+    # Color
+    "cogs.color.color_assignment",
+    "cogs.color.color_info",
+    "cogs.color.color_management",
+
+    # Theme
+    "cogs.theme.theme_assignment",
+    "cogs.theme.theme_info",
+    "cogs.theme.theme_management",
+]
+
+emoji_dict = {"checkmark": "✅",
+              "crossmark": "❌"}
 
 preset_names = [
     "basic",
     "vibrant",
     "rainbow",
     "metro",
-    "bootstrap",
     "icecream",
     "neon",
     "pastel",
     "outrun",
     "sunset",
-    "downtown",
     "discord",
     "christmas",
-    "bridge",
-    "redtoblack"
 ]
+
 
 def get_prefix(bot, message):
     """Gets the prefix per server"""
@@ -42,7 +50,7 @@ def get_prefix(bot, message):
         id = message.guild.id
 
     try:
-        data = coll.find_one({"id": id})
+        data = db.coll.find_one({"id": id})
     except:
         print("no coll found for prefix")
         return '$'
@@ -52,18 +60,22 @@ def get_prefix(bot, message):
         data["prefix"] = '$'
     return data["prefix"]
 
-bot = commands.Bot(command_prefix=get_prefix, help_command=None) # creates bot object
+
+bot = commands.Bot(command_prefix=get_prefix,
+                   help_command=None)  # creates bot object
 
 none_embed = discord.Embed(
     title="No active colors",
     description=f"To add colors use the `add` command or import a theme",
     color=discord.Color.blurple())
 
-disabled_embed = discord.Embed(title="Channel is Disabled", description=f"The channel you tried to use is disabled")
+disabled_embed = discord.Embed(
+    title="Channel is Disabled", description=f"The channel you tried to use is disabled")
+
 
 def get_help(p):
-    help_dict = {
-        None: {
+    return {
+        "Help": {
             "1. Setup": "Shows you how to set up the bot easily and how to use basic commands",
             "2. Themes": "Learn how to use themes",
             "3. General Commands": "Shows a list of general commands the bot has",
@@ -71,7 +83,7 @@ def get_help(p):
             "5. Theme Commands": "Shows a list of theme related commands the bot has",
             "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
-        1: {
+        "Setup": {
             "Add Custom Color": f"""-add a custom color by typing `{p}add #ff0000 My Color`
                                   -Add a few more colors if you'd like using `{p}add` and view them by typing `{p}colors`""",
             "Setting Themes": f"""Learn how to save your colors, use presets and hot swap the way your server looks by using themes. Type `{p}help themes`""",
@@ -90,7 +102,7 @@ def get_help(p):
                                            -Enable a channel by typing `{p}enable` in the desired channel
                                            -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
         },
-        2: {
+        "Themes": {
             "Importing Themes": f"""Import a preset theme by using `{p}import vibrant`.
                                     This will import a preset called "Vibrant"
                                     After importing, color everyone with `{p}splash`.""",
@@ -102,7 +114,7 @@ def get_help(p):
                                         If you would like to rename your theme then do so by using `{p}theme.rename` or `{p}t.rn`. For more help on this command type `{p}help theme.rename`.""",
             "Viewing your themes": f"""View all of your themes by typing `{p}themes` or `{p}t`."""
         },
-        3: {
+        "Commands": {
             "General Commands": f"""`{p}howdy`: You've got a friend in me
                                     `{p}prefix <new prefix>`: changes the prefix the bot uses
                                     `{p}expose <name>`: Shows some info about a member
@@ -116,7 +128,7 @@ def get_help(p):
                                     `{p}channels`: Shows disabled channels and welcome channel
                                     """
         },
-        4: {
+        "Color Commands": {
             "Color Commands": f"""`{p}colorme <name/index>`: Gives you your desired color or a random one
                                   `{p}color <user> <name/index>`: Gives a specific user a color
                                   `{p}colors`: Shows available colors
@@ -128,7 +140,7 @@ def get_help(p):
                                   `{p}info <name/index>`:shows info about a color
                                 """
         },
-        5: {
+        "Theme Commands": {
             "Theme Commands": f"""`{p}themes`: Draws a pretty list of themes
                                   `{p}theme.save <name>`: Saves your theme
                                   `{p}theme.remove <name/index>`: Deletes a theme
@@ -140,10 +152,10 @@ def get_help(p):
                                 """
         },
     }
-    return help_dict
+
 
 def get_commands(p):
-    command_dict = {
+    return {
         "help": {
             "Description": "Do you really need one?",
             "Usage": f"`{p}help`: You know what this does",
@@ -185,9 +197,9 @@ def get_commands(p):
                                    -Uses fuzzy matching to try to match misspelled names for convenience"""
         },
         "colors": {
-            "Description": "Generates an image of the current colorset and sends it in the channel",
+            "Description": "Generates an image of all the colors and sends it",
             "Usage": f"`{p}colors`",
-            "Aliases": "colorset\ncolourset\ncolours",
+            "Aliases": "colours\ncolorset\ncolourset",
             "More Information": """-If channel is disabled then it will DM you the message
                                    -Uses python Pillow library to draw a custom image to send"""
         },
@@ -209,7 +221,7 @@ def get_commands(p):
         },
         "enable": {
             "Description": "Enables the channel it is typed in",
-             "Fields": """all: this is an optional field where you can type all to specify if you want all channels enabled""",
+            "Fields": """all: this is an optional field where you can type all to specify if you want all channels enabled""",
             "Usage": f"`{p}enable`: enable just this channel\n`{p}enable all`: enable all channels"
         },
         "remove": {
@@ -337,14 +349,8 @@ def get_commands(p):
             "Usage": f"`{p}theme.rename 1 | Happy colors`: rename the first theme to 'Happy colors'",
             "Aliases": f"`{p}t.rename`, `{p}t.rn`",
         },
-
-
-
-
-
-
     }
-    return command_dict
+
 
 change_log = {
     "0.1": {
@@ -359,37 +365,37 @@ change_log = {
         "Optimized Data storage": "improved function input to be more specific to make it faster",
         "Optimized splash command": "Splash runs faster due to better math",
     },
-    "0.3":{
+    "0.3": {
         "Overhauled help command": "Gave help a bunch of useful stuff like setup and individual command help",
         "`clear_all_colors` and `set` changed": "Commands now send a backup just incase",
         "Changed data command name": "Changed it to channels since it only shows channel data",
         "Added a force prefix change": "can use vibrantprefix command to avoid overlap"
     },
-    "0.4":{
+    "0.4": {
         "Aliased Commands": "Gave a bunch of commands alternate names like add/remove can be create/delete if you want",
         "Removed redundant commands": "removed redundant commands because I figured out how to alias commands",
         "Better Error Handling": "ignores things like command not found and has specific error handling for add command",
     },
-    "0.5":{
+    "0.5": {
         "Black color now works": "black no longer shows up as transparent because hex value is auto converted to #000001",
         "Added more presets": "presets work differently and thus there are many more like Bootstrap, Metro, and Icecream",
         "Better Drawing": "Made drawing images for commands like colors look better and more open",
         "Preview command": "new command to show preset colors"
     },
-    "0.6":{
+    "0.6": {
         "Changed the look of channels and expose": "Commands are simpler and easier to read",
         "DM Commands": "Some commands like help and howdy work in a DM channel now",
         "Less verbose": "Some commands are less verbose to clear up clutter",
         "More error handling": "Some more errors are handled",
         "Destroyed some bugs": "General stuff like me being stupid"
     },
-    "0.7":{
+    "0.7": {
         "The return of reaction based UX": "Reaction based UX is back and works this time",
         "updated pfp algorithm": "Algorithm is more accurate now",
         "DBL integration": "better integration with the API",
         "Hyperlinks": "inline links for help to clean things up"
     },
-    "0.8":{
+    "0.8": {
         "Themes(alpha)": "Themes not ready yet but kind of work",
         "Housekeeping": "Cleaned up a bunch of things that weren't necessary",
         "Added some functions to classes": "less imports, better looking",
@@ -398,7 +404,7 @@ change_log = {
         "Patchnotes": "Patchnotes doesnt bypass disabled channels now",
         "Help works": "help wont give setup every time",
     },
-    "0.9":{
+    "0.9": {
         "Themes": "Themes allow you to save presets which allows switching the feel of the server",
         "Serialization": "Custom serialization per object to allow for the use of sets",
         "The use of python sets": "No more duplicate role members",
@@ -406,19 +412,26 @@ change_log = {
         "Smarter updates": "The database is updated less but at better times to save your time",
         "Changed some functions": "Some functions within the code are now faster and smarter",
     },
-    "1.0":{
+    "1.0": {
         "Themes Documentation": "Get help with using themes",
         "Segmented help": "More help categories",
         "Importing presets": "Can import named presets as themes",
     },
+    "1.1": {
+        "Housekeeping": "New techniques for cleaner/faster code",
+        "Exceptions": "New way to handle errors should be more descriptive"
+    }
 }
 
-#wait lists with for reaction based UX
+# wait lists with for reaction based UX
 waiting_on_reaction = {}
 waiting_on_hexcode = {}
 waiting_on_pfp = {}
 
+heavy_command_active = {}
+
 statbuffer = {
+    "howdies": 0,
     "users_colored": 0,
     "colors_created": 0,
     "colors_removed": 0,
