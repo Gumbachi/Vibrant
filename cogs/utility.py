@@ -14,13 +14,44 @@ class UtilityCommands(commands.Cog):
 
     @commands.command(name="update")
     async def update_mongo(self, ctx):
-        await db.update_prefs()
+        """Update all documents in database"""
+        if ctx.author.id != 128595549975871488:
+            return
+
+        db.update_prefs(*list(Guild._guilds.values()))
+        await ctx.send("update complete")
+
+    @commands.command(name="trim_members")
+    async def purge_members(self, ctx, *, id=None):
+        if ctx.author.id != 128595549975871488:
+            return
+
+        if not id:
+            for guild in Guild._guilds.values():
+                all_members = set()
+                verified_members = {
+                    member.id for member in guild.discord_guild.members}
+                for color in guild.colors:
+                    color.member_ids &= verified_members
+                    color.member_ids -= all_members
+                    all_members |= color.member_ids
+        else:
+            guild = Guild.get(int(id))
+            all_members = set()
+            verified_members = {
+                member.id for member in guild.discord_guild.members}
+            for color in guild.colors:
+                if not color.member_ids:
+                    continue
+                color.member_ids &= verified_members
+                color.member_ids -= all_members
+                all_members |= color.member_ids
+            db.update_prefs(guild)
 
     @commands.command(name="guildinfo")
     async def show_guild_info(self, ctx):
         """Shows guild info in an embed and in terminal"""
         guild = Guild.get(ctx.guild.id)
-        print(guild)
         embed = discord.Embed(title="Guild info", description=repr(guild))
         await ctx.send(embed=embed)
 
@@ -48,8 +79,8 @@ class UtilityCommands(commands.Cog):
             await ctx.send(f"purged {amount} messages", delete_after=2)
 
     @commands.command(name="repeat", aliases=["print", "write"])
-    async def repeat(self, ctx, *msg):
-        await ctx.send(" ".join(msg))
+    async def repeat(self, ctx, *, msg):
+        await ctx.send(msg)
 
     @commands.command(name="check")
     async def is_visible(self, ctx, id):
@@ -61,19 +92,20 @@ class UtilityCommands(commands.Cog):
         else:
             return await ctx.send("Is not visible")
 
-    @commands.command(name="checkmem")
-    async def guild_in_dict(self, ctx, id):
-        if ctx.author.id != 128595549975871488:
-            return
-        id = int(id)
-        if id in Guild._guilds.keys():
-            return await ctx.send("It is there")
-        else:
-            return await ctx.send("Not there")
-
-    @commands.command(name="servers")
+    @commands.command(name="botstats")
     async def count_guilds(self, ctx):
-        await ctx.send(len(bot.guilds))
+        users = 0
+        colors = 0
+        themes = 0
+        for guild in Guild._guilds.values():
+            users += len(guild.discord_guild.members)
+            colors += len(guild.colors)
+            themes += len(guild.themes)
+
+        stat_embed = discord.Embed(
+            title="Stats",
+            description=f"Servers: {len(bot.guilds)}\nUsers: {users}\nColors: {colors}\nThemes: {themes}")
+        await ctx.send(embed=stat_embed)
 
     @commands.command(name="announce")
     async def send_to_all_guilds(self, ctx, *message):
@@ -81,12 +113,6 @@ class UtilityCommands(commands.Cog):
             return
         #announce_embed = discord.Embed(title="ColorBOT Announcement", description=" ".join(message))
         # unfinished
-
-    @commands.command(name='embed')
-    async def test_command(self, ctx):
-        embed = discord.Embed(
-            title="Test", description="* One\n* Two\n* One\n* Two")
-        await ctx.send(embed=embed)
 
     @commands.command(name="convert", aliases=["hex", "tohex"])
     async def convert_to_hex(self, ctx, *rgb):
@@ -117,17 +143,6 @@ class UtilityCommands(commands.Cog):
             await ctx.author.send(f"**{hexcode}**")
         else:
             await ctx.send(f"**{hexcode}**")
-
-    @commands.command(name="mc")
-    async def check_member_count(self, ctx, id):
-        if ctx.author.id != 128595549975871488:
-            return
-        id = int(id)
-        try:
-            guild = bot.get_guild(id)
-            return await ctx.send(str(len(guild.members)))
-        except:
-            return await ctx.send("not visible")
 
 
 def setup(bot):

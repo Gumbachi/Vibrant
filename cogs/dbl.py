@@ -4,7 +4,7 @@ import discord
 from dbl import DBLClient
 from discord.ext import commands
 
-from vars import bot
+from vars import bot as dbot
 
 
 class TopGG(commands.Cog):
@@ -17,5 +17,5 @@ class TopGG(commands.Cog):
         self.dblpy = DBLClient(self.bot, self.token, autopost=True)
 
 
-def setup(bot):
-    bot.add_cog(TopGG(bot))
+def setup(dbot):
+    dbot.add_cog(TopGG(dbot))

@@ -27,8 +27,6 @@ def update_prefs(*guilds):
     Args:
         guilds (list of Guild): list of guild to update
     """
-
-    print("UPDATING")
     for guild in guilds:
         json_data = guild.to_json()  # serialize objects
 

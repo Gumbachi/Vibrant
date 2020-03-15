@@ -1,4 +1,6 @@
 import io
+import os
+from os.path import sep
 
 import discord
 from discord.ext import commands
@@ -26,7 +28,7 @@ class ThemeInfo(commands.Cog):
         return await ctx.send(file=file)
 
     @commands.command(name="theme.info", aliases=["t.info", "t.i"])
-    async def theme_info(self, ctx, *, query):
+    async def theme_info(self, ctx, *, query="1"):
         """Get general info about a theme."""
         authorize(ctx, "disabled", theme_query=(query, 0))
         guild = Guild.get(ctx.guild.id)
@@ -41,6 +43,11 @@ class ThemeInfo(commands.Cog):
                 f"Colors: {', '.join([color.name for color in theme.colors])}"),
             color=discord.Color.blurple())
         await ctx.send(embed=theme_embed)
+
+    @commands.command(name="imports", aliases=["presets"])
+    async def show_imports(self, ctx):
+        for preset in os.listdir(f".{sep}presets"):
+            pass
 
 
 def setup(bot):

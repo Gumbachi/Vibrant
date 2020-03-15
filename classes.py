@@ -84,12 +84,9 @@ class Guild():
         cleanly displays data
         """
         out = (f"Name: {self.name}\nID: {self.id}\nPrefix: {self.prefix}\n"
-               f"Welcome: {self.welcome_channel}\n"
+               f"Welcome: {str(self.welcome_channel)}\n"
                f"Theme Limit: {self.theme_limit}\n"
-               f"Color Limit: {self.color_limit}\n"
-               f"Disabled Channels\n")
-        for channel in self.disabled_channels:
-            out += f"    {channel}\n"
+               f"Color Limit: {self.color_limit}\n")
 
         out += "Colors\n"
         for color in self.colors:
@@ -270,8 +267,6 @@ class Guild():
 
         # draws themes
         for i, theme in enumerate(self.themes):
-            print(theme)
-            print(theme.index)
             # draw text
             msg = f"{theme.index}. {theme.name}"
             text_width, text_height = draw.textsize(msg, fnt)
@@ -463,9 +458,9 @@ class Color():
 
     def __repr__(self):
         """Method for cleaner printing."""
-        has_role = True if self.role_id else False
+        has_role = bool(self.role_id)
         return (f"{self.index}.{self.name} {self.hexcode} "
-                f"Active:{has_role} Members:{len(self.members)}")
+                f"Active:{has_role} Members:{len(self.member_ids)}")
 
     async def delete(self):
         """Remove a color from the guild. Deletes associated roles"""

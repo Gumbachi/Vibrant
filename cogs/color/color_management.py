@@ -43,7 +43,7 @@ class ColorManagement(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="remove", aliases=["delete", "r"])
-    async def remove_color(self, ctx, *, query=""):
+    async def remove_color(self, ctx, *, query):
         """Remove a color from the Guild.
 
         Args:
@@ -62,7 +62,7 @@ class ColorManagement(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="rename", aliases=["rn"])
-    async def rename_color(self, ctx, *, query=""):
+    async def rename_color(self, ctx, *, query):
         """Rename a color in the Guild's active colors.
 
         Args:
@@ -96,7 +96,7 @@ class ColorManagement(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="recolor", aliases=["rc", "recolour"])
-    async def recolor(self, ctx, *, query=""):
+    async def recolor(self, ctx, *, query):
         """Change a color's hexcode.
 
         Args:

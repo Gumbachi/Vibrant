@@ -9,6 +9,7 @@ extensions = [
     "cogs.channels",
     "cogs.errors",
     "cogs.utility",
+    "cogs.dbl",
 
     # Color
     "cogs.color.color_assignment",

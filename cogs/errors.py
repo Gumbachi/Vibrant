@@ -36,7 +36,7 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send("Something went wrong. I couldn't find the data for this server.")
             guild = Guild(guild.id)
             db.update_prefs(guild)
-            return await ctx.send("A blank profile has been added for this server. Please add some colors and try again.")
+            return await ctx.send("A blank profile has been added for this server. Please add some colors and try again")
 
         # Channel Disabled
         elif isinstance(error, auth.ChannelDisabled):
@@ -52,11 +52,11 @@ class CommandErrorHandler(commands.Cog):
 
         # Missing Permissions
         elif isinstance(error, auth.MissingPermissions):
-            return await ctx.send(f"You need `{error}` permissions to use that command.")
+            return await ctx.send(f"You need `{error}` permissions to use that command")
 
         # Heavy Command Running
         elif isinstance(error, auth.HeavyCommandActive):
-            return await ctx.send(f"**{error}** command is running right now. Please wait for it to finish.")
+            return await ctx.send(f"**{error}** command is running right now. Please wait for it to finish")
 
         # No Colors Available
         elif isinstance(error, auth.NoAvailableColors):
@@ -108,6 +108,9 @@ class CommandErrorHandler(commands.Cog):
 
         elif isinstance(ctx.channel, discord.channel.DMChannel):
             return await ctx.send(f"**{ctx.command}** must be used in a server channel")
+
+        elif isinstance(error, commands.MissingRequiredArgument):
+            return await ctx.send(f"Missing command arguments")
 
         error_embed = discord.Embed(title=f'Your command: {ctx.message.content}',
                                     description=str(error),

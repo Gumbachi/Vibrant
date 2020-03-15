@@ -37,7 +37,7 @@ class ThemeManagement(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="theme.remove", aliases=["theme.delete", "t.d", "t.r"])
-    async def remove_theme(self, ctx, *, query=""):
+    async def remove_theme(self, ctx, *, query):
         """Remove a theme."""
         authorize(ctx, "disabled", "roles", "themes", theme_query=(query, 90))
         guild = Guild.get(ctx.guild.id)
@@ -51,7 +51,7 @@ class ThemeManagement(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="theme.overwrite", aliases=["theme.replace", "t.o"])
-    async def overwrite_theme(self, ctx, *, query=""):
+    async def overwrite_theme(self, ctx, *, query):
         """Overwrite one of the Guild's themes with another."""
         authorize(ctx, "disabled", "roles", "themes",
                   "colors", swap_query=query)
@@ -79,7 +79,7 @@ class ThemeManagement(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="theme.rename", aliases=["t.rn"])
-    async def rename_theme(self, ctx, *, query=""):
+    async def rename_theme(self, ctx, *, query):
         """Rename a theme in the guild."""
         authorize(ctx, "disabled", "roles", "themes", swap_query=query)
         guild = Guild.get(ctx.guild.id)
@@ -98,7 +98,7 @@ class ThemeManagement(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="import")
-    async def import_colors(self, ctx, *, name=""):
+    async def import_colors(self, ctx, *, name):
         """Save a preset as a theme"""
         name = name.lower()
         authorize(ctx, "disabled", "roles", "theme_limit", preset_query=name)
@@ -118,11 +118,6 @@ class ThemeManagement(commands.Cog):
         await ctx.send(
             f"Preset has been saved as **{theme.name}** in your themes")
         db.update_prefs(guild)
-
-    @commands.command(name="imports", aliases=["presets"])
-    async def show_imports(self, ctx):
-        for preset in os.listdir(f".{sep}presets"):
-            pass
 
 
 def setup(bot):
