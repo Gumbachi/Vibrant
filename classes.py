@@ -154,15 +154,6 @@ class Guild():
         except IndexError:
             pass
 
-    def list_colors_by(self, attr):
-        """Compile a list of an attribute."""
-        return [color.__getattribute__(attr) for color in self.colors]
-
-    def list_themes_by(self, attr):
-        """Compile a list of an attribute."""
-        l = [theme.__getattribute__(attr) for theme in self.themes]
-        return list(filter(None, l))  # filter out None values
-
     def get_color_role(self, user):
         """
         Get a users color role if it exists.
@@ -175,7 +166,7 @@ class Guild():
             role = discord.Role: The color role
         """
         ids = {role.id for role in user.roles}
-        role = ids & set(self.list_colors_by("role_id"))
+        role = ids & {color.role_id for color in self.colors if color.role_id}
         if role:
             return self.get_role(role.pop())
 
@@ -279,7 +270,8 @@ class Guild():
 
         # draws themes
         for i, theme in enumerate(self.themes):
-
+            print(theme)
+            print(theme.index)
             # draw text
             msg = f"{theme.index}. {theme.name}"
             text_width, text_height = draw.textsize(msg, fnt)
@@ -296,8 +288,6 @@ class Guild():
 
             # draw color preview
             for j, color in enumerate(theme.colors, 0):
-                rgb = color.rgb()
-
                 # top left corner
                 x0 = j * width_of_rect
                 y0 = i * cont_height + text_height
@@ -306,7 +296,7 @@ class Guild():
                 x1 = x0 + width_of_rect - box_margin
                 y1 = y0 + color_height
 
-                draw.rectangle([(x0, y0), (x1, y1)], fill=rgb)
+                draw.rectangle([(x0, y0), (x1, y1)], fill=color.rgb)
 
         # different drawing if no themes
         if not self.themes:
@@ -327,7 +317,7 @@ class Guild():
         """
         # random color
         if query == "":
-            return self.rand_color()
+            return self.random_color()
 
         # get color by index
         elif query.isdigit() and 0 < int(query) < len(self.colors) + 1:
@@ -336,7 +326,7 @@ class Guild():
         # get color by name
         else:
             name, rating = process.extractOne(
-                query, self.list_colors_by("name"))
+                query, [color.name for color in self.colors])
             if rating >= threshold:
                 return self.get_color('name', name)
 
@@ -357,7 +347,7 @@ class Guild():
         # get theme by name
         else:
             best_theme, rating = process.extractOne(
-                query, self.list_themes_by("name"))
+                query, [theme.name for theme in self.themes])
             if rating >= threshold:
                 return self.get_theme('name', best_theme)
 
@@ -428,18 +418,18 @@ class Color():
     A color object that stores color data.
 
     Args:
-        name (str): The name of the color
-        hexcode (str): The hexcode of the color
-        guild_id (int): The id of the guild the color belongs to
-        role_id (int): the discord role id of the color if created
-        member_ids (set): set of discord ids for members with this role
+        name(str): The name of the color
+        hexcode(str): The hexcode of the color
+        guild_id(int): The id of the guild the color belongs to
+        role_id(int): the discord role id of the color if created
+        member_ids(set): set of discord ids for members with this role
 
     Attributes:
-        name (str): The name of the color
-        hexcode (str): The hexcode of the color
-        rgb (tuple of int): The rgb values of the color
-        guild_id (int): The id of the guild the color belongs to
-        role_id (int): the discord role id of the color if created
+        name(str): The name of the color
+        hexcode(str): The hexcode of the color
+        rgb(tuple of int): The rgb values of the color
+        guild_id(int): The id of the guild the color belongs to
+        role_id(int): the discord role id of the color if created
     """
 
     def __init__(self, name, hexcode, guild_id, role_id=None, member_ids=set()):
@@ -477,16 +467,12 @@ class Color():
         return (f"{self.index}.{self.name} {self.hexcode} "
                 f"Active:{has_role} Members:{len(self.members)}")
 
-    async def delete(self, delete_role=True):
-        """
-        Remove a color from the colors attribute of a guild
-        and deletes any roles associated with the color as well
-        as reindexing the colors in the guild.
-        """
+    async def delete(self):
+        """Remove a color from the guild. Deletes associated roles"""
         self.guild.colors.remove(self)
 
         # deletes role associated with color if specified
-        if delete_role and self.role_id:
+        if self.role_id:
             print(f"Deleteing {self.name} role")
             role = self.guild.get_role(self.role_id)
             if role:
@@ -518,17 +504,17 @@ class Theme():
     """An object that stores a list of color objects with name and description
 
     Args:
-        name (str): The name of the theme
-        guild_id (int): The id of the guild the color belongs to
-        description (str): the description of the theme
+        name(str): The name of the theme
+        guild_id(int): The id of the guild the color belongs to
+        description(str): the description of the theme
 
     Attributes:
-        name (str): The name of the theme
-        description (str): the description of the theme
-        guild_id (int): The id of the guild the color belongs to
-        color (list of Color): a list of Color belonging to the theme
-        active (boolean): Determines if theme is in use (unused)
-        index (int): The location in the list of themes in the guild
+        name(str): The name of the theme
+        description(str): the description of the theme
+        guild_id(int): The id of the guild the color belongs to
+        color(list of Color): a list of Color belonging to the theme
+        active(boolean): Determines if theme is in use(unused)
+        index(int): The location in the list of themes in the guild
     """
 
     def __init__(self, name, guild_id, description="", colors=[]):
@@ -543,19 +529,17 @@ class Theme():
 
     @property
     def index(self):
-        len(self.guild.themes) + 1
+        return self.guild.themes.index(self) + 1
 
     def delete(self):
-        """Removes theme from guild and reindexes themes"""
+        """Removes theme from guild"""
         self.guild.themes.remove(self)
-        guild.reindex_themes()
 
     def activate(self):
         """adds theme colors to the colors list of the guild"""
         guild = self.guild
         new_colors = copy.deepcopy(self.colors)
         guild.colors = new_colors
-        guild.reindex_colors()
 
     def to_json(self):
         """Convert Color object to valid JSON."""

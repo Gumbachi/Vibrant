@@ -1,10 +1,13 @@
 import sys
 import traceback
+
 import discord
 from discord.ext import commands
-from vars import bot, get_prefix
+
+import database as db
 import authorization as auth
 from classes import Guild
+from vars import bot, get_prefix
 
 
 class CommandErrorHandler(commands.Cog):
@@ -15,32 +18,65 @@ class CommandErrorHandler(commands.Cog):
     async def on_command_error(self, ctx, error):
         """The event triggered when an error is raised while invoking a command."""
 
-        print(f"ERROR TYPE: {type(error)}")
+        p = get_prefix(bot, ctx.message)  # prefix
+        gumbachi = bot.get_user(128595549975871488)
         if hasattr(ctx.command, 'on_error'):
             return
 
-        ignored = (commands.CommandNotFound)  # ignored errors
         error = getattr(error, 'original', error)
 
-        if isinstance(error, ignored):
+        if isinstance(error, commands.CommandNotFound):
             return
 
-        elif isinstance(error, auth.HeavyCommandActive):
-            return await ctx.send(f"**{error}** is running right now. Please wait for it to finish.")
+        ################ COMMAND ERROR HANDLING ################
 
-        elif isinstance(error, auth.MissingPermissions):
-            return await ctx.send(f"You need `{error}` permissions to use that command.")
+        # Missing Guild
+        if isinstance(error, auth.MissingGuild):
+            await gumbachi.send(f"Missing guild {ctx.guild.id} {ctx.guild.name}")
+            await ctx.send("Something went wrong. I couldn't find the data for this server.")
+            guild = Guild(guild.id)
+            db.update_prefs(guild)
+            return await ctx.send("A blank profile has been added for this server. Please add some colors and try again.")
 
+        # Channel Disabled
         elif isinstance(error, auth.ChannelDisabled):
             try:
                 await ctx.message.delete()
                 guild = Guild.get(ctx.guild.id)
                 embed = discord.Embed(title=f"{ctx.channel.name} is disabled",
-                                      description=(f"Enabled channels for {guild.name}:\n"
+                                      description=(f"Enabled channels:\n"
                                                    f"{', '.join([channel.mention for channel in guild.enabled_channels])}"))
                 return await ctx.author.send(embed=embed)
             except:
                 return
+
+        # Missing Permissions
+        elif isinstance(error, auth.MissingPermissions):
+            return await ctx.send(f"You need `{error}` permissions to use that command.")
+
+        # Heavy Command Running
+        elif isinstance(error, auth.HeavyCommandActive):
+            return await ctx.send(f"**{error}** command is running right now. Please wait for it to finish.")
+
+        # No Colors Available
+        elif isinstance(error, auth.NoAvailableColors):
+            embed = discord.Embed(
+                title="No Available Colors",
+                description=f"You need to add some colors or load a preset. You can learn how with the `{p}help` command")
+            return await ctx.send(embed=embed)
+
+        # No Themes Available
+        elif isinstance(error, auth.NoAvailableThemes):
+            embed = discord.Embed(
+                title="No Available Themes",
+                description=f"You need to add a theme or import one. You can learn how with the `{p}help` command")
+            return await ctx.send(embed=embed)
+
+        # Theme/Color limit reached
+        elif isinstance(error, auth.LimitReached):
+            return await ctx.send(f"You have reached the max amount of {error}. Please delete some to make room for more")
+
+        ################ USER INPUT HANDLING ################
 
         elif isinstance(error, auth.InvalidHexcode):
             embed = discord.Embed(
@@ -49,18 +85,26 @@ class CommandErrorHandler(commands.Cog):
                              "[hex code](https://www.google.com/search?q=color+picker)"))
             return await ctx.send(embed=embed)
 
-        elif isinstance(error, auth.NoAvailableColors):
-            embed = discord.Embed(
-                title="No Available Colors",
-                description="Solution: You need to add some colors or load a preset. You can learn how with the help command")
-            return await ctx.send(embed=embed)
+        elif isinstance(error, auth.InvalidName):
+            return await ctx.send(error)
+
+        elif isinstance(error, auth.NotFoundError):
+            return await ctx.send(f"Could not find **{error}**")
+
+        elif isinstance(error, auth.InvalidSwapQuery):
+            return await ctx.send(error)
+
+        elif isinstance(error, auth.UserMissingColorRole):
+            return await ctx.send(f"{str(error)} does not have a color role")
+
+        ################ DISCORD ERROR HANDLING ################
 
         elif isinstance(error, discord.HTTPException) and error.code == 50007:
             return await ctx.send(f"Couldn't DM {ctx.author.mention}. Probably has me blocked")
 
         elif isinstance(error, discord.errors.Forbidden) and error.code == 50013:
             return await ctx.send(
-                f"I don't have permission to do this. This can be solved by reinviting the bot or making sure the bot has permission to manage roles/messages")
+                f"I don't have permission to do this. Make sure the bot has permission to manage roles/messages")
 
         elif isinstance(ctx.channel, discord.channel.DMChannel):
             return await ctx.send(f"**{ctx.command}** must be used in a server channel")
@@ -70,7 +114,6 @@ class CommandErrorHandler(commands.Cog):
                                     color=discord.Colour.red())
         await ctx.send(embed=error_embed, delete_after=30)
 
-        gumbachi = bot.get_user(128595549975871488)
         await gumbachi.send(embed=error_embed)
 
         print(f'Ignoring exception in command {ctx.command}:', file=sys.stderr)

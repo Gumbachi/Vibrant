@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 
 from classes import Guild
-from functions import update_prefs, is_disabled
-from authorization import authorize
+import database as db
+from authorization import authorize, is_disabled
 from vars import bot
 
 
@@ -24,7 +24,7 @@ class ChannelCommands(commands.Cog):
             guild.welcome_channel_id = ctx.channel.id
             await ctx.send(f"Success! {ctx.channel.mention} will now be the channel for greeting people")
 
-        update_prefs(guild)  # update preferences
+        db.update_prefs(guild)  # update preferences
 
     @commands.command(name="enable")
     async def enable_channel(self, ctx, fill=None):
@@ -45,7 +45,7 @@ class ChannelCommands(commands.Cog):
             else:
                 await ctx.send(f"channel is already enabled")
 
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="disable")
     async def disable_channel(self, ctx, fill=None):
@@ -68,7 +68,7 @@ class ChannelCommands(commands.Cog):
                 f"Okay😞 {ctx.channel.mention} is now disabled and the party has ended",
                 delete_after=3)
 
-        update_prefs(guild)  # update database
+        db.update_prefs(guild)  # update database
 
     @commands.command(name="status")
     async def check_channel_status(self, ctx):

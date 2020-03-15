@@ -2,7 +2,9 @@ import discord
 from discord.ext import commands
 
 from classes import Guild
-from functions import update_prefs, rgb_to_hex, is_disabled
+from functions import rgb_to_hex
+import database as db
+from authorization import is_disabled
 from vars import bot
 
 
@@ -12,7 +14,7 @@ class UtilityCommands(commands.Cog):
 
     @commands.command(name="update")
     async def update_mongo(self, ctx):
-        await update_prefs()
+        await db.update_prefs()
 
     @commands.command(name="guildinfo")
     async def show_guild_info(self, ctx):
@@ -127,6 +129,6 @@ class UtilityCommands(commands.Cog):
         except:
             return await ctx.send("not visible")
 
+
 def setup(bot):
     bot.add_cog(UtilityCommands(bot))
-

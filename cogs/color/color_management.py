@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from classes import Guild, Color
-from functions import update_prefs
+import database as db
 from authorization import authorize
 from vars import bot
 
@@ -40,10 +40,10 @@ class ColorManagement(commands.Cog):
         await ctx.send(
             f"**{color.name}** has been added at index **{color.index}**.")
         await ctx.invoke(bot.get_command("colors"))  # show new set
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="remove", aliases=["delete", "r"])
-    async def remove_color(self, ctx, *, query):
+    async def remove_color(self, ctx, *, query=""):
         """Remove a color from the Guild.
 
         Args:
@@ -59,10 +59,10 @@ class ColorManagement(commands.Cog):
         await color.delete()
         await ctx.send(f"**{color.name}** has been deleted!")
         await ctx.invoke(bot.get_command("colors"))  # show updated set
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="rename", aliases=["rn"])
-    async def rename_color(self, ctx, *, query):
+    async def rename_color(self, ctx, *, query=""):
         """Rename a color in the Guild's active colors.
 
         Args:
@@ -93,10 +93,10 @@ class ColorManagement(commands.Cog):
                 color.role_id = None
 
         await ctx.send(f"**{old_name}** is now named **{after}**")
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="recolor", aliases=["rc", "recolour"])
-    async def recolor(self, ctx, *, query):
+    async def recolor(self, ctx, *, query=""):
         """Change a color's hexcode.
 
         Args:
@@ -132,7 +132,7 @@ class ColorManagement(commands.Cog):
             color=discord.Color.from_rgb(*color.rgb))
 
         await ctx.send(embed=rc_embed)
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
     async def clear_colors(self, ctx, backup=True):
@@ -151,7 +151,7 @@ class ColorManagement(commands.Cog):
             await guild.clear_colors()
 
         await ctx.send(f"Success! All colors have been removed.")
-        update_prefs(guild)
+        db.update_prefs(guild)
 
 
 def setup(bot):

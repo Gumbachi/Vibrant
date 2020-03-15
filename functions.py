@@ -1,70 +1,17 @@
-import copy
-import io
-import json
-import math
 import os
+import json
 import re
-import random
+import io
 
-import numpy as np
-import scipy
-import scipy.cluster
-import binascii
 import discord
-import requests
-from PIL import Image, ImageDraw, ImageFont, ImageOps
-from fuzzywuzzy import process
+from PIL import Image, ImageDraw, ImageFont
 
-import classes as c
-from cfg import coll  # collection from mongoDB
 from vars import preset_names, heavy_command_active
-
-
-def update_prefs(*guilds):
-    """
-    Update the linked mongoDB database. Updates all if arg is left blank.
-
-    Args:
-        guilds (list of Guild): list of guild to update
-    """
-
-    print("UPDATING")
-    for guild in guilds:
-        json_data = guild.to_json()  # serialize objects
-
-        # find a document based on ID and update update
-        if coll.find_one({"id": guild.id}):
-            if not coll.find_one(json_data):
-                coll.find_one_and_update({"id": guild.id}, {'$set': json_data})
-        else:
-            # add new document if guild is not found
-            coll.insert_one(json_data)
-
-
-def get_prefs():
-    """Generates objects from json format to python objects from mongoDB
-
-    Only runs on start of program
-    """
-    c.Guild._guilds.clear()  # remove all guilds to be remade
-    data = list(coll.find())  # get mongo data
-    if not data:
-        return
-
-    for guild_dict in data:
-        guild = c.Guild.from_json(guild_dict)  # build guild
-        guild.reset_ids()
 
 
 def check_hex(string):
     """Verify if a string is a valid hexcode."""
     return bool(re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', string))
-
-
-def is_disabled(channel):
-    """Evaluate if a discord channel is disabled."""
-    return (isinstance(channel, discord.DMChannel)
-            or channel.id in c.Guild.get(channel.guild.id).disabled_channel_ids)
 
 
 def draw_presets():

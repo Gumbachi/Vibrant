@@ -1,18 +1,24 @@
 import discord
 from discord.ext import commands
-from cfg import coll
+import database as db
 
 # Cogs the bot loads
 extensions = [
+    # General
     "cogs.basic",
     "cogs.channels",
+    "cogs.errors",
+    "cogs.utility",
+
+    # Color
     "cogs.color.color_assignment",
     "cogs.color.color_info",
     "cogs.color.color_management",
-    "cogs.errors",
-    # 'cogs.themes',
-    # 'cogs.utility',
-    # 'cogs.dbl'
+
+    # Theme
+    "cogs.theme.theme_assignment",
+    "cogs.theme.theme_info",
+    "cogs.theme.theme_management",
 ]
 
 emoji_dict = {"checkmark": "✅",
@@ -23,17 +29,13 @@ preset_names = [
     "vibrant",
     "rainbow",
     "metro",
-    "bootstrap",
     "icecream",
     "neon",
     "pastel",
     "outrun",
     "sunset",
-    "downtown",
     "discord",
     "christmas",
-    "bridge",
-    "redtoblack"
 ]
 
 
@@ -47,7 +49,7 @@ def get_prefix(bot, message):
         id = message.guild.id
 
     try:
-        data = coll.find_one({"id": id})
+        data = db.coll.find_one({"id": id})
     except:
         print("no coll found for prefix")
         return '$'
@@ -71,7 +73,7 @@ disabled_embed = discord.Embed(
 
 
 def get_help(p):
-    help_dict = {
+    return {
         "Help": {
             "1. Setup": "Shows you how to set up the bot easily and how to use basic commands",
             "2. Themes": "Learn how to use themes",
@@ -149,11 +151,10 @@ def get_help(p):
                                 """
         },
     }
-    return help_dict
 
 
 def get_commands(p):
-    command_dict = {
+    return {
         "help": {
             "Description": "Do you really need one?",
             "Usage": f"`{p}help`: You know what this does",
@@ -347,14 +348,7 @@ def get_commands(p):
             "Usage": f"`{p}theme.rename 1 | Happy colors`: rename the first theme to 'Happy colors'",
             "Aliases": f"`{p}t.rename`, `{p}t.rn`",
         },
-
-
-
-
-
-
     }
-    return command_dict
 
 
 change_log = {

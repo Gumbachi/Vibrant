@@ -2,10 +2,11 @@
 improve readability in commands."""
 
 import re
+import discord
 from discord.ext.commands import CommandError, UserInputError
 
 from classes import Guild
-from vars import heavy_command_active
+from vars import heavy_command_active, preset_names
 
 
 class MissingGuild(CommandError):
@@ -28,18 +29,18 @@ class NoAvailableColors(CommandError):
     pass
 
 
+class NoAvailableThemes(CommandError):
+    """Raised when there are no colors available"""
+    pass
+
+
 class HeavyCommandActive(CommandError):
     """Raised when there is a heavy command like splash active"""
     pass
 
 
-class ColorLimitReached(CommandError):
-    """Raised when color limit is reached."""
-    pass
-
-
-class ThemeLimitReached(CommandError):
-    """Raised when theme limit is reached."""
+class LimitReached(CommandError):
+    """Raised when a color/theme limit is reached."""
     pass
 
 
@@ -48,18 +49,13 @@ class InvalidHexcode(UserInputError):
     pass
 
 
-class InvalidColorName(UserInputError):
-    """Raised when name is improper."""
+class InvalidName(UserInputError):
+    """Raised when color/theme name is improper."""
     pass
 
 
-class ColorNotFound(UserInputError):
+class NotFoundError(UserInputError):
     """Raised when color cannot be found with a given string/threshold"""
-    pass
-
-
-class UserNotFound(UserInputError):
-    """Raised when user cannot be found with a given string/threshold"""
     pass
 
 
@@ -71,6 +67,12 @@ class UserMissingColorRole(CommandError):
 class InvalidSwapQuery(UserInputError):
     """Raised when a swap query for rename or recolor is invalid"""
     pass
+
+
+def is_disabled(channel):
+    """Evaluate if a discord channel is disabled."""
+    return (isinstance(channel, discord.DMChannel)
+            or channel.id in Guild.get(channel.guild.id).disabled_channel_ids)
 
 
 def authorize(ctx, *checks, **input_checks):
@@ -107,10 +109,14 @@ def authorize(ctx, *checks, **input_checks):
         raise NoAvailableColors()
 
     if "color_limit" in checks and len(guild.colors) >= guild.color_limit:
-        raise ColorLimitReached(str(guild.color_limit))
+        raise LimitReached("colors")
+
+    # Theme related checks
+    if "themes" in checks and not guild.themes:
+        raise NoAvailableThemes()
 
     if "theme_limit" in checks and len(guild.themes) >= guild.theme_limit:
-        raise ThemeLimitReached(str(guild.theme_limit))
+        raise LimitReached("themes")
 
     ############## USER INPUT EXCPETIONS ##############
 
@@ -119,7 +125,12 @@ def authorize(ctx, *checks, **input_checks):
 
         # check for separator bar
         if re.search(r"[|]+", name):
-            raise InvalidColorName("You cannot include `|` in color names")
+            raise InvalidName(
+                "Names cannot include `|`")
+
+        if 100 < len(name) < 1:
+            raise InvalidName(
+                "Names must be between 1-100 characters")
 
     if "hexcode" in input_checks:
         hexcode = input_checks["hexcode"]
@@ -129,12 +140,22 @@ def authorize(ctx, *checks, **input_checks):
     if "color_query" in input_checks:
         query, threshold = input_checks["color_query"]
         if not bool(guild.find_color(query, threshold)):
-            raise ColorNotFound(query)
+            raise NotFoundError(query)
+
+    if "theme_query" in input_checks:
+        query, threshold = input_checks["theme_query"]
+        if not bool(guild.find_theme(query, threshold)):
+            raise NotFoundError(query)
 
     if "user_query" in input_checks:
         query, threshold = input_checks["user_query"]
         if not bool(guild.find_user(query, ctx.message, threshold)):
-            raise ColorNotFound(query)
+            raise NotFoundError(query)
+
+    if "preset_query" in input_checks:
+        preset = input_checks["preset_query"]
+        if preset not in preset_names:
+            raise NotFoundError(preset)
 
     if "has_color" in input_checks:
         if not guild.get_color_role(input_checks["has_color"]):
@@ -143,12 +164,12 @@ def authorize(ctx, *checks, **input_checks):
     if "swap_query" in input_checks:
         query = input_checks["swap_query"]
         if not re.search(r"[\d\w\s]+[|]{1}[\d\w\s]+", input_checks["swap_query"]):
-            raise InvalidSwapQuery()
+            raise InvalidSwapQuery("Invalid Input.")
 
         try:
             _, _ = query.split("|")
         except ValueError:
             raise InvalidSwapQuery(
-                f"There are too many separators in **{query}**")
+                f"There are too many separators in **{query}**.")
 
     return True

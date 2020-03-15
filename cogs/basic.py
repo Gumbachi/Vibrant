@@ -2,8 +2,8 @@ import discord
 from discord.ext import commands
 
 from classes import Guild
-from functions import is_disabled, update_prefs
-from authorization import authorize
+import database as db
+from authorization import authorize, is_disabled
 from vars import bot, change_log, get_commands, get_help, get_prefix
 
 
@@ -127,7 +127,7 @@ class BaseCommands(commands.Cog):
 
         guild.prefix = new_prefix  # set new prefix
         await ctx.send(f"New Prefix is `{new_prefix}`")
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="version", aliases=["patchnotes"])
     async def patchnotes(self, ctx, version=None):

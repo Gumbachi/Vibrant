@@ -4,9 +4,9 @@ from itertools import islice, cycle, repeat
 import discord
 from discord.ext import commands
 
-from functions import update_prefs
+import database as db
 from classes import Guild, Color
-from authorization import authorize, MissingPermissions, ColorNotFound
+from authorization import authorize, MissingPermissions, NotFoundError
 from vars import bot, waiting_on_reaction, waiting_on_hexcode, emoji_dict
 from vars import heavy_command_active
 
@@ -16,20 +16,19 @@ class ColorAssignment(commands.Cog):
         self.bot = bot
 
     @commands.command(name="color", aliases=["colour", "cu"])
-    async def color(self, ctx, user, *color_query):
+    async def color(self, ctx, user, *, color_query=""):
         """Color a specified user a specified color.
 
         Args:
             user (str): The name of the user or a mention
             color (tuple of str): The name of the desired color
         """
-        authorize(ctx, "disabled", "roles", "colors", user_query=user)
+        authorize(ctx, "disabled", "roles", "colors", user_query=(user, 90))
         guild = Guild.get(ctx.guild.id)
 
         user = guild.find_user(user, ctx.message)
 
         # find color
-        color_query = " ".join(color_query)
         if color_query:
             color = guild.find_color(color_query)
             if not color:
@@ -37,16 +36,16 @@ class ColorAssignment(commands.Cog):
                     authorize(ctx, "roles")
                     return await add_color_UX(ctx, color_query)
                 except MissingPermissions:
-                    raise ColorNotFound()
+                    raise NotFoundError()
         else:
             color = guild.random_color()
 
         await color_user(guild, user, color)
         await ctx.send(f"Gave **{user.name}** the **{color.name}** role")
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="colorme", aliases=["me", "colourme", "cm"])
-    async def colorme(self, ctx, *, color_query):
+    async def colorme(self, ctx, *, color_query=""):
         """Assign a Color to the author of the command."""
         authorize(ctx, "disabled", "colors")
 
@@ -59,13 +58,13 @@ class ColorAssignment(commands.Cog):
                     authorize(ctx, "roles")
                     return await add_color_UX(ctx, color_query)
                 except MissingPermissions:
-                    raise ColorNotFound
+                    raise NotFoundError()
         else:
             color = guild.random_color()
 
         await color_user(guild, ctx.author, color)
         await ctx.send(f"You are now colored **{color.name}**")
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="uncolorme", aliases=["uncolourme", "ucm"])
     async def uncolor_me(self, ctx):
@@ -78,7 +77,7 @@ class ColorAssignment(commands.Cog):
         # remove roles and send success message
         await ctx.author.remove_roles(role)
         await ctx.send(f"You are no longer colored **{role.name}**")
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="splash", aliases=["colorall", "colourall"])
     async def color_server(self, ctx, color=None, trace=True):
@@ -127,7 +126,7 @@ class ColorAssignment(commands.Cog):
         if trace:
             await ctx.send("Everyone visible has been colored!")
 
-        update_prefs(guild)
+        db.update_prefs(guild)
 
     @commands.command(name="unsplash", aliases=["uncolorall", "uncolourall"])
     async def uncolor_server(self, ctx, trace=True):
@@ -162,7 +161,7 @@ class ColorAssignment(commands.Cog):
         if trace:
             await ctx.send("Everyone has been uncolored!")
 
-        update_prefs(guild)
+        db.update_prefs(guild)
 
 
 def setup(bot):
@@ -236,17 +235,3 @@ async def on_reaction_add(reaction, user):
             await waiting_data["message"].clear_reactions()
             await waiting_data["message"].edit(content=f"{reaction.message.content} **Cancelled**")
         del waiting_on_reaction[user.id]
-
-    # # check reaction for adding pfp color
-    # if user.id in waiting_on_pfp.keys():
-    #     pfp_data = waiting_on_pfp[user.id]
-    #     ctx = await bot.get_context(pfp_data["message"])
-    #     if reaction.message.id == pfp_data["message"].id:
-    #         if reaction.emoji == vars.emoji_dict["checkmark"]:
-    #             await reaction.message.clear_reactions()
-    #             await ctx.invoke(bot.get_command("add"), pfp_data["hexcode"], pfp_data["color"])
-    #         elif reaction.emoji == vars.emoji_dict["crossmark"]:
-    #             await reaction.message.delete()
-    #     else:
-    #         await pfp_data["message"].delete()
-    #     del waiting_on_pfp[user.id]

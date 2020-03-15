@@ -4,8 +4,7 @@ import discord
 from discord.ext import commands
 
 from classes import Guild
-from functions import is_disabled
-from authorization import authorize
+from authorization import authorize, is_disabled
 
 
 class ColorInfo(commands.Cog):
@@ -29,7 +28,7 @@ class ColorInfo(commands.Cog):
             await ctx.send(file=discord.File(fp, filename="colors.png"))
 
     @commands.command(name="info", aliases=["about"])
-    async def show_color_info(self, ctx, *, query):
+    async def show_color_info(self, ctx, *, query=""):
         authorize(ctx, "colors")
         guild = Guild.get(ctx.guild.id)
 
