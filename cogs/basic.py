@@ -1,12 +1,9 @@
-import random
-import re
-
 import discord
 from discord.ext import commands
-from fuzzywuzzy import fuzz, process
 
-from classes import Color, Guild
-from functions import check_hex, is_disabled, update_prefs
+from classes import Guild
+from functions import is_disabled, update_prefs
+from authorization import authorize
 from vars import bot, change_log, get_commands, get_help, get_prefix
 
 
@@ -20,79 +17,79 @@ class BaseCommands(commands.Cog):
         self.bot = bot
 
     @commands.command(name="help")
-    async def help(self, ctx, arg=None):
-        """The standard help command. Pulls info from vars.py and allows
-         users to select pages or specific commands"""
+    async def help(self, ctx, page=None):
+        """The standard help command.
 
-        # check if channel is disabled
-        disabled = is_disabled(ctx.channel)
-        if disabled:
-            if not isinstance(ctx.channel, discord.channel.DMChannel):
-                await ctx.message.delete()
+        Pulls info from vars.py and allows
+        users to select pages or specific commands.
+        """
 
         # get prefix and generate help dictionary
         p = get_prefix(bot, ctx.message)
         help_dict = get_help(p)
 
         # Table of contents
-        if not arg:
-            recipient = ctx.author if disabled else ctx
+        if not page:
+            recipient = ctx
             title = "Vibrant Help"
             description = f"""Table of Contents.
                 To go to another page please use `{p}help <page>`
                 Example `{p}help 1`, `{p}help setup`"""
-            fields = help_dict[None].items()
+            fields = help_dict["Help"].items()
 
         # setup instructions/how to use
-        elif arg == '1' or arg == 'setup':
+        elif page == '1' or page == 'setup':
             recipient = ctx.author
-            title = "VIbrant Setup"
+            title = "Vibrant Setup"
             description = "Follow these steps to learn how to use Vibrant"
-            fields = help_dict[1].items()
+            fields = help_dict["Setup"].items()
 
         # list of theme commands and short descriptions
-        elif arg == '2' or arg == 'themes':
+        elif page == '2' or page == 'themes':
             recipient = ctx.author
             title = "Vibrant Themes Tutorial"
             description = "All you need to know about using themes with Vibrant"
-            fields = help_dict[2].items()
+            fields = help_dict["Themes"].items()
 
         # list of command and short descriptions
-        elif arg == '3' or arg == 'general':
+        elif page == '3' or page == 'general':
             recipient = ctx.author
             title = "Vibrant General Commands"
             description = ("A list of commands the bot has. For more info "
-                          f"on a specific command you can use `{p}help <command>`"
-                          f"Example: `{p}help prefix`")
-            fields = help_dict[3].items()
+                           f"on a specific command you can use `{p}help <command>`"
+                           f"Example: `{p}help prefix`")
+            fields = help_dict["Commands"].items()
 
         # list of theme commands and short descriptions
-        elif arg == '4' or arg == 'color':
+        elif page == '4' or page == 'color':
             recipient = ctx.author
             title = "Vibrant Color Commands"
             description = ("A list of color commands the bot has. For more info "
-                          f"on a specific command you can use `{p}help <command>`"
-                          f"Example: `{p}help add`")
-            fields = help_dict[4].items()
+                           f"on a specific command you can use `{p}help <command>`"
+                           f"Example: `{p}help add`")
+            fields = help_dict["Color Commands"].items()
 
         # list of theme commands and short descriptions
-        elif arg == '5' or arg == 'theme':
+        elif page == '5' or page == 'theme':
             recipient = ctx.author
             title = "Vibrant Theme Commands"
             description = ("A list of theme commands the bot has. For more info "
-                          f"on a specific command you can use `{p}help <command>`"
-                          f"Example: `{p}help theme.overwrite`")
-            fields = help_dict[5].items()
+                           f"on a specific command you can use `{p}help <command>`"
+                           f"Example: `{p}help theme.overwrite`")
+            fields = help_dict["Theme Commands"].items()
 
         # individual command help
-        elif arg in [command.name for command in bot.commands]:
-            recipient = ctx.author if disabled else ctx
+        elif page in [command.name for command in bot.commands]:
+            recipient = ctx
             cmd_list = get_commands(p)
-            title = f"{p}{arg}"
-            description = f"An in-depth description of the `{p}{arg}` command"
-            fields = cmd_list[arg].items()
+            title = f"{p}{page}"
+            description = cmd_list[page]["Description"]
+            del cmd_list[page]["Description"]
+            fields = cmd_list[page].items()
+
+        # page not found
         else:
-            raise commands.UserInputError(f"{arg} is not a valid argument")
+            raise commands.UserInputError(f"{page} is not a valid argument")
 
         # generate embed
         help_embed = discord.Embed(title=title, description=description,
@@ -101,9 +98,14 @@ class BaseCommands(commands.Cog):
             help_embed.add_field(name=k, value=v, inline=False)
 
         # notify user of DM
-        if recipient is ctx.author and not disabled:
-            await ctx.send("You've got mail!")
+        if is_disabled(ctx.channel):
+            await ctx.message.delete()
+            recipient = ctx.author
+        else:
+            if recipient is ctx.author:
+                await ctx.send("You've got mail!")
 
+        # send message
         await recipient.send(embed=help_embed)
 
     @commands.command(name='howdy')
@@ -116,111 +118,24 @@ class BaseCommands(commands.Cog):
 
     @commands.command(name='prefix', aliases=['vibrantprefix'])
     async def change_prefix(self, ctx, new_prefix=None):
-        """Changes the server prefix and updates the database
-
-        Args:
-            new_prefix (str): the new prefix
-        """
-        # check user permissions
-        if not ctx.author.guild_permissions.manage_guild:
-            return await ctx.send(
-                (f"{ctx.author.mention}, you need "
-                 "`manage server` permissions to use this command"))
-
-        # check channel status
-        if is_disabled(ctx.channel):
-            return await ctx.message.delete()
-
+        """Change the server prefix."""
+        authorize(ctx, "disabled", "server")  # check perms and channel status
         guild = Guild.get(ctx.guild.id)
+
         if not new_prefix:
             return await ctx.send(f"Current Prefix: `{guild.prefix}`")
 
         guild.prefix = new_prefix  # set new prefix
         await ctx.send(f"New Prefix is `{new_prefix}`")
-        await update_prefs([guild])
-
-    @commands.command("expose", aliases=['whois'])
-    async def expose_user(self, ctx, *name):
-        """Displays and embed giving simple information about a user"""
-        user = " ".join(name)
-        guild = Guild.get(ctx.guild.id)
-
-        # find a user
-        if user == "":
-            user = ctx.author
-        else:
-            user = guild.find_user(user, ctx.message, 0)
-
-        if not user:
-            return await ctx.send("Couldn't find user")
-
-        #set color and name depending if user is colored
-        if color_role := guild.get_color_role(user):
-            color_name = color_role.name
-            disc_color = color_role.color
-        else:
-            color_name = "None"
-            disc_color = discord.Color.light_grey()
-
-        # generate embed
-        expose_embed = discord.Embed(title=f"{user.name}#{user.discriminator}",
-                                     description=' ',
-                                     color=disc_color)
-
-        nickname = user.nick if user.nick else user.name
-
-        # structure embed
-        expose_embed.set_author(name=nickname, icon_url=user.avatar_url)
-        expose_embed.add_field(name="Color", value=color_name)
-        expose_embed.add_field(name='Status', value=str(user.status))
-        expose_embed.add_field(name='Member Since', value=str(user.joined_at)[:10])
-        expose_embed.set_thumbnail(url=user.avatar_url)
-        expose_embed.set_footer(text=f"ID: {user.id}")
-
-        # send to right location
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            await ctx.author.send(embed=expose_embed)
-        else:
-            await ctx.send(embed=expose_embed)
-
-    @commands.command("channels", aliases=["data"])
-    async def channel_data(self, ctx):
-        """Displays a list of channels that are enabled and disabled"""
-        guild = Guild.get(ctx.guild.id)
-
-        #get welcome channel name
-        if guild.welcome_channel:
-            welcome = guild.get_welcome().name
-        else:
-            welcome = "None"
-
-        # get names of disabled/enabled channels
-        disabled = [channel.name for channel in guild.get_disabled()]
-        enabled = [channel.name for channel in guild.get_enabled()]
-
-        # build embed
-        embed = discord.Embed(
-            title=guild.name, description=f"Welcome Channel: `{welcome}`")
-        embed.add_field(name="Enabled Channels",
-                        value="\n".join(enabled) if enabled else "None")
-        embed.add_field(name="Disabled Channels",
-                        value="\n".join(disabled) if disabled else "None")
-
-        # check if channel is disabled to choose where to send
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            await ctx.author.send(embed=embed)
-        else:
-            await ctx.send(embed=embed)
+        update_prefs(guild)
 
     @commands.command(name="version", aliases=["patchnotes"])
     async def patchnotes(self, ctx, version=None):
         """generate formatted embed of patchnotesto send to user"""
-        latest = "0.8"
+        latest = "1.1"
 
         # get correct version
-        if version in change_log.keys():
+        if version in change_log:
             info = change_log[version]
         else:
             info = change_log[latest]
@@ -232,6 +147,7 @@ class BaseCommands(commands.Cog):
             description=(f"Current Version: {latest}\n"
                          f"Versions: {', '.join(change_log.keys())}"),
             color=discord.Colour.blue())
+
         for k, v in info.items():
             patch_embed.add_field(name=k, value=v, inline=False)
 
@@ -244,20 +160,6 @@ class BaseCommands(commands.Cog):
         else:
             await ctx.send(embed=patch_embed)
 
-    @commands.command(name="report")
-    async def report(self, ctx, *msg):
-        """Sends a message to the developer"""
-        gumbachi = bot.get_user(128595549975871488)
-        report_embed = discord.Embed(
-            title=f"Report from {ctx.author.name} in {ctx.guild.name}",
-            description=" ".join(msg),
-            color=discord.Colour.blue())
-        await gumbachi.send(embed=report_embed)
-
-        if is_disabled(ctx.channel):
-            await ctx.author.send("Message sent.")
-        else:
-            await ctx.send("Message sent.")
 
 def setup(bot):
     bot.add_cog(BaseCommands(bot))

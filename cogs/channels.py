@@ -1,90 +1,116 @@
 import discord
 from discord.ext import commands
-from functions import update_prefs
-from vars import bot
+
 from classes import Guild
+from functions import update_prefs, is_disabled
+from authorization import authorize
+from vars import bot
+
 
 class ChannelCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    #set welcome channel
     @commands.command(name="welcome")
     async def set_welcome_channel(self, ctx, remove=None):
-        #check permissions
-        if not ctx.author.guild_permissions.manage_channels:
-            return await ctx.send("You need `manage channels` permission to use this command")
-
+        """Set welcome channel to the channel the command is called in."""
+        authorize(ctx, "channels")
         guild = Guild.get(ctx.guild.id)
-        guild.welcome_channel = ctx.channel.id
 
         if remove == "remove":
-            guild.welcome_channel = None
+            guild.welcome_channel_id = None
             await ctx.send(f"Success! There is no longer a welcome channel")
         else:
+            guild.welcome_channel_id = ctx.channel.id
             await ctx.send(f"Success! {ctx.channel.mention} will now be the channel for greeting people")
 
-        await update_prefs([guild])#update preferences
+        update_prefs(guild)  # update preferences
 
-    #enables a channel or all channels for command use
     @commands.command(name="enable")
     async def enable_channel(self, ctx, fill=None):
+        """Enable a single channel or all channels."""
+        authorize(ctx, "channels")
         guild = Guild.get(ctx.guild.id)
 
-        #check permissions
-        if not ctx.author.guild_permissions.manage_channels:
-            return await ctx.send("You need `manage channels` permission to use this command\nThis message will self-destruct shortly", delete_after=7)
-
-        #go through all channels and enable all of them
-        if fill == 'all':
-            guild.disabled_channels.clear() #empty list of disabled channels
+        # enable all channels
+        if fill == "all":
+            guild.disabled_channel_ids.clear()  # empty list of disabled channels
             await ctx.send(f"All text channels are now enabled!")
+
+        # enable a single channel
         else:
-            if ctx.channel.id in guild.disabled_channels:
-                guild.disabled_channels.discard(ctx.channel.id)
+            if ctx.channel.id in guild.disabled_channel_ids:
+                guild.disabled_channel_ids.discard(ctx.channel.id)
                 await ctx.send(f"channel is now enabled!")
             else:
                 await ctx.send(f"channel is already enabled")
 
-        await update_prefs([guild]) #update database
+        update_prefs(guild)
 
-    #disable one channel or all channels
     @commands.command(name="disable")
     async def disable_channel(self, ctx, fill=None):
-        #check permissions
-        if not ctx.author.guild_permissions.manage_channels:
-            return await ctx.send("You need `manage channels` permission to use this command")
-
+        """Disable a single channel or all channels."""
+        authorize(ctx, "channels")
         guild = Guild.get(ctx.guild.id)
 
-        #disable all channels
+        # disable all channels
         if fill == 'all':
-            for channel in ctx.guild.text_channels:
-                if channel.id not in guild.disabled_channels:
-                    guild.disabled_channels = {channel.id for channel in ctx.guild.text_channels} #list comp of all channel ids
-            await ctx.send(f"Okay😞 all text channels are now disabled.\nThis message will self-destruct shortly", delete_after=7)
+            guild.disabled_channel_ids = {
+                channel.id for channel in ctx.guild.text_channels}
+            await ctx.send(f"Okay😞 all text channels are now disabled",
+                           delete_after=3)
 
-        #disabled a select channel
+        # disabled a select channel
         else:
-            if ctx.channel.id not in guild.disabled_channels:
-                guild.disabled_channels.add(ctx.channel.id)
-                await ctx.send(f"Okay😞 {ctx.channel.mention} is now disabled and the party has ended.\nThis message will self-destruct shortly", delete_after=7) #channel has been disabled
-            else:
-                await ctx.send(f"{ctx.channel.mention} is already disabled.\nThis message will self-destruct shortly", delete_after=7)#channel was already disabled
+            guild.disabled_channel_ids.add(ctx.channel.id)
+            # channel has been disabled
+            await ctx.send(
+                f"Okay😞 {ctx.channel.mention} is now disabled and the party has ended",
+                delete_after=3)
 
-        await update_prefs([guild])#update database
+        update_prefs(guild)  # update database
 
-    #check status of a channel
     @commands.command(name="status")
     async def check_channel_status(self, ctx):
-        disabled = Guild.get(ctx.guild.id).disabled_channels
+        """Check if a channel is disabled or enabled"""
+        guild = Guild.get(ctx.guild.id)
 
-        #returns status of channel
-        if ctx.channel.id in disabled:
-            await ctx.message.delete() #delete command if in disabled channel
-            return await ctx.send(f"#{ctx.channel.mention} is disabled.\nThis message will self-destruct shortly", delete_after=7)
+        # returns status of channel
+        if ctx.channel in guild.disabled_channels:
+            await ctx.message.delete()  # delete command if in disabled channel
+            return await ctx.send(f"#{ctx.channel.mention} is disabled.", delete_after=3)
         else:
-            return await ctx.send(f"{ctx.channel.mention} is enabled")
+            await ctx.send(f"{ctx.channel.mention} is enabled")
+
+    @commands.command("channels", aliases=["data"])
+    async def channel_data(self, ctx):
+        """Displays a list of channels that are enabled and disabled"""
+        guild = Guild.get(ctx.guild.id)
+
+        channel_embed = discord.Embed(title=guild.name)
+
+        # add if welcome channel
+        if guild.welcome_channel:
+            channel_embed.add_field(
+                name="Welcome Channel", value=guild.welcome_channel.mention, inline=False)
+
+        if guild.disabled_channels:
+            channel_embed.add_field(name="Disabled Channels",
+                                    value="\n".join(str(channel)
+                                                    for channel in guild.disabled_channels))
+
+        if guild.enabled_channels:
+            channel_embed.add_field(name="Enabled Channels",
+                                    value="\n".join(channel.mention
+                                                    for channel in guild.enabled_channels))
+
+        # check if channel is disabled to choose where to send
+        if is_disabled(ctx.channel):
+            await ctx.message.delete()
+            await ctx.author.send(embed=channel_embed)
+        else:
+            await ctx.send(embed=channel_embed)
+
 
 def setup(bot):
     bot.add_cog(ChannelCommands(bot))

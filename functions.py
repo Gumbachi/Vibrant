@@ -17,21 +17,20 @@ from fuzzywuzzy import process
 
 import classes as c
 from cfg import coll  # collection from mongoDB
-from vars import preset_names
+from vars import preset_names, heavy_command_active
 
 
-async def update_prefs(guilds=None):
+def update_prefs(*guilds):
     """
     Update the linked mongoDB database. Updates all if arg is left blank.
 
     Args:
         guilds (list of Guild): list of guild to update
     """
-    if not guilds:
-        guilds = list(c.Guild._guilds.values())
 
+    print("UPDATING")
     for guild in guilds:
-        json_data = guild.to_json() # serialize objects
+        json_data = guild.to_json()  # serialize objects
 
         # find a document based on ID and update update
         if coll.find_one({"id": guild.id}):
@@ -42,7 +41,7 @@ async def update_prefs(guilds=None):
             coll.insert_one(json_data)
 
 
-async def get_prefs():
+def get_prefs():
     """Generates objects from json format to python objects from mongoDB
 
     Only runs on start of program
@@ -54,41 +53,18 @@ async def get_prefs():
 
     for guild_dict in data:
         guild = c.Guild.from_json(guild_dict)  # build guild
-        guild.reindex_colors()
-        guild.reindex_themes()
-        guild.fix_ids()
+        guild.reset_ids()
 
 
-def check_hex(search):
-    """
-    Verify that a string is a valid hexcode.
-
-    Args:
-        search (string): The string to be validated
-
-    Returns:
-        bool: if search was valid hex or not
-    """
-    valid = re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', search)
-    return True if valid else False
+def check_hex(string):
+    """Verify if a string is a valid hexcode."""
+    return bool(re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', string))
 
 
 def is_disabled(channel):
-    """
-    Evaluate if a channel is disabled
-
-    Args:
-        channel (discord.channel): The channel to get info from
-
-    Returns:
-        bool: if the channel is enabled
-    """
-    if isinstance(channel, discord.DMChannel):
-        return True
-    if channel.id in c.Guild.get(channel.guild.id).disabled_channels:
-        return True
-    else:
-        return False
+    """Evaluate if a discord channel is disabled."""
+    return (isinstance(channel, discord.DMChannel)
+            or channel.id in c.Guild.get(channel.guild.id).disabled_channel_ids)
 
 
 def draw_presets():
@@ -102,7 +78,7 @@ def draw_presets():
     text_width = 250
 
     img = Image.new('RGB', (canvas_width, len(preset_names) * row_height),
-                            color=(54, 57, 63))  # generate image
+                    color=(54, 57, 63))  # generate image
     draw = ImageDraw.Draw(img)  # set image for drawing
     fnt = ImageFont.truetype(
         f'.{os.path.sep}assets{os.path.sep}OpenSans-Regular.ttf', 40)  # set font
@@ -138,36 +114,13 @@ def draw_presets():
     return imgByteArr
 
 
-def pfp_analysis(URL):
-    NUM_CLUSTERS = 5
-    response = requests.get(URL)
-    im = Image.open(io.BytesIO(response.content))
-    im = im.resize((150, 150))      # optional, to reduce time
-    ar = np.asarray(im)
-    shape = ar.shape
-    ar = ar.reshape(np.product(shape[:2]), shape[2]).astype(float)
-
-    #print('finding clusters')
-    codes, _ = scipy.cluster.vq.kmeans(ar, NUM_CLUSTERS)
-    #print('cluster centres:\n', codes)
-
-    vecs, _ = scipy.cluster.vq.vq(ar, codes)         # assign codes
-    counts, _ = np.histogram(vecs, len(codes))    # count occurrences
-
-    index_max = np.argmax(counts)                    # find most frequent
-    rgb = codes[index_max]
-    hexcode = binascii.hexlify(bytearray(int(c) for c in rgb)).decode('ascii')
-    #print(f'most frequent is {rgb} ({hexcode})')
-    return f"#{hexcode[:6]}"
-
-
 def rgb_to_hex(rgb):
-    """Converts rgb tuple to hexcode string"""
-    return '#%02x%02x%02x' % rgb
+    """Convert rgb tuple to hexcode string."""
+    return "#%02x%02x%02x" % rgb
 
 
 def hex_to_rgb(value):
-    """Converts hexcode string to rgb tuple"""
+    """Convert hexcode string to rgb tuple."""
     value = value.lstrip('#')
     if len(value) == 3:
         value = u''.join(2 * s for s in value)
