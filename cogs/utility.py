@@ -21,6 +21,26 @@ class UtilityCommands(commands.Cog):
         db.update_prefs(*list(Guild._guilds.values()))
         await ctx.send("update complete")
 
+    @commands.command(name="correct_members")
+    async def fix_member_roles(self, ctx):
+        if ctx.author.id != 128595549975871488:
+            return
+
+        for guild in Guild._guilds.values():
+            for color in guild.colors:
+                if color.role_id:
+                    try:
+                        role = guild.discord_guild.get_role(color.role_id)
+                        color.member_ids = {
+                            member.id for member in role.members}
+                    except:
+                        print("broke")
+
+                else:
+                    color.member_ids = set()
+            db.update_prefs(guild)
+        print("Finished")
+
     @commands.command(name="trim_members")
     async def purge_members(self, ctx, *, id=None):
         if ctx.author.id != 128595549975871488:
@@ -47,6 +67,7 @@ class UtilityCommands(commands.Cog):
                 color.member_ids -= all_members
                 all_members |= color.member_ids
             db.update_prefs(guild)
+        await ctx.send("Done")
 
     @commands.command(name="guildinfo")
     async def show_guild_info(self, ctx):
