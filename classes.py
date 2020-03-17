@@ -4,6 +4,7 @@ import json
 import math
 import os
 import random
+from os.path import sep
 
 import discord
 from fuzzywuzzy import process
@@ -11,6 +12,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from vars import bot
 from functions import hex_to_rgb
+import authorization as auth
 
 
 class Guild():
@@ -173,21 +175,17 @@ class Guild():
         Returns:
             A byte array of the image
         """
-        sep = os.path.sep  # separator for cross-platform
-
         rows = math.ceil(len(self.colors) / 3)  # amt of rows needed
-        rows = 1 if not rows else rows
         row_height = 50
         column_width = 300
         columns = 3
-        discord = (54, 57, 63)  # discord background color
 
-        img = Image.new(mode='RGB',
+        img = Image.new(mode='RGBA',
                         size=(columns * column_width, rows * row_height),
-                        color=discord)
+                        color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(img)  # set image for drawing
         fnt = ImageFont.truetype(
-            font=f'.{sep}assets{sep}Roboto.ttf', size=30)
+            font=f".{sep}assets{sep}Roboto.ttf", size=30)
 
         # draws and labels boxes
         for i, color in enumerate(self.colors):
@@ -198,9 +196,9 @@ class Guild():
             x1 = column_width * rem
             x2 = row_height * div
             y1 = column_width * (rem+1)
-            y2 = row_height*(div+1)
+            y2 = row_height * (div+1)
             draw.rectangle([x1, x2, y1, y2], fill=color.rgb,
-                           outline=discord, width=2)
+                           outline=(0, 0, 0, 0), width=2)
 
             W, H = column_width*rem, row_height*div+10  # origin to draw boxes
             msg = f"{color.index}. {color.name}"
@@ -224,18 +222,11 @@ class Guild():
             y = H
             draw.text((x, y), msg, font=fnt, fill=text_color)  # draw text
 
-        # draw if there are no colors
-        if not self.colors:
-            msg = "No active colors"
-            w, _ = draw.textsize(msg, fnt)
-            draw.text(((900-w) / 2, 0), "No active colors",
-                      font=fnt, fill=(255, 255, 255))
-
         # return binary data
         imgByteArr = io.BytesIO()
-        img.save(imgByteArr, format='PNG')
+        img.save(imgByteArr, format='WEBP')
         imgByteArr = imgByteArr.getvalue()
-        return imgByteArr
+        return io.BytesIO(imgByteArr)
 
     def draw_themes(self):
         """
@@ -253,17 +244,15 @@ class Guild():
 
         rows = 1 if not self.themes else len(self.themes)
 
-        img = Image.new(mode='RGB',
+        img = Image.new(mode='RGBA',
                         size=(canvas_width, cont_height * rows),
-                        color=(54, 57, 63))
+                        color=(0, 0, 0, 0))
         draw = ImageDraw.Draw(img)  # set image for drawing
 
         # set font
         fnt = ImageFont.truetype(
             f'.{os.path.sep}assets{os.path.sep}Roboto.ttf',
             size=40)
-
-        white = (255, 255, 255)  # white
 
         # draws themes
         for i, theme in enumerate(self.themes):
@@ -277,7 +266,7 @@ class Guild():
 
             text_height += padding_above_text + padding_below_text
 
-            draw.text((x, y), msg, font=fnt, fill=white)
+            draw.text((x, y), msg, font=fnt, fill=(255, 255, 255))
 
             width_of_rect = canvas_width/len(theme.colors)
 
@@ -293,15 +282,11 @@ class Guild():
 
                 draw.rectangle([(x0, y0), (x1, y1)], fill=color.rgb)
 
-        # different drawing if no themes
-        if not self.themes:
-            draw.text((20, 0), f"No Themes", font=fnt, fill=white)
-
         # return binary data
         imgByteArr = io.BytesIO()
-        img.save(imgByteArr, format='PNG')
+        img.save(imgByteArr, format='WEBP')
         imgByteArr = imgByteArr.getvalue()
-        return imgByteArr
+        return io.BytesIO(imgByteArr)
 
     def find_color(self, query, threshold=90):
         """Find a color in the guild's colors based on index or name.
@@ -392,7 +377,10 @@ class Guild():
     @classmethod
     def get(cls, id):
         """Find guild in the dictionary."""
-        return cls._guilds.get(id)
+        guild = cls._guilds.get(id)
+        if not guild:
+            raise auth.MissingGuild()
+        return guild
 
     @staticmethod
     def from_json(data):

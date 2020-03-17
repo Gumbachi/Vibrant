@@ -79,7 +79,7 @@ class ColorAssignment(commands.Cog):
         await ctx.send(f"You are no longer colored **{role.name}**")
         db.update_prefs(guild)
 
-    @commands.command(name="splash", aliases=["colorall", "colourall"])
+    @commands.command(name="splash")
     async def color_server(self, ctx, color=None, trace=True):
         """Gather all of the uncolored users and assigns them a color.
 
@@ -128,7 +128,7 @@ class ColorAssignment(commands.Cog):
 
         db.update_prefs(guild)
 
-    @commands.command(name="unsplash", aliases=["uncolorall", "uncolourall"])
+    @commands.command(name="unsplash")
     async def uncolor_server(self, ctx, trace=True):
         """Gather all of the uncolored users and assigns them a color.
 

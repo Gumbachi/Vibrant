@@ -14,18 +14,17 @@ class ColorInfo(commands.Cog):
     @commands.command(name="colors", aliases=["colours", "c"])
     async def show_colors(self, ctx):
         """Display an image of equipped colors."""
-        authorize(ctx, "color")
-
+        authorize(ctx, "colors")
         guild = Guild.get(ctx.guild.id)
-        fp = io.BytesIO(guild.draw_colors())
+        img = guild.draw_colors()
+        file = discord.File(img, filename="colors.webp")
 
         # send info to channel or user
         if is_disabled(ctx.channel):
             await ctx.message.delete()
-            await ctx.author.send(content=f"**{ctx.guild.name}**:",
-                                  file=discord.File(fp, filename="colors.png"))
+            await ctx.author.send(content=f"**{ctx.guild.name}**:", file=file)
         else:
-            await ctx.send(file=discord.File(fp, filename="colors.png"))
+            await ctx.send(file=file)
 
     @commands.command(name="info", aliases=["about"])
     async def show_color_info(self, ctx, *, query=""):

@@ -5,7 +5,7 @@ import re
 import discord
 from discord.ext.commands import CommandError, UserInputError
 
-from classes import Guild
+import classes
 from vars import heavy_command_active, preset_names
 
 
@@ -72,17 +72,14 @@ class InvalidSwapQuery(UserInputError):
 def is_disabled(channel):
     """Evaluate if a discord channel is disabled."""
     return (isinstance(channel, discord.DMChannel)
-            or channel.id in Guild.get(channel.guild.id).disabled_channel_ids)
+            or channel.id in classes.Guild.get(channel.guild.id).disabled_channel_ids)
 
 
 def authorize(ctx, *checks, **input_checks):
     """Check certain perms and assure passing."""
 
     # Guild related checks
-    guild = Guild.get(ctx.guild.id)
-
-    if not guild:
-        raise MissingGuild()
+    guild = classes.Guild.get(ctx.guild.id)
 
     ############## GENERAL COMMAND EXCEPTIONS ##############
 

@@ -16,10 +16,11 @@ class ThemeInfo(commands.Cog):
     @commands.command(name="themes", aliases=["temes", "t"])
     async def show_themes(self, ctx):
         """Draw the guild's themes and send in channel."""
+        authorize(ctx, "themes")
         guild = Guild.get(ctx.guild.id)
-        fp = io.BytesIO(guild.draw_themes())  # convert to sendable
+        img = guild.draw_themes()  # get sendable
 
-        file = discord.File(fp, filename="themes.png")
+        file = discord.File(img, filename="themes.webp")
 
         # send to author or channel depending on status
         if is_disabled(ctx.channel):

@@ -55,6 +55,7 @@ class ChannelCommands(commands.Cog):
 
         # disable all channels
         if fill == 'all':
+            await ctx.message.delete()
             guild.disabled_channel_ids = {
                 channel.id for channel in ctx.guild.text_channels}
             await ctx.send(f"Okay😞 all text channels are now disabled",
@@ -62,6 +63,7 @@ class ChannelCommands(commands.Cog):
 
         # disabled a select channel
         else:
+            await ctx.message.delete()
             guild.disabled_channel_ids.add(ctx.channel.id)
             # channel has been disabled
             await ctx.send(
