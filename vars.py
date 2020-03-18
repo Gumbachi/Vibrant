@@ -117,8 +117,6 @@ def get_help(p):
         "Commands": {
             "General Commands": f"""`{p}howdy`: You've got a friend in me
                                     `{p}prefix <new prefix>`: changes the prefix the bot uses
-                                    `{p}expose <name>`: Shows some info about a member
-                                    `{p}pfp <user>`: sends a hexcode that matches the user's pfp
                                     `{p}report <issue>`: sends a message to the developer with your problem
                                     """,
             "Channel Commands": f"""`{p}enable <all>`: Enables the channel or all channels
@@ -137,6 +135,7 @@ def get_help(p):
                                   `{p}rename <name/index> | <new name>`: Changes a color's name
                                   `{p}recolor <name/index> | <new hexcode>`: Changes a color's value
                                   `{p}splash`: Gives a color to everyone in the server without one
+                                  `{p}unsplash`: Uncolors everyone
                                   `{p}info <name/index>`:shows info about a color
                                 """
         },

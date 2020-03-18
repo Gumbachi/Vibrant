@@ -4,8 +4,8 @@ from discord.ext import commands
 from classes import Guild
 from functions import rgb_to_hex
 import database as db
-from authorization import is_disabled
-from vars import bot
+from authorization import is_disabled, MissingGuild
+from vars import bot, emoji_dict
 
 
 class UtilityCommands(commands.Cog):
@@ -70,9 +70,11 @@ class UtilityCommands(commands.Cog):
         await ctx.send("Done")
 
     @commands.command(name="guildinfo")
-    async def show_guild_info(self, ctx):
+    async def show_guild_info(self, ctx, id=None):
         """Shows guild info in an embed and in terminal"""
-        guild = Guild.get(ctx.guild.id)
+        if not id:
+            id = ctx.guild.id
+        guild = Guild.get(int(id))
         embed = discord.Embed(title="Guild info", description=repr(guild))
         await ctx.send(embed=embed)
 
@@ -84,7 +86,6 @@ class UtilityCommands(commands.Cog):
         for color in guild.colors:
             s += f"    {repr(color)}\n"
         embed = discord.Embed(title="Colors info", description=s)
-        print(s)
         await ctx.send(embed=embed)
 
     @commands.command(name='purge')
@@ -104,14 +105,51 @@ class UtilityCommands(commands.Cog):
         await ctx.send(msg)
 
     @commands.command(name="check")
-    async def is_visible(self, ctx, id):
+    async def is_visible(self, ctx, id=None):
         if ctx.author.id != 128595549975871488:
             return
+
+        if not id:
+            id = ctx.guild.id
         id = int(id)
+
+        dguild = bot.get_guild(id)
+        name = dguild.name if dguild else "None"
+
+        embed = discord.Embed(
+            title=name, description="Checks info for a specific server")
+
         if id in [guild.id for guild in bot.guilds]:
-            return await ctx.send("Is visible")
+            embed.add_field(name="Visible", value=emoji_dict["checkmark"])
         else:
-            return await ctx.send("Is not visible")
+            embed.add_field(name="Visible", value=emoji_dict["crossmark"])
+
+        try:
+            guild = Guild.get(id)
+            embed.add_field(name="Memory", value=emoji_dict["checkmark"])
+        except MissingGuild:
+            embed.add_field(name="Memory", value=emoji_dict["crossmark"])
+            return await ctx.send(embed=embed)
+
+        for member in guild.members:
+            if member.id == bot.user.id:
+                botmember = member
+                break
+
+        botperms = botmember.guild_permissions
+        perms = (f"Manage Roles: {emoji_dict['checkmark'] if botperms.manage_roles else emoji_dict['crossmark']}\n"
+                 f"Send Messages: {emoji_dict['checkmark'] if botperms.send_messages else emoji_dict['crossmark']}\n"
+                 f"Manage Messages: {emoji_dict['checkmark'] if botperms.manage_messages else emoji_dict['crossmark']}\n"
+                 f"Attach Files: {emoji_dict['checkmark'] if botperms.attach_files else emoji_dict['crossmark']}")
+
+        embed.add_field(name="Permissions", value=perms)
+
+        stats = (f"Members: {len(guild.members)}\n"
+                 f"Colors: {len(guild.colors)}\n"
+                 f"Themes: {len(guild.themes)}\n")
+        embed.add_field(name="Stats", value=stats)
+
+        await ctx.send(embed=embed)
 
     @commands.command(name="botstats")
     async def count_guilds(self, ctx):

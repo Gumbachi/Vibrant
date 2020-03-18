@@ -36,6 +36,7 @@ class CommandErrorHandler(commands.Cog):
             await ctx.send("Something went wrong. I couldn't find the data for this server.")
             guild = Guild(guild.id)
             db.update_prefs(guild)
+            print("Guild Created")
             return await ctx.send("A blank profile has been added for this server. Please add some colors and try again")
 
         # Channel Disabled
