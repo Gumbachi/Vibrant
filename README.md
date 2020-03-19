@@ -34,8 +34,6 @@ If you forgot your prefix then you can @mention the bot for help.
 |:--------------------:|:--------------------:|:--------------------------------------------------------------:|
 | help \<page>         | $help setup          | Standard help command. You know what it does                   |
 | prefix \<new prefix> | $prefix %            | Changes the prefix you use to call commands                    |
-| expose \<user>       | $expose @Gumbachi    | Shows general information about a person in the server         |
-| pfp \<user>          | $pfp @Gumbachi       | Tries to find the prominent color of the users profile picture |
 | report \<msg>        | $report Bot's busted | Sends me a direct message. Should be used to report bugs       |
 
 ## Main Color Commands
@@ -59,8 +57,6 @@ If you forgot your prefix then you can @mention the bot for help.
 | presets         | $presets         | Shows a list of presets to choose from                          |
 | preview         | $preview vibrant | Shows a preview of the preset                                   |
 | info \<color>   | $info Red        | Shows info about a color like members it belongs to and hexcode |
-| export          | $export          | Provides a JSON file with a backup of your color loadout        |
-| import          | $import          | Sets colors to those in attached JSON file                      |
 
 ## Channel Commands
 
