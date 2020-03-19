@@ -433,7 +433,10 @@ class Color():
 
     @property
     def index(self):
-        return self.guild.colors.index(self) + 1
+        try:
+            return self.guild.colors.index(self) + 1
+        except ValueError:
+            return 1
 
     @property
     def members(self):
@@ -516,7 +519,10 @@ class Theme():
 
     def delete(self):
         """Removes theme from guild"""
-        self.guild.themes.remove(self)
+        try:
+            self.guild.themes.remove(self)
+        except ValueError:
+            return 1
 
     def activate(self):
         """adds theme colors to the colors list of the guild"""

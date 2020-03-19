@@ -114,7 +114,7 @@ class CommandErrorHandler(commands.Cog):
             return await ctx.send(f"Missing command arguments")
 
         error_embed = discord.Embed(title=f'Your command: {ctx.message.content}',
-                                    description=str(error),
+                                    description=ctx.guild.id,
                                     color=discord.Colour.red())
         await ctx.send(embed=error_embed, delete_after=30)
 
