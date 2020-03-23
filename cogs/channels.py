@@ -84,7 +84,7 @@ class ChannelCommands(commands.Cog):
         else:
             await ctx.send(f"{ctx.channel.mention} is enabled")
 
-    @commands.command("channels", aliases=["data"])
+    @commands.command("channels")
     async def channel_data(self, ctx):
         """Displays a list of channels that are enabled and disabled"""
         guild = Guild.get(ctx.guild.id)

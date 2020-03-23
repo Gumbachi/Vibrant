@@ -11,7 +11,7 @@ class ColorManagement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="add", aliases=["new", "create", "addcolor", "a"])
+    @commands.command(name="add", aliases=["new", "a"])
     async def add_color(self, ctx, hexcode, *, name=""):
         """Add a color to the Guild.
 
@@ -33,7 +33,8 @@ class ColorManagement(commands.Cog):
             hexcode == "#000001"
 
         # create and add color
-        color = Color(name, hexcode, ctx.guild.id)
+        color = Color(name=name, hexcode=hexcode,
+                      guild_id=ctx.guild.id, role_id=None, member_ids=set())
         guild.colors.append(color)
 
         # report success

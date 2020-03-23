@@ -33,7 +33,7 @@ def update_prefs(*guilds):
         # find a document based on ID and update update
         if coll.find_one({"id": guild.id}):
             if not coll.find_one(json_data):
-                coll.find_one_and_update({"id": guild.id}, {'$set': json_data})
+                coll.find_one_and_update({"id": guild.id}, {"$set": json_data})
         else:
             # add new document if guild is not found
             coll.insert_one(json_data)

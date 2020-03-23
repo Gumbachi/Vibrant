@@ -119,7 +119,7 @@ class UtilityCommands(commands.Cog):
         embed = discord.Embed(
             title=name, description="Checks info for a specific server")
 
-        if id in [guild.id for guild in bot.guilds]:
+        if bot.get_guild(id):
             embed.add_field(name="Visible", value=emoji_dict["checkmark"])
         else:
             embed.add_field(name="Visible", value=emoji_dict["crossmark"])
@@ -156,14 +156,17 @@ class UtilityCommands(commands.Cog):
         users = 0
         colors = 0
         themes = 0
+        exceptions = 0
         for guild in Guild._guilds.values():
-            users += len(guild.discord_guild.members)
-            colors += len(guild.colors)
-            themes += len(guild.themes)
-
+            try:
+                users += len(guild.discord_guild.members)
+                colors += len(guild.colors)
+                themes += len(guild.themes)
+            except:
+                exceptions += 1
         stat_embed = discord.Embed(
             title="Stats",
-            description=f"Servers: {len(bot.guilds)}\nUsers: {users}\nColors: {colors}\nThemes: {themes}")
+            description=f"Servers: {len(bot.guilds)}\nUsers: {users}\nColors: {colors}\nThemes: {themes}\nExceptions: {exceptions}")
         await ctx.send(embed=stat_embed)
 
     @commands.command(name="announce")
@@ -172,6 +175,14 @@ class UtilityCommands(commands.Cog):
             return
         #announce_embed = discord.Embed(title="ColorBOT Announcement", description=" ".join(message))
         # unfinished
+
+    @commands.command(name="deleteguild")
+    async def remove_guild(self, ctx, id):
+        if ctx.author.id != 128595549975871488:
+            return
+
+        guild = Guild._guilds.pop(int(id), "None")
+        print(f"Forcibly removed {guild.name}")
 
     @commands.command(name="convert", aliases=["hex", "tohex"])
     async def convert_to_hex(self, ctx, *rgb):

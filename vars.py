@@ -158,35 +158,27 @@ def get_commands(p):
         "help": {
             "Description": "Do you really need one?",
             "Usage": f"`{p}help`: You know what this does",
-            "Aliases": "info",
         },
         "howdy": {
             "Description": "A friendly function that replies howdy",
             "Usage": f"`{p}howdy`",
-            "More Info": """Will reply howdy in the channel the command was sent in unless the channel is disabled which it will then message the user"""
         },
         "colorme": {
-            "Description": "Will give you a color",
-            "Fields": "name/index: this is an optional field where you can input a specific color index or name to get a specific color",
+            "Description": "Will give you a color if there are any",
+            "Arguments": "`name/index`: Optional field where you can input a specific color index or name to get a specific color",
             "Usage": f"`{p}colorme`: Colors you a random color\n`{p}colorme blue`: Colors you blue if the color exists\n`{p}colorme 2`: Colors you whatever color is in the 2nd slot of the set",
-            "Aliases": "colourme\nme",
-            "More Info": """-Will give you a random color if name/index is left blank
-                                   -I would recommend using index to avoid mixup. Fuzzy matching isnt perfect"""
+            "Aliases": f"`{p}colourme`, `{p}me`",
         },
         "color": {
             "Description": "Colors another user",
-            "Fields": "user: this is a required field where you can @mention a user or type in their name to find a user\ncolor/index: this is an optional field where you can input a specific color index or name to get a specific color",
+            "Arguments": "`user`: this is a required field where you can @mention a user or type in their name to find a user\n`color/index`: this is an optional field where you can input a specific color index or name to get a specific color",
             "Usage": f"`{p}color @gumbachi`: Colors the mentioned user a random color\n`{p}color @gumbachi 2`: colors the mentioned user the 2nd color\n`{p}color Gumbachi blue`",
-            "Aliases": "colour",
-            "More Info": """-Will give random color if color/index field is left blank
-                                   -Uses fuzzy matching to try to match misspelled names for convenience"""
+            "Aliases": f"`{p}colour`, `{p}cu`",
         },
         "colors": {
             "Description": "Generates an image of all the colors and sends it",
             "Usage": f"`{p}colors`",
-            "Aliases": "colours\ncolorset\ncolourset",
-            "More Info": """-If channel is disabled then it will DM you the message
-                                   -Uses python Pillow library to draw a custom image to send"""
+            "Aliases": f"{p}`colours`, `{p}c`",
         },
         "splash": {
             "Description": "Colors everyone without a color in the server",
@@ -200,83 +192,76 @@ def get_commands(p):
         },
         "add": {
             "Description": "Adds a custom color to the colorset",
-            "Fields": """hexcode: this is a required field where you can input a hexcode for your desired color
-                         name: this is an optional field for the name of your new color""",
+            "Arguments": """`hexcode`: Required field where you can input a hexcode for your desired color
+                         `name`: Optional field for the name of your new color""",
             "Usage": f"`{p}add #ff0000 Red`: Adds a color named red to the set\n`{p}add #ffff00`:Adds a color named 'Color x' to the set",
-            "Aliases": "new\ncreate",
-            "More Info": """-Will give the color a name like 'Color 2' if name field left blank"""
+            "Aliases": f"`{p}new`, `{p}a`",
+            "More Info": "Will give the color a name like 'Color 2' if name field left blank"
         },
         "enable": {
             "Description": "Enables the channel it is typed in",
-            "Fields": """all: this is an optional field where you can type all to specify if you want all channels enabled""",
+            "Arguments": """`all`: Optional field where you can type all to specify if you want all channels enabled""",
             "Usage": f"`{p}enable`: enable just this channel\n`{p}enable all`: enable all channels"
         },
         "remove": {
             "Description": "Removes a color from the colorset",
-            "Fields": """color/index: this is a required field where you can input a color name or index for your desired color""",
+            "Arguments": "`color/index`: Required field where you can input a color name or index for your desired color",
             "Usage": f"`{p}remove Red`: Will try to remove a color named red\n`{p}remove 3`: Removes the color in the 3rd slot",
-            "Aliases": "delete",
+            "Aliases": f"`{p}delete`, `{p}r`"
         },
         "rename": {
             "Description": "Renames a color in the colorset",
-            "Fields": """color/index: this is a required field where you can type a color name or index to change
-                         new name: this is a required field for the new name of the color""",
+            "Arguments": """`color/index`: this is a required field where you can type a color name or index to change
+                         `new name`: this is a required field for the new name of the color""",
             "Usage": f"`{p}rename blue | red`: Will rename a color named blue to red\n`{p}rename 4 | Blue`: Renames the 4th color to Blue",
-            "More Info": """Uses a `|` separator to split the before and after"""
+            "More Info": "Uses a `|` separator to split the before and after",
+            "Aliases": f"`{p}rn`"
         },
         "recolor": {
             "Description": "Changes a color's look",
-            "Fields": """color/index: this is a required field where you can type a color name or index to change
-                         new hexcode: this is a required field for the new hexcode of the color""",
+            "Arguments": """`color/index`: this is a required field where you can type a color name or index to change
+                         `new hexcode`: this is a required field for the new hexcode of the color""",
             "Usage": f"`{p}recolor blue | #0000ff`: Will change the value of blue to #0000ff(blue)\n`{p}recolor 4 | #ffffff`: Changes the value of the 4th color to #ffffff(white)",
-            "Aliases": "recolour",
+            "Aliases": f"`{p}recolour`, `{p}rc`",
             "More Info": """Uses a `|` separator to split the before and after"""
         },
         "prefix": {
             "Description": "Changes the server prefix",
-            "Fields": """new prefix: this is a required field for the new prefix""",
+            "Arguments": """`new prefix`: this is a required field for the new prefix""",
             "Usage": f"`{p}prefix $`: Will change prefix to $\n`{p}vibrantprefix $`: Does the same thing under a different alias",
-            "Aliases": "vibrantprefix",
-            "More Info": f"""if you have overlap issues then use `{p}vibrantprefix new_prefix` to dodge bot overlap"""
+            "Aliases": "`vibrantprefix`",
+            "More Info": f"if you have overlap issues then use `{p}vibrantprefix` to dodge command overlap"
         },
         "clear_all_colors": {
             "Description": "Will remove all colors from a colorset",
             "Usage": f"`{p}clear_all_colors`",
-            "Aliases": "clear_all_colours",
-            "More Info": """-Is made difficult on purpose to avoid accidents
-                                   -Will send a backup incase you made a mistake:)"""
+            "Aliases": "`clear_all_colours`",
+            "More Info": "Is made difficult on purpose to avoid accidents"
         },
         "channels": {
             "Description": "Sends channel information",
             "Usage": f"`{p}channels`",
-            "Aliases": "data",
-            "More Info": """If channel is disabled then it will DM you the message"""
-        },
-        "export": {
-            "Description": "Creates a JSON file cotaining your colorset",
-            "Usage": f"`{p}export`"
         },
         "version": {
             "Description": "Sends a message containing patch notes",
-            "Fields": """version: this is an optional for the version you want to see""",
+            "Arguments": "`version`:  optional for the version you want to see",
             "Usage": f"`{p}version`: Sends latest\n`{p}version 1.4`: sends v1.4 notes",
-            "Aliases": "patchnotes",
         },
         "import": {
             "Description": "Imports a theme from from a preset",
-            "Fields": "name: The name of the preset you want to import",
+            "Arguments": "`name`: The name of the preset you want to import",
             "Usage": f"`{p}import vibrant`: Imports the vibrant preset as a theme",
         },
         "disable": {
             "Description": "Disables the channel it is typed in",
-            "Fields": """all: this is an optional field where you can type all to specify if you want all channels disabled""",
+            "Arguments": "`all`:  optional field where you can type all to specify if you want all channels disabled",
             "Usage": f"`{p}disable`: disable just this channel\n`{p}disable all`: disable all channels"
         },
         "report": {
             "Description": "Sends a message to me(Gumbachi). you can just say 'Hi' if you want to:).",
-            "Fields": "message: this is a required containing your message",
+            "Arguments": "`message`: this is a required containing your message",
             "Usage": f"`{p}report Hi Gum`: Sends 'Hi Gum' to me",
-            "More Info": """Support Server if its urgent: https://discord.gg/rhvyup5"""
+            "More Info": "Support Server: https://discord.gg/rhvyup5"
         },
         "status": {
             "Description": "Sends a message saying if the channel is enable or not",
@@ -284,14 +269,13 @@ def get_commands(p):
         },
         "welcome": {
             "Description": "Sets or removed the welcome channel",
-            "Fields": """remove: this is an optional field where you can specify if you want to remove the welcome channel""",
+            "Arguments": "`remove`:  optional field where you can specify if you want to remove the welcome channel",
             "Usage": f"`{p}welcome`: sets the channel\n`{p}welcome remove`: removes the welcome channel"
         },
         "info": {
             "Description": "Shows info about a color",
-            "Fields": """name/index: this is an required field where you can specify which color you want to know about""",
+            "Arguments": "`name/index:  required field where you can specify which color you want to know about",
             "Usage": f"`{p}info red`: shows info if red exists in your set\n`{p}info 2`: shows info about your second color",
-            "Aliases": "about",
         },
         "themes": {
             "Description": "Shows a list of themes to the user",
@@ -300,41 +284,41 @@ def get_commands(p):
         },
         "theme.save": {
             "Description": "Saves the users active colors as a theme",
-            "Fields": "name: The name you want the new theme to be called",
+            "Arguments": "`name`: The name you want the new theme to be called",
             "Usage": f"`{p}theme.save My Theme`: Saves a new theme called 'My Theme'",
-            "Aliases": f"`{p}t.s`, `{p}t.save`, `{p}theme.add`, `{p}t.add`",
+            "Aliases": f"`{p}t.s`, `{p}t.save`, `{p}theme.add`",
         },
         "theme.overwrite": {
             "Description": "Overwrites a theme with another one",
-            "Fields": """name/index: The name or index of the theme you want to replace
-                         name: The name of the new theme you are adding""",
+            "Arguments": """`name/index`: The name or index of the theme you want to replace
+                         `name`: The name of the new theme you are adding""",
             "Usage": f"`{p}theme.overwrite 1 | My new Theme`: Overwrite the first theme with a new theme called 'My new Theme'",
-            "Aliases": f"`{p}t.o`, `{p}t.replace`, `{p}t.overwrite`",
+            "Aliases": f"`{p}t.o`, `{p}theme.replace`",
         },
         "theme.remove": {
             "Description": "Deletes a theme",
-            "Fields": """name/index: The name or index of the theme you want to remove""",
+            "Arguments": "`name/index`: The name or index of the theme you want to remove",
             "Usage": f"`{p}theme.remove 2`: Removes the second theme",
-            "Aliases": f"`{p}t.remove`, `{p}t.r`, `{p}theme.delete`, `{p}t.delete`, `{p}t.d`",
+            "Aliases": f"`{p}t.r`, `{p}theme.delete`",
         },
         "theme.load": {
             "Description": "Applies a theme to the server",
-            "Fields": """name/index: The name or index of the theme you want to load""",
+            "Arguments": "`name/index`: The name or index of the theme you want to load",
             "Usage": f"`{p}theme.load Vibrant`: Loads a theme called 'Vibrant' if there is one",
-            "Aliases": f"`{p}t.load`, `{p}t.l`",
+            "Aliases": f"`{p}t.l`",
         },
         "theme.info": {
-            "Description": "Shows info about a given theme",
-            "Fields": """name/index: The name or index of the theme you want to see""",
+            "Description": "Show a drawn image of your themes",
+            "Arguments": "`name/index`: The name or index of the theme you want to see",
             "Usage": f"`{p}theme.info 1`: Shows info about the first theme",
-            "Aliases": f"`{p}t.i`, `{p}t.info`",
+            "Aliases": f"`{p}t.i`",
         },
         "theme.rename": {
             "Description": "Renames a theme",
-            "Fields": """name/index: The name or index of the theme you want to rename
-                         name: The new name of the theme""",
+            "Arguments": """`name/index`: The name or index of the theme you want to rename
+                         `name`: The new name of the theme""",
             "Usage": f"`{p}theme.rename 1 | Happy colors`: rename the first theme to 'Happy colors'",
-            "Aliases": f"`{p}t.rename`, `{p}t.rn`",
+            "Aliases": f"`{p}t.rn`",
         },
     }
 
@@ -408,6 +392,7 @@ change_log = {
         "Housekeeping": "New techniques for cleaner/faster code",
         "Exceptions": "New way to handle errors should be more descriptive",
         "Less prone to breaking": "Stricter error handling so less confusing errors",
+        "Fixed major bug with missing guild problems": "Should handle data better"
     }
 }
 

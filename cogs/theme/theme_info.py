@@ -31,7 +31,7 @@ class ThemeInfo(commands.Cog):
     @commands.command(name="theme.info", aliases=["t.info", "t.i"])
     async def theme_info(self, ctx, *, query="1"):
         """Get general info about a theme."""
-        authorize(ctx, "disabled", theme_query=(query, 0))
+        authorize(ctx, "disabled", "themes")
         guild = Guild.get(ctx.guild.id)
         theme = guild.find_theme(query, threshold=0)
 

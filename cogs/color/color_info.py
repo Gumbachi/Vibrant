@@ -26,9 +26,9 @@ class ColorInfo(commands.Cog):
         else:
             await ctx.send(file=file)
 
-    @commands.command(name="info", aliases=["about"])
+    @commands.command(name="info")
     async def show_color_info(self, ctx, *, query=""):
-        authorize(ctx, "colors")
+        authorize(ctx, "disabled", "colors")
         guild = Guild.get(ctx.guild.id)
 
         color = guild.find_color(query, threshold=0)
@@ -43,12 +43,7 @@ class ColorInfo(commands.Cog):
                          f"Role ID: {color.role_id}"),
             color=discord.Color.from_rgb(*color.rgb))
 
-        # manage recipient and cleanup if needed
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            await ctx.author.send(embed=color_embed)  # to user
-        else:
-            await ctx.send(embed=color_embed)
+        await ctx.send(embed=color_embed)
 
 
 def setup(bot):

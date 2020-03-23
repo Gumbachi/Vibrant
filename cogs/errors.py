@@ -7,7 +7,7 @@ from discord.ext import commands
 import database as db
 import authorization as auth
 from classes import Guild
-from vars import bot, get_prefix
+from vars import bot, get_prefix, get_commands
 
 
 class CommandErrorHandler(commands.Cog):
@@ -34,10 +34,11 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, auth.MissingGuild):
             await gumbachi.send(f"Missing guild {ctx.guild.id} {ctx.guild.name}")
             await ctx.send("Something went wrong. I couldn't find the data for this server.")
-            guild = Guild(ctx.guild.id)
+            guild = Guild(id=ctx.guild.id, prefix='$', welcome_channel_id=None,
+                          disabled_channel_ids=set(), theme_limit=3, color_limit=25,
+                          themes=[], colors=[])
             db.update_prefs(guild)
-            print("Guild Created")
-            return await ctx.send("A blank profile has been added for this server. Please add some colors and try again")
+            return await ctx.send("A blank profile has been added for this server. Try your command again and if this issue persists please try reinviting the bot")
 
         # Channel Disabled
         elif isinstance(error, auth.ChannelDisabled):
@@ -63,14 +64,14 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, auth.NoAvailableColors):
             embed = discord.Embed(
                 title="No Available Colors",
-                description=f"You need to add some colors or load a preset. You can learn how with the `{p}help` command")
+                description=f"You can add some with `{p}add` or load a preset with `{p}theme.load`.\nLearn more with the `{p}help` command")
             return await ctx.send(embed=embed)
 
         # No Themes Available
         elif isinstance(error, auth.NoAvailableThemes):
             embed = discord.Embed(
                 title="No Available Themes",
-                description=f"You need to add a theme or import one. You can learn how with the `{p}help` command")
+                description=f"You can save your current colors with `{p}theme.save` or import a theme with {p}import.\nLearn more with the `{p}help` command")
             return await ctx.send(embed=embed)
 
         # Theme/Color limit reached
@@ -103,15 +104,20 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, discord.HTTPException) and error.code == 50007:
             return await ctx.send(f"Couldn't DM {ctx.author.mention}. Probably has me blocked")
 
-        elif isinstance(error, discord.errors.Forbidden) and error.code == 50013:
+        elif isinstance(error, discord.errors.Forbidden):
             return await ctx.send(
-                f"I don't have permission to do this. Make sure the bot has permission to manage roles/messages")
+                f"I don't have permission to do this. Make sure the bot has required permissions")
 
         elif isinstance(ctx.channel, discord.channel.DMChannel):
             return await ctx.send(f"**{ctx.command}** must be used in a server channel")
 
         elif isinstance(error, commands.MissingRequiredArgument):
-            return await ctx.send(f"Missing command arguments")
+            cmd_list = get_commands(p)
+            description = cmd_list.get(
+                ctx.command.name, {"Usage": "None"}).get("Usage", "None")
+            embed = discord.Embed(
+                title="Missing Arguments", description=f"Proper Format\n" + description)
+            return await ctx.send(embed=embed)
 
         error_embed = discord.Embed(title=f'Your command: {ctx.message.content}',
                                     description=ctx.guild.id,

@@ -27,7 +27,14 @@ async def on_ready():
     # collect new guilds and create objects for them
     print("Generating Objects...")
     new_ids = {guild.id for guild in bot.guilds} - set(Guild._guilds.keys())
-    new_guilds = (Guild(id) for id in new_ids)
+
+    # Dont change this. Default args in constructor act wonky and idk why
+    new_guilds = []
+    for id in new_ids:
+        new_guild = Guild(id=id, prefix='$', welcome_channel_id=None,
+                          disabled_channel_ids=set(), theme_limit=3, color_limit=25,
+                          themes=[], colors=[])
+        new_guilds.append(new_guild)
 
     # update DB with new guilds
     print("Updating Database...")
@@ -154,14 +161,18 @@ async def on_member_update(before, after):
 @bot.event
 async def on_guild_join(guild):
     """Create new object and update database when the bot joins a guild."""
-    guild = Guild(guild.id)
-    db.update_prefs(guild)
+    print(f"ADDED TO {guild.name}")
+    new_guild = Guild(id=guild.id, prefix='$', welcome_channel_id=None,
+                      disabled_channel_ids=set(), theme_limit=3, color_limit=25,
+                      themes=[], colors=[])
+    db.update_prefs(new_guild)
 
 
 @bot.event
 async def on_guild_remove(guild):
     """Delete guild object and db document when bot leaves a guild."""
-    del Guild._guilds[guild.id]  # remove from internal list
+    print(f"REMOVED FROM {guild.name}")
+    Guild._guilds.pop(guild.id)  # remove from internal list
     db.coll.delete_one({"id": guild.id})  # remove from MongoD
 
 

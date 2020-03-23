@@ -116,7 +116,7 @@ class ThemeManagement(commands.Cog):
         guild.themes.append(theme)
 
         await ctx.send(
-            f"Preset has been saved as **{theme.name}** in your themes")
+            f"Preset has been imported as **{theme.name}**. Apply it with `theme.load {theme.name}`")
         db.update_prefs(guild)
 
 

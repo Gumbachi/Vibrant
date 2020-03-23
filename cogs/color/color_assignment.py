@@ -44,7 +44,7 @@ class ColorAssignment(commands.Cog):
         await ctx.send(f"Gave **{user.name}** the **{color.name}** role")
         db.update_prefs(guild)
 
-    @commands.command(name="colorme", aliases=["me", "colourme", "cm"])
+    @commands.command(name="colorme", aliases=["me", "colourme"])
     async def colorme(self, ctx, *, color_query=""):
         """Assign a Color to the author of the command."""
         authorize(ctx, "disabled", "colors")
