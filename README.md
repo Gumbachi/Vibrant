@@ -11,67 +11,88 @@ If you forgot your prefix then you can @mention the bot for help.
 2. The syntax for commands is intuitive for commands like colorme, add, remove which are also aliased for ease of use (e.g. colourme works too for those with the extra 'u')
 3. The bot also manages your roles so if you aren't using a color then it is removed until you use it again. This cuts down on role clutter
 
-## Features
+## More Features
 
-* Create and manage custom color roles
-* Color people and yourself with commands
-* Customizable prefix
-* Randomly color everyone or specific people
-* Welcome new members and assign them colors
-* Get a color to match your profile picture
-* Save themes/presets for when you feel like change but dont want to lose your current setup
-* Auto role management keeps the server clean and also updates info if somebody changes a role to keep your colors and discord connected perfectly
+- Create and manage custom color roles
+- Color people and yourself with commands
+- Customizable prefix
+- Randomly color everyone or specific people
+- Welcome new members and assign them colors
+- Save themes/presets for when you feel like change but dont want to lose your current setup
+- Auto role management keeps the server clean and also updates info if somebody changes a role to keep your colors and discord connected perfectly
 
 ## Setup
 
 1. Invite the [bot](https://discordapp.com/api/oauth2/authorize?client_id=589685258841096206&permissions=268545088&redirect_uri=https%3A%2F%2Fdiscordapp.com%2Foauth2%2Fauthorize%3F%26client_id%3D589685258841096206%26scope%3Dbot&scope=bot) to your server
-2. Type `$help 1` in a text channel to view setup instructions and to get a basic understanding of how to use the bot. Note that '$' is the default prefix and may change if you decide to, in which case you need to use your custom prefix
+2. Type `$help 1` in a text channel to view setup instructions and to get a basic understanding of how to use the bot. Note that '\$' is the default prefix and may change if you decide to, in which case you need to use your custom prefix
 3. Follow the setup through until the end and you should have a basic understanding of how to use the bot
 
 ## General Commands
 
-|      **Command**     |      **Example**     |                     **Description**                            |
-|:--------------------:|:--------------------:|:--------------------------------------------------------------:|
-| help \<page>         | $help setup          | Standard help command. You know what it does                   |
-| prefix \<new prefix> | $prefix %            | Changes the prefix you use to call commands                    |
-| report \<msg>        | $report Bot's busted | Sends me a direct message. Should be used to report bugs       |
+Optional arguments are marked with a \*
 
-## Main Color Commands
+### General Commands
 
-|          **Command**           |      **Example**      |                  **Description**                      |
-|:------------------------------:|:---------------------:|:-----------------------------------------------------:|
-| colorme \<color/index>         | $colorme 3            | Colors you. Colors user randomly if not given a color |
-| color \<user> \<color/index>   | $color @Gumbachi 2    | Colors a specific user a specific color               |
-| colors                         | $colors               | Shows a nicely laid out grid of your colors           |
-| add \<hexcode> \<name>         | $add #FFC0CB Pink     | Adds a color to your active colors                    |
-| remove \<color>                | $remove pink          | Removes a color from your active colors               |
-| rename \<color> \| \<name>     | $rename pink \| blue  | Renames a color in your active colors                 |
-| recolor \<color> \| \<hexcode> | $recolor 2 \| #0000FF | Changes the way the color looks                       |
+|      **Command**       | **Example**  |               **Description**               |
+| :--------------------: | :----------: | :-----------------------------------------: |
+|     help \<page\*>     | \$help setup |            Standard help command            |
+| prefix \<new prefix\*> |  \$prefix %  | Changes the prefix you use to call commands |
 
-## Other Color Commands
+### Color General Commands
 
-|   **Command**   |    **Example**   |                       **Description**                           |
-|:---------------:|:----------------:|:---------------------------------------------------------------:|
-| splash \<color> | $splash          | Colors everyone who isn't.                                      |
-| set \<preset>   | $set vibrant     | Changes the active colors to a preset set of colors             |
-| presets         | $presets         | Shows a list of presets to choose from                          |
-| preview         | $preview vibrant | Shows a preview of the preset                                   |
-| info \<color>   | $info Red        | Shows info about a color like members it belongs to and hexcode |
+|  **Command**   |      **Example**      |           **Description**            |
+| :------------: | :-------------------: | :----------------------------------: |
+|     colors     |       \$colors        | Shows an image of your active colors |
+| info \<color>  |      \$info Red       |  Shows info about a specific color   |
+| convert \<rgb> | \$convert 123,123,123 |        Convert RGB to hexcode        |
 
-## Channel Commands
+### Color Management Commands
 
-|    **Command**    | **Example** |                        **Description**                             |
-|:-----------------:|:-----------:|:------------------------------------------------------------------:|
-| enable \<all>     | $enable     | Will enable a channel if disabled. 'all' will toggle all channnels |
-| disable \<all>    | $disable    | Will disable a channel if enabled. 'all' will toggle all channels  |
-| welcome \<remove> | $welcome    | Sets the welcome channel for greetings and auto assigned colors    |
-| status            | $status     | Provides the status of the channel                                 |
-| channels          | $channels   | Provides a list of all enabled and disabled channels               |
+|          **Command**           |      **Example**       |             **Description**             |
+| :----------------------------: | :--------------------: | :-------------------------------------: |
+|    add \<hexcode> \<name\*>    |   \$add #FFC0CB Pink   |   Adds a color to your active colors    |
+|        remove \<color>         |     \$remove pink      | Removes a color from your active colors |
+|   rename \<color> \| \<name>   | \$rename pink \| blue  |  Renames a color in your active colors  |
+| recolor \<color> \| \<hexcode> | \$recolor 2 \| #0000FF |     Changes the way the color looks     |
+|        clear_all_colors        |   \$clear_all_colors   |        Removes all active colors        |
 
-## About the Bot
+### Color Assignment Commands
 
-This bot is written in python using the discord.py library and makes use of other libraries like pillow to draw images to make viewing colors easy  
-The bot stores information about your colors in a MongoDB database so if the bot goes offline you don't lose your data
+|          **Command**           |     **Example**     |      **Description**      |
+| :----------------------------: | :-----------------: | :-----------------------: |
+|    colorme \<color/index\*>    |     \$colorme 3     |     Colors the sender     |
+| color \<user> \<color/index\*> | \$color @Gumbachi 2 |  Colors a specific user   |
+|       splash \<color\*>        |      \$splash       | Colors everyone who isn't |
+|      unsplash \<color\*>       |     \$unsplash      |     Uncolors everyone     |
+
+### Theme General Commands
+
+|  **Command**  |  **Example**   |           **Description**           |
+| :-----------: | :------------: | :---------------------------------: |
+|    themes     |    \$themes    | Shows an image of your added themes |
+| info \<theme> | \$info vibrant |  Shows info about a specific theme  |
+|    imports    |   \$imports    |       Shows a list of presets       |
+
+### Theme Management Commands
+
+|              **Command**               |       **Example**        |           **Description**           |
+| :------------------------------------: | :----------------------: | :---------------------------------: |
+|            import \<preset>            |     \$import Outrun      | Adds a preset theme to saved themes |
+|          theme.save \<name\*>          |      \$t.s My Theme      |   Saves current colors as a theme   |
+|        theme.load \<name/index>        |      \$t.l vibrant       |     Loads a saved theme for use     |
+|       theme.remove \<name/index>       |      \$t.r vibrant       |           Removes a theme           |
+|        theme.overwrite \<name>         |      \$t.o vibrant       |      overwrites a saved theme       |
+| theme.rename \<color/index> \| \<name> | \$t.rn vibant \| Vibrant |        Renames a saved theme        |
+
+### Channel Commands
+
+|     **Command**     | **Example** |                   **Description**                    |
+| :-----------------: | :---------: | :--------------------------------------------------: |
+|   enable \<all\*>   |  \$enable   |             Enable a channel if disabled             |
+|  disable \<all\*>   |  \$disable  |             Disable a channel if enabled             |
+| welcome \<remove\*> |  \$welcome  |               Sets the welcome channel               |
+|       status        |  \$status   |          Provides the status of the channel          |
+|      channels       | \$channels  | Provides a list of all enabled and disabled channels |
 
 ## Support Server
 
