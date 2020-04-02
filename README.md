@@ -27,7 +27,7 @@ If you forgot your prefix then you can @mention the bot for help.
 2. Type `$help 1` in a text channel to view setup instructions and to get a basic understanding of how to use the bot. Note that '\$' is the default prefix and may change if you decide to, in which case you need to use your custom prefix
 3. Follow the setup through until the end and you should have a basic understanding of how to use the bot
 
-## General Commands
+## Commands
 
 Optional arguments are marked with a \*
 
