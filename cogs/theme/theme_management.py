@@ -9,7 +9,7 @@ from discord.ext import commands
 from classes import Guild, Theme, Color
 import database as db
 from authorization import authorize
-from vars import bot, preset_names
+from vars import bot
 
 
 class ThemeManagement(commands.Cog):

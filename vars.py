@@ -25,20 +25,6 @@ extensions = [
 emoji_dict = {"checkmark": "✅",
               "crossmark": "❌"}
 
-preset_names = [
-    "basic",
-    "vibrant",
-    "rainbow",
-    "metro",
-    "icecream",
-    "neon",
-    "pastel",
-    "outrun",
-    "sunset",
-    "discord",
-    "christmas",
-]
-
 
 def get_prefix(bot, message):
     """Gets the prefix per server"""

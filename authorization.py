@@ -2,11 +2,12 @@
 improve readability in commands."""
 
 import re
+import os
 import discord
 from discord.ext.commands import CommandError, UserInputError
 
 import classes
-from vars import heavy_command_active, preset_names
+from vars import heavy_command_active
 
 
 class MissingGuild(CommandError):
@@ -150,8 +151,8 @@ def authorize(ctx, *checks, **input_checks):
             raise NotFoundError(query)
 
     if "preset_query" in input_checks:
-        preset = input_checks["preset_query"]
-        if preset not in preset_names:
+        preset = input_checks["preset_query"] + ".json"
+        if preset not in os.listdir(f"presets{os.path.sep}"):
             raise NotFoundError(preset)
 
     if "has_color" in input_checks:
