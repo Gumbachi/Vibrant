@@ -2,6 +2,7 @@ import os
 import sys
 from pymongo import MongoClient
 from classes import Guild
+from vars import bot
 
 # database setup
 client = MongoClient(
@@ -50,3 +51,17 @@ def get_prefs():
     for guild_dict in data:
         guild = Guild.from_json(guild_dict)  # build guild
         guild.reset_ids()
+
+
+def clear_abandoned_guilds():
+    """Remove guilds that the bot cannot see"""
+    guilds = {guild.id for guild in bot.guilds}
+    db_guilds = {guild.id for guild in Guild._guilds.values()}
+
+    abandoned = db_guilds - guilds
+
+    print(len(abandoned))
+
+    for id in abandoned:
+        Guild._guilds.pop(id)  # remove from internal list
+        coll.delete_one({"id": id})  # remove from MongoD

@@ -56,7 +56,7 @@ class UtilityCommands(commands.Cog):
                     color.member_ids -= all_members
                     all_members |= color.member_ids
         else:
-            guild = Guild.get(int(id))
+            guild = Guild.get(int(id), catch_error=False)
             all_members = set()
             verified_members = {
                 member.id for member in guild.discord_guild.members}
@@ -66,6 +66,15 @@ class UtilityCommands(commands.Cog):
                 color.member_ids &= verified_members
                 color.member_ids -= all_members
                 all_members |= color.member_ids
+
+            for theme in guild.themes:
+                for color in theme.colors:
+                    if not color.member_ids:
+                        continue
+                    color.member_ids &= verified_members
+                    color.member_ids -= all_members
+                    all_members |= color.member_ids
+
             db.update_prefs(guild)
         await ctx.send("Done")
 
@@ -74,7 +83,7 @@ class UtilityCommands(commands.Cog):
         """Shows guild info in an embed and in terminal"""
         if not id:
             id = ctx.guild.id
-        guild = Guild.get(int(id))
+        guild = Guild.get(int(id), catch_error=False)
         embed = discord.Embed(title="Guild info", description=repr(guild))
         await ctx.send(embed=embed)
 

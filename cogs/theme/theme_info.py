@@ -38,13 +38,16 @@ class ThemeInfo(commands.Cog):
         guild = Guild.get(ctx.guild.id)
         theme = guild.find_theme(query, threshold=0)
 
+        colors = ", ".join(
+            [color.name + f"({len(color.member_ids)})" for color in theme.colors])
+
         # generate embed
         theme_embed = discord.Embed(
             title=theme.name,
             description=(
                 f"Description: {theme.description}\n"
                 f"Index: {theme.index}\n"
-                f"Colors: {', '.join([color.name for color in theme.colors])}"),
+                f"Colors: {colors}"),
             color=discord.Color.blurple())
         await ctx.send(embed=theme_embed)
 

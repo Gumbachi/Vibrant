@@ -375,11 +375,14 @@ class Guild():
         }
 
     @classmethod
-    def get(cls, id):
+    def get(cls, id, catch_error=True):
         """Find guild in the dictionary."""
         guild = cls._guilds.get(id)
         if not guild:
-            raise auth.MissingGuild()
+            if catch_error:
+                raise auth.MissingGuild()
+            else:
+                return
         return guild
 
     @staticmethod
