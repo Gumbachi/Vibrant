@@ -379,6 +379,10 @@ change_log = {
         "Exceptions": "New way to handle errors should be more descriptive",
         "Less prone to breaking": "Stricter error handling so less confusing errors",
         "Fixed major bug with missing guild problems": "Should handle data better"
+    },
+    "1.2": {
+        "Overlapping data": "Member data should be handled properly due to a fixed constructor error",
+        "Unsplash is faster": "unsplash just deletes roles which should make it faster",
     }
 }
 

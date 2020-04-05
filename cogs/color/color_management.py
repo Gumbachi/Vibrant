@@ -33,8 +33,7 @@ class ColorManagement(commands.Cog):
             hexcode == "#000001"
 
         # create and add color
-        color = Color(name=name, hexcode=hexcode,
-                      guild_id=ctx.guild.id, role_id=None, member_ids=set())
+        color = Color(name, hexcode, ctx.guild.id)
         guild.colors.append(color)
 
         # report success

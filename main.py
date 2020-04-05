@@ -8,7 +8,7 @@ from discord.ext import commands
 import database as db
 from classes import Guild
 from cogs.color.color_assignment import color_user
-from functions import check_hex, rgb_to_hex
+from utils import check_hex, rgb_to_hex
 from authorization import authorize
 from vars import bot, extensions, get_prefix, waiting_on_hexcode
 
@@ -27,14 +27,7 @@ async def on_ready():
     # collect new guilds and create objects for them
     print("Generating Objects...")
     new_ids = {guild.id for guild in bot.guilds} - set(Guild._guilds.keys())
-
-    # Dont change this. Default args in constructor act wonky and idk why
-    new_guilds = []
-    for id in new_ids:
-        new_guild = Guild(id=id, prefix='$', welcome_channel_id=None,
-                          disabled_channel_ids=set(), theme_limit=3, color_limit=25,
-                          themes=[], colors=[])
-        new_guilds.append(new_guild)
+    new_guilds = [Guild(id) for id in new_ids]
 
     # update DB with new guilds
     print("Updating Database...")
@@ -163,9 +156,7 @@ async def on_member_update(before, after):
 async def on_guild_join(guild):
     """Create new object and update database when the bot joins a guild."""
     print(f"ADDED TO {guild.name}")
-    new_guild = Guild(id=guild.id, prefix='$', welcome_channel_id=None,
-                      disabled_channel_ids=set(), theme_limit=3, color_limit=25,
-                      themes=[], colors=[])
+    new_guild = Guild(guild.id)
     db.update_prefs(new_guild)
 
 

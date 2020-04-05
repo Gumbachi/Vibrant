@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from classes import Guild
-from functions import rgb_to_hex
+from utils import rgb_to_hex
 import database as db
 from authorization import is_disabled, MissingGuild
 from vars import bot, emoji_dict

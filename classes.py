@@ -11,21 +11,12 @@ from fuzzywuzzy import process
 from PIL import Image, ImageDraw, ImageFont
 
 from vars import bot
-from functions import hex_to_rgb
+from utils import hex_to_rgb
 import authorization as auth
 
 
-class Guild():
+class Guild:
     """Guild object that stores preferences for a guild the bot is in
-
-    Args:
-        name (str): The name of the guild
-        id (int): The id of the guild from discord
-        prefix (str): The custom guild command prefix
-        welcome_channel (int): The id of the greeting channel
-        disabled_channels (list of int): list of ids of disabled channels
-        theme_limit (int): The maximum amount of themes a guild can have
-        color_limit (int): The maximum number of colors a guild can have
 
     Attributes:
         name (str): The name of the guild
@@ -40,18 +31,16 @@ class Guild():
     """
     _guilds = {}  # dict of guilds that have been created
 
-    def __init__(self, id, prefix='$', welcome_channel_id=None,
-                 disabled_channel_ids=set(), theme_limit=3, color_limit=25,
-                 themes=[], colors=[]):
+    def __init__(self, id, **kwargs):
         self.name = str(bot.get_guild(id))
         self.id = id
-        self.prefix = prefix
-        self.welcome_channel_id = welcome_channel_id
-        self.disabled_channel_ids = disabled_channel_ids
-        self.theme_limit = theme_limit
-        self.color_limit = color_limit
-        self.themes = themes
-        self.colors = colors
+        self.prefix = kwargs.get("prefix", "$")
+        self.welcome_channel_id = kwargs.get("welcome_channel_id", None)
+        self.disabled_channel_ids = kwargs.get("disabled_channel_ids", set())
+        self.theme_limit = kwargs.get("theme_limit", 3)
+        self.color_limit = kwargs.get("color_limit", 25)
+        self.themes = kwargs.get("themes", [])
+        self.colors = kwargs.get("colors", [])
 
         Guild._guilds[id] = self  # add guild to the dict
 
@@ -96,21 +85,11 @@ class Guild():
 
         return out
 
-    def __str__(self):
-        return self.name
-
     def get_role(self, id):
         """Get a discord role from a given ID."""
         discord_guild = self.discord_guild
         if discord_guild:
             return discord_guild.get_role(id)
-
-    def reset_ids(self):
-        """Fix the ids of all color and themes so they match the guild."""
-        for color in self.colors:
-            color.guild_id = self.id
-        for theme in self.themes:
-            theme.guild_id = self.id
 
     async def clear_colors(self):
         """Remove all colors and associated roles from the guild."""
@@ -222,11 +201,7 @@ class Guild():
             y = H
             draw.text((x, y), msg, font=fnt, fill=text_color)  # draw text
 
-        # return binary data
-        imgByteArr = io.BytesIO()
-        img.save(imgByteArr, format='WEBP')
-        imgByteArr = imgByteArr.getvalue()
-        return io.BytesIO(imgByteArr)
+        return img
 
     def draw_themes(self):
         """
@@ -282,11 +257,7 @@ class Guild():
 
                 draw.rectangle([(x0, y0), (x1, y1)], fill=color.rgb)
 
-        # return binary data
-        imgByteArr = io.BytesIO()
-        img.save(imgByteArr, format='WEBP')
-        imgByteArr = imgByteArr.getvalue()
-        return io.BytesIO(imgByteArr)
+        return img
 
     def find_color(self, query, threshold=90):
         """Find a color in the guild's colors based on index or name.
@@ -399,7 +370,7 @@ class Guild():
             colors=[Color.from_json(color) for color in data["colors"]])
 
 
-class Color():
+class Color:
     """
     A color object that stores color data.
 
@@ -418,12 +389,12 @@ class Color():
         role_id(int): the discord role id of the color if created
     """
 
-    def __init__(self, name, hexcode, guild_id, role_id=None, member_ids=set()):
+    def __init__(self, name, hexcode, guild_id, **kwargs):
         self.name = name
         self.hexcode = hexcode
         self.guild_id = guild_id
-        self.role_id = role_id
-        self.member_ids = member_ids
+        self.role_id = kwargs.get("role_id", None)
+        self.member_ids = kwargs.get("member_ids", set())
 
     @property
     def rgb(self):
@@ -447,8 +418,10 @@ class Color():
         return (member for member in self.guild.members
                 if member.id in self.member_ids)
 
-    def __str__(self):
-        return self.name
+    @property
+    def role(self):
+        if self.role_id:
+            return self.guild.get_role(self.role_id)
 
     def __repr__(self):
         """Method for cleaner printing."""
@@ -489,7 +462,7 @@ class Color():
             member_ids=set(color["members"]))
 
 
-class Theme():
+class Theme:
     """An object that stores a list of color objects with name and description
 
     Args:
@@ -506,11 +479,11 @@ class Theme():
         index(int): The location in the list of themes in the guild
     """
 
-    def __init__(self, name, guild_id, description="", colors=[]):
+    def __init__(self, name, guild_id, **kwargs):
         self.name = name
         self.guild_id = guild_id
-        self.description = description
-        self.colors = colors
+        self.description = kwargs.get("description", name)
+        self.colors = kwargs.get("colors", [])
 
     @property
     def guild(self):
@@ -525,7 +498,7 @@ class Theme():
         try:
             self.guild.themes.remove(self)
         except ValueError:
-            return 1
+            pass
 
     def activate(self):
         """adds theme colors to the colors list of the guild"""

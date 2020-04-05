@@ -148,12 +148,10 @@ class ColorAssignment(commands.Cog):
 
         # loop through and color members
         async with ctx.channel.typing():
-            for member in guild.members:
-                role = guild.get_color_role(member)
-                if not role:
-                    continue
-                else:
-                    await member.remove_roles(role)
+            for color in guild.colors:
+                role = color.role
+                if role:
+                    await role.delete()
 
         del heavy_command_active[ctx.guild.id]
 

@@ -117,7 +117,7 @@ class BaseCommands(commands.Cog):
             await ctx.send(f"Howdy, {ctx.message.author.mention}!")
 
     @commands.command(name='prefix', aliases=['vibrantprefix'])
-    async def change_prefix(self, ctx, new_prefix=None):
+    async def change_prefix(self, ctx, *, new_prefix=None):
         """Change the server prefix."""
         authorize(ctx, "disabled", "server")  # check perms and channel status
         guild = Guild.get(ctx.guild.id)
@@ -131,8 +131,10 @@ class BaseCommands(commands.Cog):
 
     @commands.command(name="version", aliases=["patchnotes"])
     async def patchnotes(self, ctx, version=None):
-        """generate formatted embed of patchnotesto send to user"""
-        latest = "1.1"
+        """patchnotes to send"""
+        authorize(ctx, "disabled")
+
+        latest = "1.2"
 
         # get correct version
         if version in change_log:
@@ -152,13 +154,7 @@ class BaseCommands(commands.Cog):
             patch_embed.add_field(name=k, value=v, inline=False)
 
         patch_embed.set_thumbnail(url=bot.user.avatar_url)
-
-        # send to recipient
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            await ctx.author.send(embed=patch_embed)
-        else:
-            await ctx.send(embed=patch_embed)
+        await ctx.send(embed=patch_embed)
 
 
 def setup(bot):

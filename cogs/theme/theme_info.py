@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 from classes import Guild
 from authorization import authorize, is_disabled
-from functions import hex_to_rgb
+from utils import hex_to_rgb, to_sendable
 
 
 class ThemeInfo(commands.Cog):
@@ -19,16 +19,9 @@ class ThemeInfo(commands.Cog):
     @commands.command(name="themes", aliases=["temes", "t"])
     async def show_themes(self, ctx):
         """Draw the guild's themes and send in channel."""
-        authorize(ctx, "themes")
+        authorize(ctx, "disabled", "themes")
         guild = Guild.get(ctx.guild.id)
-        img = guild.draw_themes()  # get sendable
-
-        file = discord.File(img, filename="themes.webp")
-
-        # send to author or channel depending on status
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            return await ctx.author.send(f"**{ctx.guild.name}**:", file=file)
+        file = to_sendable(guild.draw_themes(), "themes")  # get sendable
         return await ctx.send(file=file)
 
     @commands.command(name="theme.info", aliases=["t.info", "t.i"])
@@ -38,6 +31,7 @@ class ThemeInfo(commands.Cog):
         guild = Guild.get(ctx.guild.id)
         theme = guild.find_theme(query, threshold=0)
 
+        # Puts colors in a list that shows name and members
         colors = ", ".join(
             [color.name + f"({len(color.member_ids)})" for color in theme.colors])
 
@@ -78,7 +72,8 @@ class ThemeInfo(commands.Cog):
 
         # draws themes
         for i, filename in enumerate(presets):
-            preset = json.load(open(f"presets{sep}{filename}", "r"))
+            with open(f"presets{sep}{filename}", "r") as f:
+                preset = json.load(f)
 
             # draw text
             msg = f"{preset['name']}: {preset['description']}"

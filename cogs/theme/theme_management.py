@@ -28,7 +28,8 @@ class ThemeManagement(commands.Cog):
             name = f"Theme {len(guild.themes) + 1}"
 
         color_copy = copy.deepcopy(guild.colors)
-        theme = Theme(name, guild.id, description, color_copy)
+        theme = Theme(name, guild.id, description=description,
+                      colors=color_copy)
         guild.themes.append(theme)
 
         # report success
@@ -54,27 +55,18 @@ class ThemeManagement(commands.Cog):
     async def overwrite_theme(self, ctx, *, query):
         """Overwrite one of the Guild's themes with another."""
         authorize(ctx, "disabled", "roles", "themes",
-                  "colors", swap_query=query)
+                  "colors", theme_query=(query, 100))
         guild = Guild.get(ctx.guild.id)
 
-        # split input
-        before, after = query.split("|")
-        before = before.strip()
-        after = after.strip()
-
-        authorize(ctx, name=after)
-
-        authorize(ctx, theme_query=(before, 100))
-        old_theme = guild.find_theme(before, threshold=100)
+        old_theme = guild.find_theme(query, threshold=100)
 
         color_copy = copy.deepcopy(guild.colors)
-        description = f"A discord color theme by {ctx.guild.name}"
-        new_theme = Theme(after, guild.id, description, color_copy)
+        new_theme = Theme(old_theme.name, guild.id, colors=color_copy)
         guild.themes[old_theme.index - 1] = new_theme
 
         # report success and update DB
         await ctx.send(
-            f"**{old_theme.name}** has been replaced by **{new_theme.name}**")
+            f"**{old_theme.name}** has been overwritten")
         await ctx.invoke(bot.get_command("themes"))
         db.update_prefs(guild)
 

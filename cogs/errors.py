@@ -34,9 +34,7 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, auth.MissingGuild):
             await gumbachi.send(f"Missing guild {ctx.guild.id} {ctx.guild.name}")
             await ctx.send("Something went wrong. I couldn't find the data for this server.")
-            guild = Guild(id=ctx.guild.id, prefix='$', welcome_channel_id=None,
-                          disabled_channel_ids=set(), theme_limit=3, color_limit=25,
-                          themes=[], colors=[])
+            guild = Guild(id=ctx.guild.id)
             db.update_prefs(guild)
             return await ctx.send("A blank profile has been added for this server. Try your command again and if this issue persists please try reinviting the bot")
 

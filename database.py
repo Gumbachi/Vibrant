@@ -49,8 +49,7 @@ def get_prefs():
     data = list(coll.find())  # get mongo data
 
     for guild_dict in data:
-        guild = Guild.from_json(guild_dict)  # build guild
-        guild.reset_ids()
+        Guild.from_json(guild_dict)  # build guild
 
 
 def clear_abandoned_guilds():
