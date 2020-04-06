@@ -212,24 +212,26 @@ async def add_color_UX(ctx, color, hexcode=None):
         pass
 
 
-@bot.event
-async def on_reaction_add(reaction, user):
-    if user.id == bot.user.id:
-        return
+# This should be a listener in the cog
 
-    # check reaction for adding color
-    if user.id in waiting_on_reaction.keys():
-        waiting_data = waiting_on_reaction[user.id]
-        if reaction.message.id == waiting_data["message"].id:
-            if reaction.emoji == emoji_dict["checkmark"]:
-                await reaction.message.clear_reactions()
-                prompt = await reaction.message.channel.send(f"{user.mention}, What will be the hexcode for **{waiting_data['color']}**")
-                waiting_on_hexcode[user.id] = {
-                    "message": prompt, "color": waiting_data['color']}
-            elif reaction.emoji == emoji_dict["crossmark"]:
-                await reaction.message.clear_reactions()
-                await reaction.message.edit(content=f"{reaction.message.content} **Cancelled**")
-        else:
-            await waiting_data["message"].clear_reactions()
-            await waiting_data["message"].edit(content=f"{reaction.message.content} **Cancelled**")
-        del waiting_on_reaction[user.id]
+# @bot.event
+# async def on_reaction_add(reaction, user):
+#     if user.id == bot.user.id:
+#         return
+
+#     # check reaction for adding color
+#     if user.id in waiting_on_reaction.keys():
+#         waiting_data = waiting_on_reaction[user.id]
+#         if reaction.message.id == waiting_data["message"].id:
+#             if reaction.emoji == emoji_dict["checkmark"]:
+#                 await reaction.message.clear_reactions()
+#                 prompt = await reaction.message.channel.send(f"{user.mention}, What will be the hexcode for **{waiting_data['color']}**")
+#                 waiting_on_hexcode[user.id] = {
+#                     "message": prompt, "color": waiting_data['color']}
+#             elif reaction.emoji == emoji_dict["crossmark"]:
+#                 await reaction.message.clear_reactions()
+#                 await reaction.message.edit(content=f"{reaction.message.content} **Cancelled**")
+#         else:
+#             await waiting_data["message"].clear_reactions()
+#             await waiting_data["message"].edit(content=f"{reaction.message.content} **Cancelled**")
+#         del waiting_on_reaction[user.id]

@@ -23,7 +23,12 @@ extensions = [
 ]
 
 emoji_dict = {"checkmark": "✅",
-              "crossmark": "❌"}
+              "crossmark": "❌",
+              "left_arrow": "⬅️",
+              "right_arrow": "➡️",
+              "home_arrow": "↩️",
+              "up_arrow": "🔼",
+              "down_arrow": "🔽"}
 
 
 def get_prefix(bot, message):
@@ -61,34 +66,41 @@ disabled_embed = discord.Embed(
 
 def get_help(p):
     return {
-        "Help": {
-            "1. Setup": "Shows you how to set up the bot easily and how to use basic commands",
+        "home": {
+            "title": "Table of Contents",
+            "description": "Navigate between pages with the reaction buttons",
+            "1. Setup": "Get familiar with the bot and some of its basic commands",
             "2. Themes": "Learn how to use themes",
-            "3. General Commands": "Shows a list of general commands the bot has",
-            "4. Color Commands": "Shows a list of color related commands the bot has",
-            "5. Theme Commands": "Shows a list of theme related commands the bot has",
+            "3. General Commands": "Shows a list of general commands",
+            "4. Color Commands": "Shows a list of color related commands",
+            "5. Theme Commands": "Shows a list of theme related commands",
             "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
-        "Setup": {
-            "Add Custom Color": f"""-add a custom color by typing `{p}add #ff0000 My Color`
-                                  -Add a few more colors if you'd like using `{p}add` and view them by typing `{p}colors`""",
-            "Setting Themes": f"""Learn how to save your colors, use presets and hot swap the way your server looks by using themes. Type `{p}help themes`""",
-            "Coloring People": f"""-Color yourself by typing `{p}colorme` This will assign you a random color. To get a specific color type `{p}colorme <index/color>`
-                                   -Color others by typing `{p}color <user>` This will try to find a user and assigning a random color. To get a specific color type `{p}color <user> <index/color>`
-                                   -Color everyone that isn't colored by typing `{p}splash`. This command may take some time depending on the amount of members who are uncolored""",
-            "Change Colors": f"""-Change the name of a color by typing `{p}rename <index/color> | <new name>`
-                                 -Change the look of a color by typing `{p}recolor <index/color> | <new hexcode>`
-                                 -[Color Picker](https://www.google.com/search?q=color+picker)""",
-            "Remove Colors": f"""-Remove a color by typing `{p}remove <index/color>`
-                                 -Remove all colors by typing `{p}clear_all_colors`. This is made difficult to type on purpose""",
-            "Set a Welcome Channel": f"""-Set a welcome channel for the bot to send a message in the channel when ever a new person joins your server
-                                         -Go to your desired channel and type `{p}welcome` to set it as the welcome channel
-                                         -This can be reverted by typing `{p}welcome remove`""",
-            "Disable/Enable Channels": f"""-Disable a channel by typing `{p}disable` in the desired channel
-                                           -Enable a channel by typing `{p}enable` in the desired channel
-                                           -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
+        "setup": {
+            "title": "Page 1: Vibrant Setup",
+            "description": " ",
+            "Managing Colors": f"""1. Type `{p}add #ff0000 My Color` to add a color
+                                   2. Type `{p}colors` to see your colors
+                                   3. Type `{p}rename 1 | Blue` to rename a color
+                                   4. Type `{p}recolor 1 | #0000ff` to change the value of a color
+                                   """,
+            "Assigning Colors": f"""1. Type `{p}colorme 1` to apply a color to yourself
+                                    2. Type `{p}color @user 1` to apply it to someone else
+                                    3. Type `{p}splash` to color everyone that isnt colored
+                                    """,
+            "Removing Colors": f"""1. Type `{p}remove 1` to remove the first color
+                                   2. Type `{p}clear_all_colors` if you want to remove all colors
+                                   """,
+
+            "Manage Channels": f"""1. Type `{p}welcome` in a specific channel to set it as the greeting channel. The bot will now color anyone who joins the server and send a message
+                                   2. Type `{p}disable` in a channel to disable it and type `{p}enable` to re-enable it
+                                   3. Type `{p}disable all` to disable all channels if you dont want the bot to run in every channel
+                                   """,
+            "Themes": f"Hit {emoji_dict['right_arrow']} to learn about themes and how to use them"
         },
-        "Themes": {
+        "themes": {
+            "title": "Page 2: Theme Tutorial",
+            "description": "A guide on how to use themes",
             "Importing Themes": f"""Import a preset theme by using `{p}import vibrant`.
                                     This will import a preset called "Vibrant"
                                     After importing, color everyone with `{p}splash`.""",
@@ -100,40 +112,51 @@ def get_help(p):
                                         If you would like to rename your theme then do so by using `{p}theme.rename` or `{p}t.rn`. For more help on this command type `{p}help theme.rename`.""",
             "Viewing your themes": f"""View all of your themes by typing `{p}themes` or `{p}t`."""
         },
-        "Commands": {
-            "General Commands": f"""`{p}howdy`: You've got a friend in me
-                                    `{p}prefix <new prefix>`: changes the prefix the bot uses
-                                    `{p}report <issue>`: sends a message to the developer with your problem
-                                    """,
-            "Channel Commands": f"""`{p}enable <all>`: Enables the channel or all channels
-                                    `{p}disable <all>`: Disables the channel or all channels
-                                    `{p}welcome <remove>`: Toggles the channel for greeting users
-                                    `{p}status`: displays disabled/enabled status for channel
-                                    `{p}channels`: Shows disabled channels and welcome channel
+        "commands": {
+            "title": "Page 3: General Commands",
+            "description": "`*` indicates an optional argument",
+            "General Commands": f"`{p}prefix <new prefix*>` -- changes the prefix the bot uses",
+            "Channel Commands": f"""`{p}enable <all*>` -- Enables the channel or all channels
+                                    `{p}disable <all*>` -- Disables the channel or all channels
+                                    `{p}welcome <remove*>` -- Toggles the channel for greeting users
+                                    `{p}status` -- displays disabled/enabled status for channel
+                                    `{p}channels` -- Shows disabled channels and welcome channel
                                     """
         },
-        "Color Commands": {
-            "Color Commands": f"""`{p}colorme <name/index>`: Gives you your desired color or a random one
-                                  `{p}color <user> <name/index>`: Gives a specific user a color
-                                  `{p}colors`: Shows available colors
-                                  `{p}add <hexcode> <name>`: Adds a color to the palette
-                                  `{p}remove <name/index>`: Removes a color from the palette
-                                  `{p}rename <name/index> | <new name>`: Changes a color's name
-                                  `{p}recolor <name/index> | <new hexcode>`: Changes a color's value
-                                  `{p}splash`: Gives a color to everyone in the server without one
-                                  `{p}unsplash`: Uncolors everyone
-                                  `{p}info <name/index>`:shows info about a color
+        "color_commands": {
+            "title": "Page 4: Color Commands",
+            "description": "`*` indicates an optional argument. `<color>` can be a name or an index",
+            "Color General Commands": f"""`{p}colors` -- Shows available colors
+                                          `{p}info <color>` -- shows info about a color
+                                          `{p}convert <rgb>` -- convert RGB to hex
+                                          """,
+            "Color Management Commands": f"""`{p}add <hexcode> <name*>` -- Adds a color to the palette
+                                  `{p}remove <color*>` -- Removes a color from the palette
+                                  `{p}rename <color> | <name>` -- Changes a color's name
+                                  `{p}recolor <color> | <hexcode>` -- Changes a color's value
+                                  `{p}clear_all_colors` -- Clears all of the colors
+                                """,
+            "Color Assignment Commands": f"""`{p}colorme <color*>` -- Gives you your desired color or a random one
+                                  `{p}color <user> <color*>` -- Gives a specific user a color
+                                  `{p}splash <color*>` -- Gives a color to everyone in the server without one
+                                  `{p}unsplash` -- Uncolors everyone
+                                  `{p}uncolorme` -- Removes your color if you have one
                                 """
+
         },
-        "Theme Commands": {
-            "Theme Commands": f"""`{p}themes`: Draws a pretty list of themes
-                                  `{p}theme.save <name>`: Saves your theme
-                                  `{p}theme.remove <name/index>`: Deletes a theme
-                                  `{p}theme.overwrite <name/index> | <name of new theme>`: Replaces a theme
-                                  `{p}theme.load <name/index>`: Applies a saved theme to your server
-                                  `{p}theme.rename <name/index> | <new name>`: Changes a theme's name
-                                  `{p}theme.info <name/index>`: Shows info about a given theme
-                                  `{p}import <name>`: Adds a preset as a theme
+        "theme_commands": {
+            "title": "Page 5: Theme Commands",
+            "description": "`*` indicates an optional argument. `<theme>` can be a name or an index",
+            "Theme General Commands": f"""`{p}themes` -- Draws a pretty list of themes
+                                  `{p}theme.info <theme>` -- Shows info about a given theme
+                                  `{p}imports` -- Shows available presets
+                                """,
+            "Theme Management Commands": f"""`{p}theme.save <name*>` -- Saves your theme
+                                  `{p}theme.remove <theme>` -- Deletes a theme
+                                  `{p}theme.overwrite <theme>` -- Replaces a theme
+                                  `{p}theme.load <theme>` -- Applies a saved theme to your server
+                                  `{p}theme.rename <theme> | <name>` -- Changes a theme's name
+                                  `{p}import <name>` -- Adds a preset as a theme
                                 """
         },
     }

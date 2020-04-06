@@ -58,12 +58,13 @@ Optional arguments are marked with a \*
 
 ### Color Assignment Commands
 
-|          **Command**           |     **Example**     |      **Description**      |
-| :----------------------------: | :-----------------: | :-----------------------: |
-|    colorme \<color/index\*>    |     \$colorme 3     |     Colors the sender     |
-| color \<user> \<color/index\*> | \$color @Gumbachi 2 |  Colors a specific user   |
-|       splash \<color\*>        |      \$splash       | Colors everyone who isn't |
-|      unsplash \<color\*>       |     \$unsplash      |     Uncolors everyone     |
+|       **Command**        |     **Example**     |          **Description**          |
+| :----------------------: | :-----------------: | :-------------------------------: |
+|    colorme \<color\*>    |     \$colorme 3     |         Colors the sender         |
+|        uncolorme         |     \$uncolorme     |        Uncolors the sender        |
+| color \<user> \<color\*> | \$color @Gumbachi 2 |      Colors a specific user       |
+|    splash \<color\*>     |    \$splash Blue    | Colors everyone who isn't colored |
+|         unsplash         |     \$unsplash      |         Uncolors everyone         |
 
 ### Theme General Commands
 
@@ -75,14 +76,14 @@ Optional arguments are marked with a \*
 
 ### Theme Management Commands
 
-|              **Command**               |       **Example**        |           **Description**           |
-| :------------------------------------: | :----------------------: | :---------------------------------: |
-|            import \<preset>            |     \$import Outrun      | Adds a preset theme to saved themes |
-|          theme.save \<name\*>          |      \$t.s My Theme      |   Saves current colors as a theme   |
-|        theme.load \<name/index>        |      \$t.l vibrant       |     Loads a saved theme for use     |
-|       theme.remove \<name/index>       |      \$t.r vibrant       |           Removes a theme           |
-|        theme.overwrite \<name>         |      \$t.o vibrant       |      overwrites a saved theme       |
-| theme.rename \<color/index> \| \<name> | \$t.rn vibant \| Vibrant |        Renames a saved theme        |
+|           **Command**            |       **Example**        |           **Description**           |
+| :------------------------------: | :----------------------: | :---------------------------------: |
+|         import \<preset>         |     \$import Outrun      | Adds a preset theme to saved themes |
+|       theme.save \<name\*>       |      \$t.s My Theme      |   Saves current colors as a theme   |
+|       theme.load \<theme>        |      \$t.l vibrant       |     Loads a saved theme for use     |
+|      theme.remove \<theme>       |      \$t.r vibrant       |           Removes a theme           |
+|     theme.overwrite \<name>      |      \$t.o vibrant       |      overwrites a saved theme       |
+| theme.rename \<theme> \| \<name> | \$t.rn vibant \| Vibrant |        Renames a saved theme        |
 
 ### Channel Commands
 

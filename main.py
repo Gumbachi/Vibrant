@@ -49,19 +49,20 @@ async def on_message(message):
         return await message.channel.send(
             f"Type `{get_prefix(bot, message)}`help for help.")
 
-    # handles message verification if user is adding a color via reaction
-    if message.author.id in waiting_on_hexcode.keys():
-        id = message.author.id
-        hexcode_data = waiting_on_hexcode[id]
-        if message.channel.id == hexcode_data["message"].channel.id:
-            ctx = await bot.get_context(message)
-            if check_hex(message.content):
-                await ctx.invoke(bot.get_command("add"), hexcode=message.content, name=hexcode_data["color"])
-            else:
-                await ctx.send("Invalid Hexcode. Please try again")
-                await hexcode_data["message"].edit(
-                    content=f"{hexcode_data['message'].content}**Cancelled**")
-        del waiting_on_hexcode[id]  # remove user from pool
+    # Make this a listener in the cog
+    # # handles message verification if user is adding a color via reaction
+    # if message.author.id in waiting_on_hexcode.keys():
+    #     id = message.author.id
+    #     hexcode_data = waiting_on_hexcode[id]
+    #     if message.channel.id == hexcode_data["message"].channel.id:
+    #         ctx = await bot.get_context(message)
+    #         if check_hex(message.content):
+    #             await ctx.invoke(bot.get_command("add"), hexcode=message.content, name=hexcode_data["color"])
+    #         else:
+    #             await ctx.send("Invalid Hexcode. Please try again")
+    #             await hexcode_data["message"].edit(
+    #                 content=f"{hexcode_data['message'].content}**Cancelled**")
+    #     del waiting_on_hexcode[id]  # remove user from pool
 
     await bot.process_commands(message)
 
