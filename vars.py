@@ -77,7 +77,7 @@ def get_help(p):
             "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
         "setup": {
-            "title": "Page 1: Vibrant Setup",
+            "title": "Page 1: Vibrant Guide",
             "description": " ",
             "Managing Colors": f"""1. Type `{p}add #ff0000 My Color` to add a color
                                    2. Type `{p}colors` to see your colors
@@ -99,18 +99,18 @@ def get_help(p):
             "Themes": f"Hit {emoji_dict['right_arrow']} to learn about themes and how to use them"
         },
         "themes": {
-            "title": "Page 2: Theme Tutorial",
-            "description": "A guide on how to use themes",
-            "Importing Themes": f"""Import a preset theme by using `{p}import vibrant`.
-                                    This will import a preset called "Vibrant"
-                                    After importing, color everyone with `{p}splash`.""",
-            "Managing your Themes": f"""Add a custom color by typing `{p}add #ffffff White`
-                                        You can save this new preset by typing `{p}theme.save My Custom Theme`
-                                        Remove your first theme by using `{p}theme.remove 1` or `{p}t.r 1`
-                                        Load your custom theme by typing `{p}theme.load 1` or `{p}t.l 1`
-                                        If you want to replace one theme with another then use `{p}theme.overwrite <index/name> | <name of new theme>` or `{p}t.o` for short.
-                                        If you would like to rename your theme then do so by using `{p}theme.rename` or `{p}t.rn`. For more help on this command type `{p}help theme.rename`.""",
-            "Viewing your themes": f"""View all of your themes by typing `{p}themes` or `{p}t`."""
+            "title": "Page 2: Theme Guide",
+            "description": "Themes save your colors and the members they are applied to so you can save your setup and use different ones without having to rebuild them",
+            "Importing Themes": f"""1. Type `{p}imports` to see available presets.
+                                    2. Type `{p}import vibrant` to import a theme
+                                    3. Type `{p}theme.load vibrant` and then `{p}splash` to apply that theme to your server""",
+            "Custom Themes": f"""1. Type `{p}theme.save My Theme` to save your current setup
+                                 2. Type `{p}themes` to view all of your themes
+                                 3. Type `{p}theme.rename My Theme | Custom Theme` to rename it however you please
+                                 """,
+            "Managing Themes": f"""1. Type `{p}theme.overwrite 1` to replace one theme with your current setup. This effectively combines `{p}theme.remove` and `{p}theme.save` into one step.
+                                   2. Type `{p}theme.remove 1` to remove one of your themes
+                                   """,
         },
         "commands": {
             "title": "Page 3: General Commands",
@@ -146,7 +146,7 @@ def get_help(p):
         },
         "theme_commands": {
             "title": "Page 5: Theme Commands",
-            "description": "`*` indicates an optional argument. `<theme>` can be a name or an index",
+            "description": "`*` indicates an optional argument. `<theme>` can be a name or an index. All of these commands have aliases that make them easier to user",
             "Theme General Commands": f"""`{p}themes` -- Draws a pretty list of themes
                                   `{p}theme.info <theme>` -- Shows info about a given theme
                                   `{p}imports` -- Shows available presets
