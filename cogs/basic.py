@@ -19,7 +19,7 @@ class BaseCommands(commands.Cog):
         self.bot = bot
 
     @commands.command(name="help")
-    async def help(self, ctx, page=None):
+    async def help(self, ctx, *, page="0"):
         """The standard help command.
 
         Pulls info from vars.py and allows
@@ -29,90 +29,19 @@ class BaseCommands(commands.Cog):
         # get prefix and generate help dictionary
         p = ctx.prefix
         help_dict = get_help(p)
-        page = "home" if not page else page
 
-        pages = PaginatedEmbed(content=help_dict)
-        await pages.send(ctx)
+        if not page.isdigit() or not -1 < int(page) < len(help_dict):
+            raise commands.UserInputError(
+                f"Invalid page number. Number must be between 0-{len(help_dict)-1}")
 
-        # # Table of contents
-        # if not page:
-        #     recipient = ctx
-        #     title = "Vibrant Help"
-        #     description = f"""Table of Contents.
-        #         To go to another page please use `{p}help <page>`
-        #         Example `{p}help 1`, `{p}help setup`"""
-        #     fields = help_dict["Help"].items()
+        pages = PaginatedEmbed(content=help_dict, pointer=int(page))
 
-        # # setup instructions/how to use
-        # elif page == '1' or page == 'setup':
-        #     recipient = ctx.author
-        #     title = "Vibrant Setup"
-        #     description = "Follow these steps to learn how to use Vibrant"
-        #     fields = help_dict["Setup"].items()
-
-        # # list of theme commands and short descriptions
-        # elif page == '2' or page == 'themes':
-        #     recipient = ctx.author
-        #     title = "Vibrant Themes Tutorial"
-        #     description = "All you need to know about using themes with Vibrant"
-        #     fields = help_dict["Themes"].items()
-
-        # # list of command and short descriptions
-        # elif page == '3' or page == 'general':
-        #     recipient = ctx.author
-        #     title = "Vibrant General Commands"
-        #     description = ("A list of commands the bot has. For more info "
-        #                    f"on a specific command you can use `{p}help <command>`"
-        #                    f"Example: `{p}help prefix`")
-        #     fields = help_dict["Commands"].items()
-
-        # # list of theme commands and short descriptions
-        # elif page == '4' or page == 'color':
-        #     recipient = ctx.author
-        #     title = "Vibrant Color Commands"
-        #     description = ("A list of color commands the bot has. For more info "
-        #                    f"on a specific command you can use `{p}help <command>`"
-        #                    f"Example: `{p}help add`")
-        #     fields = help_dict["Color Commands"].items()
-
-        # # list of theme commands and short descriptions
-        # elif page == '5' or page == 'theme':
-        #     recipient = ctx.author
-        #     title = "Vibrant Theme Commands"
-        #     description = ("A list of theme commands the bot has. For more info "
-        #                    f"on a specific command you can use `{p}help <command>`"
-        #                    f"Example: `{p}help theme.overwrite`")
-        #     fields = help_dict["Theme Commands"].items()
-
-        # # individual command help
-        # elif page in [command.name for command in bot.commands]:
-        #     recipient = ctx
-        #     cmd_list = get_commands(p)
-        #     title = f"{p}{page}"
-        #     description = cmd_list[page]["Description"]
-        #     del cmd_list[page]["Description"]
-        #     fields = cmd_list[page].items()
-
-        # # page not found
-        # else:
-        #     raise commands.UserInputError(f"{page} is not a valid argument")
-
-        # # generate embed
-        # help_embed = discord.Embed(title=title, description=description,
-        #                            color=discord.Colour.blue())
-        # for k, v in fields:
-        #     help_embed.add_field(name=k, value=v, inline=False)
-
-        # # notify user of DM
-        # if is_disabled(ctx.channel):
-        #     await ctx.message.delete()
-        #     recipient = ctx.author
-        # else:
-        #     if recipient is ctx.author:
-        #         await ctx.send("You've got mail!")
-
-        # # send message
-        # await recipient.send(embed=help_embed)
+        if is_disabled(ctx.channel):
+            if not isinstance(ctx.channel, discord.DMChannel):
+                await ctx.message.delete()
+            await ctx.author.send(embed=pages.generate_embed())
+        else:
+            await pages.send(ctx.channel)
 
     @commands.command(name='howdy')
     async def howdy(self, ctx):

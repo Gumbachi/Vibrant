@@ -50,14 +50,14 @@ class PaginatedEmbed(PaginatedMessage):
             description=" ")
         await self.message.edit(embed=empty_embed)
 
-    async def send(self, ctx):
-        self.message = await ctx.send(embed=self.embed)
+    async def send(self, channel):
+        self.message = await channel.send(embed=self.embed)
         await self.message.add_reaction(emoji_dict["left_arrow"])
         await self.message.add_reaction(emoji_dict["right_arrow"])
         await self.message.add_reaction(emoji_dict["home_arrow"])
         await self.message.add_reaction(emoji_dict["up_arrow"])
         await self.message.add_reaction(emoji_dict["down_arrow"])
-        PaginatedEmbed._items[ctx.channel.id] = self
+        PaginatedEmbed._items[channel.id] = self
 
     async def update(self):
         await self.message.edit(embed=self.generate_embed())

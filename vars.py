@@ -68,7 +68,7 @@ def get_help(p):
     return {
         "home": {
             "title": "Table of Contents",
-            "description": "Navigate between pages with the reaction buttons",
+            "description": f"Navigate between pages with the reaction buttons or use `{p}help <page>`",
             "1. Setup": "Get familiar with the bot and some of its basic commands",
             "2. Themes": "Learn how to use themes",
             "3. General Commands": "Shows a list of general commands",

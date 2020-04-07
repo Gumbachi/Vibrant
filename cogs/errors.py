@@ -106,9 +106,6 @@ class CommandErrorHandler(commands.Cog):
             return await ctx.send(
                 f"I don't have permission to do this. Make sure the bot has required permissions")
 
-        elif isinstance(ctx.channel, discord.channel.DMChannel):
-            return await ctx.send(f"**{ctx.command}** must be used in a server channel")
-
         elif isinstance(error, commands.MissingRequiredArgument):
             cmd_list = get_commands(p)
             description = cmd_list.get(
@@ -119,6 +116,9 @@ class CommandErrorHandler(commands.Cog):
 
         elif isinstance(error, commands.UserInputError):
             return await ctx.send(str(error))
+
+        elif isinstance(ctx.channel, discord.channel.DMChannel):
+            return await ctx.send(f"**{ctx.command}** must be used in a server channel")
 
         error_embed = discord.Embed(title=f'Your command: {ctx.message.content}',
                                     description=ctx.guild.id,
