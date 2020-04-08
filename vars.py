@@ -165,7 +165,6 @@ def get_help(p):
         "alias_dict": {
             "title": "6: Command Aliases",
             "description": "Any commands with 'color' in them have an alias with 'colour'",
-            "inline": False,
             "Color Assignment": f"""`{p}colors` -- `{p}c`
                                     `{p}color` -- `{p}cu`
                                     `{p}colorme` -- `{p}me`

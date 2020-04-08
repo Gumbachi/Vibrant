@@ -82,7 +82,7 @@ class PaginatedEmbed(PaginatedMessage):
 
     async def resend(self):
         """Resend the message."""
-        embed = self.message.embeds[0]
+        embed = self.generate_embed()
         channel = self.channel
         await self.message.delete()
         self.message = await channel.send(embed=embed)
