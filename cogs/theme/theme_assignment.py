@@ -12,7 +12,7 @@ class ThemeAssignment(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="theme.load", aliases=["t.load", "t.l"])
+    @commands.command(name="theme.load", aliases=["t.l"])
     async def load_theme(self, ctx, *, query):
         """Change the active colors to a theme."""
         authorize(ctx, "disabled", "roles", "themes",

@@ -65,36 +65,13 @@ class BaseCommands(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="version", aliases=["patchnotes"])
-    async def patchnotes(self, ctx, version=None):
+    async def patchnotes(self, ctx):
         """patchnotes to send"""
         authorize(ctx, "disabled")
 
-        latest = "1.2"
-
-        # get correct version
-        if version in change_log:
-            info = change_log[version]
-        else:
-            info = change_log[latest]
-            version = latest
-
-        # create and add to embed
-        patch_embed = discord.Embed(
-            title=f"Vibrant v{version} Patch Notes",
-            description=(f"Current Version: {latest}\n"
-                         f"Versions: {', '.join(change_log.keys())}"),
-            color=discord.Colour.blue())
-
-        for k, v in info.items():
-            patch_embed.add_field(name=k, value=v, inline=False)
-
-        patch_embed.set_thumbnail(url=bot.user.avatar_url)
-        await ctx.send(embed=patch_embed)
-
-    @commands.command(name="pages")
-    async def pagetest(self, ctx):
-        pages = PaginatedEmbed(content=vars.ex)
-        await pages.send(ctx)
+        pointer = len(change_log) - 1
+        pages = PaginatedEmbed(content=change_log, pointer=pointer)
+        await pages.send(ctx.channel)
 
 
 def setup(bot):

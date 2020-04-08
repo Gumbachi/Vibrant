@@ -16,7 +16,7 @@ class ThemeManagement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="theme.save", aliases=["theme.add", "t.a", "t.s"])
+    @commands.command(name="theme.save", aliases=["t.s"])
     async def save_theme(self, ctx, *, name="None"):
         """Save a theme if there is available space"""
         authorize(ctx, "disabled", "roles", "theme_limit", "colors", name=name)
@@ -51,7 +51,7 @@ class ThemeManagement(commands.Cog):
         await ctx.invoke(bot.get_command("themes"))
         db.update_prefs(guild)
 
-    @commands.command(name="theme.overwrite", aliases=["theme.replace", "t.o"])
+    @commands.command(name="theme.overwrite", aliases=["t.o"])
     async def overwrite_theme(self, ctx, *, query):
         """Overwrite one of the Guild's themes with another."""
         authorize(ctx, "disabled", "roles", "themes",

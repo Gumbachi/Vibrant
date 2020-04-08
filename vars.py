@@ -28,7 +28,9 @@ emoji_dict = {"checkmark": "✅",
               "right_arrow": "➡️",
               "home_arrow": "↩️",
               "up_arrow": "🔼",
-              "down_arrow": "🔽"}
+              "down_arrow": "🔽",
+              "double_down": "⏬",
+              "refresh": "🔄"}
 
 
 def get_prefix(bot, message):
@@ -74,10 +76,11 @@ def get_help(p):
             "3. General Commands": "Shows a list of general commands",
             "4. Color Commands": "Shows a list of color related commands",
             "5. Theme Commands": "Shows a list of theme related commands",
+            "6. Alias Dictionary": "All of the aliases that commands have to make input easier",
             "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
         "setup": {
-            "title": "Page 1: Vibrant Guide",
+            "title": "1: Vibrant Guide",
             "description": " ",
             "Managing Colors": f"""1. Type `{p}add #ff0000 My Color` to add a color
                                    2. Type `{p}colors` to see your colors
@@ -99,7 +102,7 @@ def get_help(p):
             "Themes": f"Hit {emoji_dict['right_arrow']} to learn about themes and how to use them"
         },
         "themes": {
-            "title": "Page 2: Theme Guide",
+            "title": "2: Theme Guide",
             "description": "Themes save your colors and the members they are applied to so you can save your setup and use different ones without having to rebuild them",
             "Importing Themes": f"""1. Type `{p}imports` to see available presets.
                                     2. Type `{p}import vibrant` to import a theme
@@ -113,7 +116,7 @@ def get_help(p):
                                    """,
         },
         "commands": {
-            "title": "Page 3: General Commands",
+            "title": "3: General Commands",
             "description": "`*` indicates an optional argument",
             "General Commands": f"`{p}prefix <new prefix*>` -- changes the prefix the bot uses",
             "Channel Commands": f"""`{p}enable <all*>` -- Enables the channel or all channels
@@ -124,7 +127,7 @@ def get_help(p):
                                     """
         },
         "color_commands": {
-            "title": "Page 4: Color Commands",
+            "title": "4: Color Commands",
             "description": "`*` indicates an optional argument. `<color>` can be a name or an index",
             "Color General Commands": f"""`{p}colors` -- Shows available colors
                                           `{p}info <color>` -- shows info about a color
@@ -145,7 +148,7 @@ def get_help(p):
 
         },
         "theme_commands": {
-            "title": "Page 5: Theme Commands",
+            "title": "5: Theme Commands",
             "description": "`*` indicates an optional argument. `<theme>` can be a name or an index. All of these commands have aliases that make them easier to user",
             "Theme General Commands": f"""`{p}themes` -- Draws a pretty list of themes
                                   `{p}theme.info <theme>` -- Shows info about a given theme
@@ -158,6 +161,30 @@ def get_help(p):
                                   `{p}theme.rename <theme> | <name>` -- Changes a theme's name
                                   `{p}import <name>` -- Adds a preset as a theme
                                 """
+        },
+        "alias_dict": {
+            "title": "6: Command Aliases",
+            "description": "Any commands with 'color' in them have an alias with 'colour'",
+            "inline": False,
+            "Color Assignment": f"""`{p}colors` -- `{p}c`
+                                    `{p}color` -- `{p}cu`
+                                    `{p}colorme` -- `{p}me`
+                                    `{p}uncolorme` -- `{p}ucm`
+                                    """,
+            "Color Management": f"""`{p}add` -- `{p}new`, `{p}a`
+                                    `{p}remove` -- `{p}delete`, `{p}r`
+                                    `{p}rename` -- `{p}rn`
+                                    `{p}recolor` -- `{p}rc`
+                                    """,
+            "Themes": f"""`{p}themes` -- `{p}t`
+                          `{p}theme.info` -- `{p}t.i`
+                          `{p}imports` -- `{p}presets`
+                          `{p}theme.load` -- `{p}t.l`
+                          `{p}theme.save` -- `{p}t.s`
+                          `{p}theme.remove` -- `{p}t.r`, `{p}theme.delete`, `{p}t.d`
+                          `{p}theme.overwrite` -- `{p}t.o`
+                          `{p}theme.rename` -- `{p}t.rn`
+                       """,
         },
     }
 
@@ -334,6 +361,8 @@ def get_commands(p):
 
 change_log = {
     "0.1": {
+        "title": "Vibrant 0.1",
+        "description": " ",
         "@Vibrant for help": "Users can mention the bot to give info about help",
         "Changeable Prefixes": "Users can change prefix with prefix command to avoid prefix conflict with other bots",
         "Added patch notes": "you can see what I'm doing and I can see what I've done",
@@ -341,28 +370,38 @@ change_log = {
         "Changed some help command things": "Made it so they show default prefixes"
     },
     "0.2": {
+        "title": "Vibrant 0.2",
+        "description": " ",
         "Optimization": "Made many functions like prefix run faster",
         "Optimized Data storage": "improved function input to be more specific to make it faster",
         "Optimized splash command": "Splash runs faster due to better math",
     },
     "0.3": {
+        "title": "Vibrant 0.3",
+        "description": " ",
         "Overhauled help command": "Gave help a bunch of useful stuff like setup and individual command help",
         "`clear_all_colors` and `set` changed": "Commands now send a backup just incase",
         "Changed data command name": "Changed it to channels since it only shows channel data",
         "Added a force prefix change": "can use vibrantprefix command to avoid overlap"
     },
     "0.4": {
+        "title": "Vibrant 0.4",
+        "description": " ",
         "Aliased Commands": "Gave a bunch of commands alternate names like add/remove can be create/delete if you want",
         "Removed redundant commands": "removed redundant commands because I figured out how to alias commands",
         "Better Error Handling": "ignores things like command not found and has specific error handling for add command",
     },
     "0.5": {
+        "title": "Vibrant 0.5",
+        "description": " ",
         "Black color now works": "black no longer shows up as transparent because hex value is auto converted to #000001",
         "Added more presets": "presets work differently and thus there are many more like Bootstrap, Metro, and Icecream",
         "Better Drawing": "Made drawing images for commands like colors look better and more open",
         "Preview command": "new command to show preset colors"
     },
     "0.6": {
+        "title": "Vibrant 0.6",
+        "description": " ",
         "Changed the look of channels and expose": "Commands are simpler and easier to read",
         "DM Commands": "Some commands like help and howdy work in a DM channel now",
         "Less verbose": "Some commands are less verbose to clear up clutter",
@@ -370,12 +409,16 @@ change_log = {
         "Destroyed some bugs": "General stuff like me being stupid"
     },
     "0.7": {
+        "title": "Vibrant 0.7",
+        "description": " ",
         "The return of reaction based UX": "Reaction based UX is back and works this time",
         "updated pfp algorithm": "Algorithm is more accurate now",
         "DBL integration": "better integration with the API",
         "Hyperlinks": "inline links for help to clean things up"
     },
     "0.8": {
+        "title": "Vibrant 0.8",
+        "description": " ",
         "Themes(alpha)": "Themes not ready yet but kind of work",
         "Housekeeping": "Cleaned up a bunch of things that weren't necessary",
         "Added some functions to classes": "less imports, better looking",
@@ -385,6 +428,8 @@ change_log = {
         "Help works": "help wont give setup every time",
     },
     "0.9": {
+        "title": "Vibrant 0.9",
+        "description": " ",
         "Themes": "Themes allow you to save presets which allows switching the feel of the server",
         "Serialization": "Custom serialization per object to allow for the use of sets",
         "The use of python sets": "No more duplicate role members",
@@ -393,19 +438,28 @@ change_log = {
         "Changed some functions": "Some functions within the code are now faster and smarter",
     },
     "1.0": {
+        "title": "Vibrant 1.0",
+        "description": " ",
         "Themes Documentation": "Get help with using themes",
         "Segmented help": "More help categories",
         "Importing presets": "Can import named presets as themes",
     },
     "1.1": {
+        "title": "Vibrant 1.1",
+        "description": " ",
         "Housekeeping": "New techniques for cleaner/faster code",
         "Exceptions": "New way to handle errors should be more descriptive",
         "Less prone to breaking": "Stricter error handling so less confusing errors",
         "Fixed major bug with missing guild problems": "Should handle data better"
     },
     "1.2": {
+        "title": "Vibrant 1.2",
+        "description": " ",
         "Overlapping data": "Member data should be handled properly due to a fixed constructor error",
         "Unsplash is faster": "unsplash just deletes roles which should make it faster",
+        "Help update": "Help command is simplified and now works like a book with buttons",
+        "Overwrite simpler": "Overwrite just overwrite a theme now without changing name",
+        "imports command": "You can now view all presets",
     }
 }
 
