@@ -35,7 +35,7 @@ class ColorAssignment(commands.Cog):
             if not color:
                 try:
                     authorize(ctx, "roles")
-                    return await add_color_UX(ctx, color_query)
+                    return await add_color_UX(ctx, color_query, user)
                 except MissingPermissions:
                     raise NotFoundError()
         else:
@@ -57,7 +57,7 @@ class ColorAssignment(commands.Cog):
             if not color:
                 try:
                     authorize(ctx, "roles")
-                    return await add_color_UX(ctx, color_query)
+                    return await add_color_UX(ctx, color_query, ctx.author)
                 except MissingPermissions:
                     raise NotFoundError()
         else:
@@ -75,8 +75,11 @@ class ColorAssignment(commands.Cog):
         guild = Guild.get(ctx.guild.id)
         role = guild.get_color_role(ctx.author)
 
+        color = guild.get_color("role_id", role.id)
+
         # remove roles and send success message
         await ctx.author.remove_roles(role)
+        color.member_ids.discard(ctx.author.id)
         await ctx.send(f"You are no longer colored **{role.name}**")
         db.update_prefs(guild)
 
@@ -150,9 +153,11 @@ class ColorAssignment(commands.Cog):
         # loop through and color members
         async with ctx.channel.typing():
             for color in guild.colors:
-                role = color.role
-                if role:
-                    await role.delete()
+                # delete role
+                if color.role:
+                    await color.role.delete()
+
+                color.member_ids.clear()  # Clear members from color
 
         guild.heavy_command_active = None
 
@@ -172,10 +177,12 @@ class ColorAssignment(commands.Cog):
         if message.author.id == guild.waiting_on_hexcode.get("id"):
             if check_hex(message.content):
                 ctx = await bot.get_context(message)
+                user = guild.waiting_on_hexcode.get("user")
                 color = await ctx.invoke(bot.get_command("add"),
                                          hexcode=message.content,
                                          name=guild.waiting_on_hexcode.get("color", "No Name"))
-                await color_user(guild, message.author, color)
+                await color_user(guild, user, color)
+                await ctx.send(f"{user.name} has been colored **{color.name}**")
             else:
                 guild.waiting_on_hexcode = {}
 
@@ -197,6 +204,9 @@ async def color_user(guild, user, color, trace=True):
     role = guild.get_color_role(user)
     if role:
         await user.remove_roles(role)
+        old_color = guild.get_color("role_id", role.id)
+        if old_color:
+            old_color.member_ids.discard(user.id)
 
     # check if role already exists and assigns then ends process if true
     if color.role_id:
@@ -214,10 +224,12 @@ async def color_user(guild, user, color, trace=True):
         await user.add_roles(color_role)
 
     # Report success
+    color.member_ids.add(user.id)  # add user to color members
     print(f"COLORED {user} -> {color.name}")
 
 
-async def add_color_UX(ctx, color):
+async def add_color_UX(ctx, color, user):
     await ctx.send(f"**{color}** is not in your colors\nType the hexcode below to add it")
     guild = Guild.get(ctx.guild.id)
-    guild.waiting_on_hexcode = {"id": ctx.author.id, "color": color}
+    guild.waiting_on_hexcode = {
+        "id": ctx.author.id, "color": color, "user": user}

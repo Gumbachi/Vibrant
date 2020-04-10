@@ -40,7 +40,8 @@ class ThemeManagement(commands.Cog):
     @commands.command(name="theme.remove", aliases=["theme.delete", "t.d", "t.r"])
     async def remove_theme(self, ctx, *, query):
         """Remove a theme."""
-        authorize(ctx, "disabled", "roles", "themes", theme_query=(query, 90))
+        authorize(ctx, "disabled", "roles", "heavy",
+                  "themes", theme_query=(query, 90))
         guild = Guild.get(ctx.guild.id)
         theme = guild.find_theme(query, threshold=90)
 
@@ -54,7 +55,7 @@ class ThemeManagement(commands.Cog):
     @commands.command(name="theme.overwrite", aliases=["t.o"])
     async def overwrite_theme(self, ctx, *, query):
         """Overwrite one of the Guild's themes with another."""
-        authorize(ctx, "disabled", "roles", "themes",
+        authorize(ctx, "disabled", "heavy", "roles", "themes",
                   "colors", theme_query=(query, 100))
         guild = Guild.get(ctx.guild.id)
 

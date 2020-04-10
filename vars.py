@@ -460,6 +460,7 @@ change_log = {
         "Help update": "Help command is simplified and now works like a book with buttons",
         "Overwrite simpler": "Overwrite just overwrite a theme now without changing name",
         "imports command": "You can now view all presets",
-        "Pages for everything": "Everything that can be paginated is"
+        "Pages for everything": "Everything that can be paginated is",
+        "Better UX": "Asks for hexcode and then colors the user you wanted"
     }
 }

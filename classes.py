@@ -115,11 +115,11 @@ class Guild:
     def erase_user(self, user_id):
         """Clears all traces of a user"""
         for color in self.colors:
-            color.members.discard(user_id)
+            color.member_ids.discard(user_id)
 
         for theme in self.themes:
             for color in theme.colors:
-                color.members.discard(user_id)
+                color.member_ids.discard(user_id)
 
 ######################### GETTERS #########################
 
@@ -346,7 +346,7 @@ class Guild:
 
         theme_images = []
 
-        for x in range(len(self.themes)//5 + 1):
+        for x in range(math.ceil(len(self.themes)/5)):
             # x is 1, 2, 3
 
             start = x * 5

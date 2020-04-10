@@ -50,7 +50,8 @@ class ColorManagement(commands.Cog):
         Args:
             color (tuple of str): The search query for color to remove
         """
-        authorize(ctx, "disabled", "roles", "colors", color_query=(query, 95))
+        authorize(ctx, "disabled", "roles", "heavy",
+                  "colors", color_query=(query, 95))
         guild = Guild.get(ctx.guild.id)
 
         # get color
@@ -69,7 +70,8 @@ class ColorManagement(commands.Cog):
         Args:
             color (tuple of str): The color to change the name of
         """
-        authorize(ctx, "disabled", "roles", "colors", swap_query=query)
+        authorize(ctx, "disabled", "roles", "heavy",
+                  "colors", swap_query=query)
 
         guild = Guild.get(ctx.guild.id)
 
@@ -103,7 +105,8 @@ class ColorManagement(commands.Cog):
         Args:
             color (tuple of str): The color to change the name of
         """
-        authorize(ctx, "disabled", "roles", "colors", swap_query=query)
+        authorize(ctx, "disabled", "roles", "heavy",
+                  "colors", swap_query=query)
 
         guild = Guild.get(ctx.guild.id)
 
@@ -142,7 +145,7 @@ class ColorManagement(commands.Cog):
         Args:
             backup (bool): Whether or not to send a backup JSON
         """
-        authorize(ctx, "disabled", "roles")
+        authorize(ctx, "disabled", "roles", "heavy")
 
         guild = Guild.get(ctx.guild.id)
 

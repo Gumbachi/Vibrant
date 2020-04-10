@@ -5,6 +5,7 @@ import io
 import os
 from os.path import sep
 import json
+import math
 
 import discord
 from PIL import Image, ImageDraw, ImageFont
@@ -56,7 +57,7 @@ def draw_imports():
 
     images = []
 
-    for x in range(len(presets)//5 + 1):
+    for x in range(math.ceil(len(presets)/5)):
         # x is 1, 2, 3
 
         start = x * 5
