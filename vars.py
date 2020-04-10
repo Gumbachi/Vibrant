@@ -23,7 +23,15 @@ extensions = [
 ]
 
 emoji_dict = {"checkmark": "✅",
-              "crossmark": "❌"}
+              "crossmark": "❌",
+              "left_arrow": "⬅️",
+              "right_arrow": "➡️",
+              "home_arrow": "↩️",
+              "up_arrow": "🔼",
+              "down_arrow": "🔽",
+              "double_down": "⏬",
+              "refresh": "🔄",
+              "updown": "↕️"}
 
 
 def get_prefix(bot, message):
@@ -61,80 +69,122 @@ disabled_embed = discord.Embed(
 
 def get_help(p):
     return {
-        "Help": {
-            "1. Setup": "Shows you how to set up the bot easily and how to use basic commands",
+        "home": {
+            "title": "Table of Contents",
+            "description": f"Navigate between pages with the reaction buttons or use `{p}help <page>`",
+            "1. Setup": "Get familiar with the bot and some of its basic commands",
             "2. Themes": "Learn how to use themes",
-            "3. General Commands": "Shows a list of general commands the bot has",
-            "4. Color Commands": "Shows a list of color related commands the bot has",
-            "5. Theme Commands": "Shows a list of theme related commands the bot has",
+            "3. General Commands": "Shows a list of general commands",
+            "4. Color Commands": "Shows a list of color related commands",
+            "5. Theme Commands": "Shows a list of theme related commands",
+            "6. Alias Dictionary": "All of the aliases that commands have to make input easier",
             "-----------------------------": "[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant) | [Report an issue](https://github.com/Gumbachi/Vibrant/issues)"
         },
-        "Setup": {
-            "Add Custom Color": f"""-add a custom color by typing `{p}add #ff0000 My Color`
-                                  -Add a few more colors if you'd like using `{p}add` and view them by typing `{p}colors`""",
-            "Setting Themes": f"""Learn how to save your colors, use presets and hot swap the way your server looks by using themes. Type `{p}help themes`""",
-            "Coloring People": f"""-Color yourself by typing `{p}colorme` This will assign you a random color. To get a specific color type `{p}colorme <index/color>`
-                                   -Color others by typing `{p}color <user>` This will try to find a user and assigning a random color. To get a specific color type `{p}color <user> <index/color>`
-                                   -Color everyone that isn't colored by typing `{p}splash`. This command may take some time depending on the amount of members who are uncolored""",
-            "Change Colors": f"""-Change the name of a color by typing `{p}rename <index/color> | <new name>`
-                                 -Change the look of a color by typing `{p}recolor <index/color> | <new hexcode>`
-                                 -[Color Picker](https://www.google.com/search?q=color+picker)""",
-            "Remove Colors": f"""-Remove a color by typing `{p}remove <index/color>`
-                                 -Remove all colors by typing `{p}clear_all_colors`. This is made difficult to type on purpose""",
-            "Set a Welcome Channel": f"""-Set a welcome channel for the bot to send a message in the channel when ever a new person joins your server
-                                         -Go to your desired channel and type `{p}welcome` to set it as the welcome channel
-                                         -This can be reverted by typing `{p}welcome remove`""",
-            "Disable/Enable Channels": f"""-Disable a channel by typing `{p}disable` in the desired channel
-                                           -Enable a channel by typing `{p}enable` in the desired channel
-                                           -If you want to disable/enable all channels then type `{p}disable all` or `{p}enable all` in any channel""",
-        },
-        "Themes": {
-            "Importing Themes": f"""Import a preset theme by using `{p}import vibrant`.
-                                    This will import a preset called "Vibrant"
-                                    After importing, color everyone with `{p}splash`.""",
-            "Managing your Themes": f"""Add a custom color by typing `{p}add #ffffff White`
-                                        You can save this new preset by typing `{p}theme.save My Custom Theme`
-                                        Remove your first theme by using `{p}theme.remove 1` or `{p}t.r 1`
-                                        Load your custom theme by typing `{p}theme.load 1` or `{p}t.l 1`
-                                        If you want to replace one theme with another then use `{p}theme.overwrite <index/name> | <name of new theme>` or `{p}t.o` for short.
-                                        If you would like to rename your theme then do so by using `{p}theme.rename` or `{p}t.rn`. For more help on this command type `{p}help theme.rename`.""",
-            "Viewing your themes": f"""View all of your themes by typing `{p}themes` or `{p}t`."""
-        },
-        "Commands": {
-            "General Commands": f"""`{p}howdy`: You've got a friend in me
-                                    `{p}prefix <new prefix>`: changes the prefix the bot uses
-                                    `{p}report <issue>`: sends a message to the developer with your problem
+        "setup": {
+            "title": "1: Vibrant Guide",
+            "description": " ",
+            "Managing Colors": f"""1. Type `{p}add #ff0000 My Color` to add a color
+                                   2. Type `{p}colors` to see your colors
+                                   3. Type `{p}rename 1 | Blue` to rename a color
+                                   4. Type `{p}recolor 1 | #0000ff` to change the value of a color
+                                   """,
+            "Assigning Colors": f"""1. Type `{p}colorme 1` to apply a color to yourself
+                                    2. Type `{p}color @user 1` to apply it to someone else
+                                    3. Type `{p}splash` to color everyone that isnt colored
                                     """,
-            "Channel Commands": f"""`{p}enable <all>`: Enables the channel or all channels
-                                    `{p}disable <all>`: Disables the channel or all channels
-                                    `{p}welcome <remove>`: Toggles the channel for greeting users
-                                    `{p}status`: displays disabled/enabled status for channel
-                                    `{p}channels`: Shows disabled channels and welcome channel
+            "Removing Colors": f"""1. Type `{p}remove 1` to remove the first color
+                                   2. Type `{p}clear_all_colors` if you want to remove all colors
+                                   """,
+
+            "Manage Channels": f"""1. Type `{p}welcome` in a specific channel to set it as the greeting channel. The bot will now color anyone who joins the server and send a message
+                                   2. Type `{p}disable` in a channel to disable it and type `{p}enable` to re-enable it
+                                   3. Type `{p}disable all` to disable all channels if you dont want the bot to run in every channel
+                                   """,
+            "Themes": f"Hit {emoji_dict['right_arrow']} to learn about themes and how to use them"
+        },
+        "themes": {
+            "title": "2: Theme Guide",
+            "description": "Themes save your colors and the members they are applied to so you can save your setup and use different ones without having to rebuild them",
+            "Importing Themes": f"""1. Type `{p}imports` to see available presets.
+                                    2. Type `{p}import vibrant` to import a theme
+                                    3. Type `{p}theme.load vibrant` and then `{p}splash` to apply that theme to your server""",
+            "Custom Themes": f"""1. Type `{p}theme.save My Theme` to save your current setup
+                                 2. Type `{p}themes` to view all of your themes
+                                 3. Type `{p}theme.rename My Theme | Custom Theme` to rename it however you please
+                                 """,
+            "Managing Themes": f"""1. Type `{p}theme.overwrite 1` to replace one theme with your current setup. This effectively combines `{p}theme.remove` and `{p}theme.save` into one step.
+                                   2. Type `{p}theme.remove 1` to remove one of your themes
+                                   """,
+        },
+        "commands": {
+            "title": "3: General Commands",
+            "description": "`*` indicates an optional argument",
+            "General Commands": f"`{p}prefix <new prefix*>` -- changes the prefix the bot uses",
+            "Channel Commands": f"""`{p}enable <all*>` -- Enables the channel or all channels
+                                    `{p}disable <all*>` -- Disables the channel or all channels
+                                    `{p}welcome <remove*>` -- Toggles the channel for greeting users
+                                    `{p}status` -- displays disabled/enabled status for channel
+                                    `{p}channels` -- Shows disabled channels and welcome channel
                                     """
         },
-        "Color Commands": {
-            "Color Commands": f"""`{p}colorme <name/index>`: Gives you your desired color or a random one
-                                  `{p}color <user> <name/index>`: Gives a specific user a color
-                                  `{p}colors`: Shows available colors
-                                  `{p}add <hexcode> <name>`: Adds a color to the palette
-                                  `{p}remove <name/index>`: Removes a color from the palette
-                                  `{p}rename <name/index> | <new name>`: Changes a color's name
-                                  `{p}recolor <name/index> | <new hexcode>`: Changes a color's value
-                                  `{p}splash`: Gives a color to everyone in the server without one
-                                  `{p}unsplash`: Uncolors everyone
-                                  `{p}info <name/index>`:shows info about a color
+        "color_commands": {
+            "title": "4: Color Commands",
+            "description": "`*` indicates an optional argument. `<color>` can be a name or an index",
+            "Color General Commands": f"""`{p}colors` -- Shows available colors
+                                          `{p}info <color>` -- shows info about a color
+                                          `{p}convert <rgb>` -- convert RGB to hex
+                                          """,
+            "Color Management Commands": f"""`{p}add <hexcode> <name*>` -- Adds a color to the palette
+                                  `{p}remove <color*>` -- Removes a color from the palette
+                                  `{p}rename <color> | <name>` -- Changes a color's name
+                                  `{p}recolor <color> | <hexcode>` -- Changes a color's value
+                                  `{p}clear_all_colors` -- Clears all of the colors
+                                """,
+            "Color Assignment Commands": f"""`{p}colorme <color*>` -- Gives you your desired color or a random one
+                                  `{p}color <user> <color*>` -- Gives a specific user a color
+                                  `{p}splash <color*>` -- Gives a color to everyone in the server without one
+                                  `{p}unsplash` -- Uncolors everyone
+                                  `{p}uncolorme` -- Removes your color if you have one
+                                """
+
+        },
+        "theme_commands": {
+            "title": "5: Theme Commands",
+            "description": "`*` indicates an optional argument. `<theme>` can be a name or an index. All of these commands have aliases that make them easier to user",
+            "Theme General Commands": f"""`{p}themes` -- Draws a pretty list of themes
+                                  `{p}theme.info <theme>` -- Shows info about a given theme
+                                  `{p}imports` -- Shows available presets
+                                """,
+            "Theme Management Commands": f"""`{p}theme.save <name*>` -- Saves your theme
+                                  `{p}theme.remove <theme>` -- Deletes a theme
+                                  `{p}theme.overwrite <theme>` -- Replaces a theme
+                                  `{p}theme.load <theme>` -- Applies a saved theme to your server
+                                  `{p}theme.rename <theme> | <name>` -- Changes a theme's name
+                                  `{p}import <name>` -- Adds a preset as a theme
                                 """
         },
-        "Theme Commands": {
-            "Theme Commands": f"""`{p}themes`: Draws a pretty list of themes
-                                  `{p}theme.save <name>`: Saves your theme
-                                  `{p}theme.remove <name/index>`: Deletes a theme
-                                  `{p}theme.overwrite <name/index> | <name of new theme>`: Replaces a theme
-                                  `{p}theme.load <name/index>`: Applies a saved theme to your server
-                                  `{p}theme.rename <name/index> | <new name>`: Changes a theme's name
-                                  `{p}theme.info <name/index>`: Shows info about a given theme
-                                  `{p}import <name>`: Adds a preset as a theme
-                                """
+        "alias_dict": {
+            "title": "6: Command Aliases",
+            "description": "Any commands with 'color' in them have an alias with 'colour'",
+            "Color Assignment": f"""`{p}colors` -- `{p}c`
+                                    `{p}color` -- `{p}cu`
+                                    `{p}colorme` -- `{p}me`
+                                    `{p}uncolorme` -- `{p}ucm`
+                                    """,
+            "Color Management": f"""`{p}add` -- `{p}new`, `{p}a`
+                                    `{p}remove` -- `{p}delete`, `{p}r`
+                                    `{p}rename` -- `{p}rn`
+                                    `{p}recolor` -- `{p}rc`
+                                    """,
+            "Themes": f"""`{p}themes` -- `{p}t`
+                          `{p}theme.info` -- `{p}t.i`
+                          `{p}imports` -- `{p}presets`
+                          `{p}theme.load` -- `{p}t.l`
+                          `{p}theme.save` -- `{p}t.s`
+                          `{p}theme.remove` -- `{p}t.r`, `{p}theme.delete`, `{p}t.d`
+                          `{p}theme.overwrite` -- `{p}t.o`
+                          `{p}theme.rename` -- `{p}t.rn`
+                       """,
         },
     }
 
@@ -311,6 +361,8 @@ def get_commands(p):
 
 change_log = {
     "0.1": {
+        "title": "Vibrant 0.1",
+        "description": " ",
         "@Vibrant for help": "Users can mention the bot to give info about help",
         "Changeable Prefixes": "Users can change prefix with prefix command to avoid prefix conflict with other bots",
         "Added patch notes": "you can see what I'm doing and I can see what I've done",
@@ -318,28 +370,38 @@ change_log = {
         "Changed some help command things": "Made it so they show default prefixes"
     },
     "0.2": {
+        "title": "Vibrant 0.2",
+        "description": " ",
         "Optimization": "Made many functions like prefix run faster",
         "Optimized Data storage": "improved function input to be more specific to make it faster",
         "Optimized splash command": "Splash runs faster due to better math",
     },
     "0.3": {
+        "title": "Vibrant 0.3",
+        "description": " ",
         "Overhauled help command": "Gave help a bunch of useful stuff like setup and individual command help",
         "`clear_all_colors` and `set` changed": "Commands now send a backup just incase",
         "Changed data command name": "Changed it to channels since it only shows channel data",
         "Added a force prefix change": "can use vibrantprefix command to avoid overlap"
     },
     "0.4": {
+        "title": "Vibrant 0.4",
+        "description": " ",
         "Aliased Commands": "Gave a bunch of commands alternate names like add/remove can be create/delete if you want",
         "Removed redundant commands": "removed redundant commands because I figured out how to alias commands",
         "Better Error Handling": "ignores things like command not found and has specific error handling for add command",
     },
     "0.5": {
+        "title": "Vibrant 0.5",
+        "description": " ",
         "Black color now works": "black no longer shows up as transparent because hex value is auto converted to #000001",
         "Added more presets": "presets work differently and thus there are many more like Bootstrap, Metro, and Icecream",
         "Better Drawing": "Made drawing images for commands like colors look better and more open",
         "Preview command": "new command to show preset colors"
     },
     "0.6": {
+        "title": "Vibrant 0.6",
+        "description": " ",
         "Changed the look of channels and expose": "Commands are simpler and easier to read",
         "DM Commands": "Some commands like help and howdy work in a DM channel now",
         "Less verbose": "Some commands are less verbose to clear up clutter",
@@ -347,12 +409,16 @@ change_log = {
         "Destroyed some bugs": "General stuff like me being stupid"
     },
     "0.7": {
+        "title": "Vibrant 0.7",
+        "description": " ",
         "The return of reaction based UX": "Reaction based UX is back and works this time",
         "updated pfp algorithm": "Algorithm is more accurate now",
         "DBL integration": "better integration with the API",
         "Hyperlinks": "inline links for help to clean things up"
     },
     "0.8": {
+        "title": "Vibrant 0.8",
+        "description": " ",
         "Themes(alpha)": "Themes not ready yet but kind of work",
         "Housekeeping": "Cleaned up a bunch of things that weren't necessary",
         "Added some functions to classes": "less imports, better looking",
@@ -362,6 +428,8 @@ change_log = {
         "Help works": "help wont give setup every time",
     },
     "0.9": {
+        "title": "Vibrant 0.9",
+        "description": " ",
         "Themes": "Themes allow you to save presets which allows switching the feel of the server",
         "Serialization": "Custom serialization per object to allow for the use of sets",
         "The use of python sets": "No more duplicate role members",
@@ -370,20 +438,29 @@ change_log = {
         "Changed some functions": "Some functions within the code are now faster and smarter",
     },
     "1.0": {
+        "title": "Vibrant 1.0",
+        "description": " ",
         "Themes Documentation": "Get help with using themes",
         "Segmented help": "More help categories",
         "Importing presets": "Can import named presets as themes",
     },
     "1.1": {
+        "title": "Vibrant 1.1",
+        "description": " ",
         "Housekeeping": "New techniques for cleaner/faster code",
         "Exceptions": "New way to handle errors should be more descriptive",
         "Less prone to breaking": "Stricter error handling so less confusing errors",
         "Fixed major bug with missing guild problems": "Should handle data better"
+    },
+    "1.2": {
+        "title": "Vibrant 1.2",
+        "description": " ",
+        "Overlapping data": "Member data should be handled properly due to a fixed constructor error",
+        "Unsplash is faster": "unsplash just deletes roles which should make it faster",
+        "Help update": "Help command is simplified and now works like a book with buttons",
+        "Overwrite simpler": "Overwrite just overwrite a theme now without changing name",
+        "imports command": "You can now view all presets",
+        "Pages for everything": "Everything that can be paginated is",
+        "Better UX": "Asks for hexcode and then colors the user you wanted"
     }
 }
-
-# wait lists with for reaction based UX
-waiting_on_reaction = {}
-waiting_on_hexcode = {}
-
-heavy_command_active = {}

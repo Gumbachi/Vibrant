@@ -34,9 +34,7 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, auth.MissingGuild):
             await gumbachi.send(f"Missing guild {ctx.guild.id} {ctx.guild.name}")
             await ctx.send("Something went wrong. I couldn't find the data for this server.")
-            guild = Guild(id=ctx.guild.id, prefix='$', welcome_channel_id=None,
-                          disabled_channel_ids=set(), theme_limit=3, color_limit=25,
-                          themes=[], colors=[])
+            guild = Guild(id=ctx.guild.id)
             db.update_prefs(guild)
             return await ctx.send("A blank profile has been added for this server. Try your command again and if this issue persists please try reinviting the bot")
 
@@ -108,9 +106,6 @@ class CommandErrorHandler(commands.Cog):
             return await ctx.send(
                 f"I don't have permission to do this. Make sure the bot has required permissions")
 
-        elif isinstance(ctx.channel, discord.channel.DMChannel):
-            return await ctx.send(f"**{ctx.command}** must be used in a server channel")
-
         elif isinstance(error, commands.MissingRequiredArgument):
             cmd_list = get_commands(p)
             description = cmd_list.get(
@@ -122,8 +117,11 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, commands.UserInputError):
             return await ctx.send(str(error))
 
+        elif isinstance(ctx.channel, discord.channel.DMChannel):
+            return await ctx.send(f"**{ctx.command}** must be used in a server channel")
+
         error_embed = discord.Embed(title=f'Your command: {ctx.message.content}',
-                                    description=ctx.guild.id,
+                                    description=f"{ctx.guild.id}: {error}",
                                     color=discord.Colour.red())
         await ctx.send(embed=error_embed, delete_after=30)
 

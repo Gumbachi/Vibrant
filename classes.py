@@ -11,21 +11,12 @@ from fuzzywuzzy import process
 from PIL import Image, ImageDraw, ImageFont
 
 from vars import bot
-from functions import hex_to_rgb
+from utils import hex_to_rgb
 import authorization as auth
 
 
-class Guild():
+class Guild:
     """Guild object that stores preferences for a guild the bot is in
-
-    Args:
-        name (str): The name of the guild
-        id (int): The id of the guild from discord
-        prefix (str): The custom guild command prefix
-        welcome_channel (int): The id of the greeting channel
-        disabled_channels (list of int): list of ids of disabled channels
-        theme_limit (int): The maximum amount of themes a guild can have
-        color_limit (int): The maximum number of colors a guild can have
 
     Attributes:
         name (str): The name of the guild
@@ -40,18 +31,18 @@ class Guild():
     """
     _guilds = {}  # dict of guilds that have been created
 
-    def __init__(self, id, prefix='$', welcome_channel_id=None,
-                 disabled_channel_ids=set(), theme_limit=3, color_limit=25,
-                 themes=[], colors=[]):
+    def __init__(self, id, **kwargs):
         self.name = str(bot.get_guild(id))
         self.id = id
-        self.prefix = prefix
-        self.welcome_channel_id = welcome_channel_id
-        self.disabled_channel_ids = disabled_channel_ids
-        self.theme_limit = theme_limit
-        self.color_limit = color_limit
-        self.themes = themes
-        self.colors = colors
+        self.prefix = kwargs.get("prefix", "$")
+        self.welcome_channel_id = kwargs.get("welcome_channel_id", None)
+        self.disabled_channel_ids = kwargs.get("disabled_channel_ids", set())
+        self.theme_limit = kwargs.get("theme_limit", 3)
+        self.color_limit = kwargs.get("color_limit", 25)
+        self.themes = kwargs.get("themes", [])
+        self.colors = kwargs.get("colors", [])
+        self.heavy_command_active = None
+        self.waiting_on_hexcode = {}
 
         Guild._guilds[id] = self  # add guild to the dict
 
@@ -96,21 +87,18 @@ class Guild():
 
         return out
 
-    def __str__(self):
-        return self.name
+    @classmethod
+    def get(cls, id, catch_error=True):
+        """Find guild in the dictionary."""
+        guild = cls._guilds.get(id)
+        if not guild:
+            if catch_error:
+                raise auth.MissingGuild()
+            else:
+                return
+        return guild
 
-    def get_role(self, id):
-        """Get a discord role from a given ID."""
-        discord_guild = self.discord_guild
-        if discord_guild:
-            return discord_guild.get_role(id)
-
-    def reset_ids(self):
-        """Fix the ids of all color and themes so they match the guild."""
-        for color in self.colors:
-            color.guild_id = self.id
-        for theme in self.themes:
-            theme.guild_id = self.id
+######################### COLOR/THEME MANAGEMENT #########################
 
     async def clear_colors(self):
         """Remove all colors and associated roles from the guild."""
@@ -118,11 +106,28 @@ class Guild():
             # deletes role associated with color
             if color.role_id:
                 try:
-                    role = bot.get_guild(self.id).get_role(color.role_id)
+                    role = self.get_role(color.role_id)
                     await role.delete()
                 except:
                     color.role_id = None
         self.colors.clear()
+
+    def erase_user(self, user_id):
+        """Clears all traces of a user"""
+        for color in self.colors:
+            color.member_ids.discard(user_id)
+
+        for theme in self.themes:
+            for color in theme.colors:
+                color.member_ids.discard(user_id)
+
+######################### GETTERS #########################
+
+    def get_role(self, id):
+        """Get a discord role from a given ID."""
+        discord_guild = self.discord_guild
+        if discord_guild:
+            return discord_guild.get_role(id)
 
     def get_color(self, attr, value):
         """Search for a color in the guild via attribute.
@@ -146,13 +151,6 @@ class Guild():
             if theme.__getattribute__(attr) == value:
                 return theme
 
-    def random_color(self):
-        """Return a random color object."""
-        try:
-            return random.choice(self.colors)
-        except IndexError:
-            pass
-
     def get_color_role(self, user):
         """
         Get a users color role if it exists.
@@ -169,124 +167,7 @@ class Guild():
         if role:
             return self.get_role(role.pop())
 
-    def draw_colors(self):
-        """Draw colored boxes based on a colors.
-
-        Returns:
-            A byte array of the image
-        """
-        rows = math.ceil(len(self.colors) / 3)  # amt of rows needed
-        row_height = 50
-        column_width = 300
-        columns = 3
-
-        img = Image.new(mode='RGBA',
-                        size=(columns * column_width, rows * row_height),
-                        color=(0, 0, 0, 0))
-        draw = ImageDraw.Draw(img)  # set image for drawing
-        fnt = ImageFont.truetype(
-            font=f".{sep}assets{sep}Roboto.ttf", size=30)
-
-        # draws and labels boxes
-        for i, color in enumerate(self.colors):
-
-            # draw boxes
-            rem = i % 3  # 0,1,2 repeating
-            div = i//3  # increment every 3 elements
-            x1 = column_width * rem
-            x2 = row_height * div
-            y1 = column_width * (rem+1)
-            y2 = row_height * (div+1)
-            draw.rectangle([x1, x2, y1, y2], fill=color.rgb,
-                           outline=(0, 0, 0, 0), width=2)
-
-            W, H = column_width*rem, row_height*div+10  # origin to draw boxes
-            msg = f"{color.index}. {color.name}"
-            w, _ = draw.textsize(msg, fnt)  # width of text
-
-            # cut text until it fits
-            text_size_limit = column_width - (column_width/10)
-            while w > text_size_limit:
-                msg = msg[:-2]
-                w, _ = draw.textsize(msg, fnt)
-                if w <= text_size_limit:
-                    msg = msg + "..."
-
-            # Make text readable
-            r, g, b = color.rgb
-            luminance = (0.299 * r + 0.587 * g + 0.114 * b)/255
-            text_color = (0, 0, 0) if luminance > 0.5 else (255, 255, 255)
-
-            # Draw text on boxes
-            x = (column_width-w)/2 + W
-            y = H
-            draw.text((x, y), msg, font=fnt, fill=text_color)  # draw text
-
-        # return binary data
-        imgByteArr = io.BytesIO()
-        img.save(imgByteArr, format='WEBP')
-        imgByteArr = imgByteArr.getvalue()
-        return io.BytesIO(imgByteArr)
-
-    def draw_themes(self):
-        """
-        Draws guild themes.
-
-        Returns:
-            imgByteArray (bytes): byte array of the image
-        """
-        color_height = 44  # height of color boxes
-        cont_height = 112 + 7  # container height
-        canvas_width = 900
-        padding_above_text = 20
-        padding_below_text = 10
-        box_margin = 5
-
-        rows = 1 if not self.themes else len(self.themes)
-
-        img = Image.new(mode='RGBA',
-                        size=(canvas_width, cont_height * rows),
-                        color=(0, 0, 0, 0))
-        draw = ImageDraw.Draw(img)  # set image for drawing
-
-        # set font
-        fnt = ImageFont.truetype(
-            f'.{os.path.sep}assets{os.path.sep}Roboto.ttf',
-            size=40)
-
-        # draws themes
-        for i, theme in enumerate(self.themes):
-            # draw text
-            msg = f"{theme.index}. {theme.name}"
-            text_width, text_height = draw.textsize(msg, fnt)
-
-            # text coords
-            x = (canvas_width/2)-(text_width/2)  # center
-            y = i * cont_height + padding_above_text
-
-            text_height += padding_above_text + padding_below_text
-
-            draw.text((x, y), msg, font=fnt, fill=(255, 255, 255))
-
-            width_of_rect = canvas_width/len(theme.colors)
-
-            # draw color preview
-            for j, color in enumerate(theme.colors, 0):
-                # top left corner
-                x0 = j * width_of_rect
-                y0 = i * cont_height + text_height
-
-                # bottom right corner
-                x1 = x0 + width_of_rect - box_margin
-                y1 = y0 + color_height
-
-                draw.rectangle([(x0, y0), (x1, y1)], fill=color.rgb)
-
-        # return binary data
-        imgByteArr = io.BytesIO()
-        img.save(imgByteArr, format='WEBP')
-        imgByteArr = imgByteArr.getvalue()
-        return io.BytesIO(imgByteArr)
+######################### FINDERS #########################
 
     def find_color(self, query, threshold=90):
         """Find a color in the guild's colors based on index or name.
@@ -297,7 +178,7 @@ class Guild():
         """
         # random color
         if query == "":
-            return self.random_color()
+            return random.choice(self.colors)
 
         # get color by index
         elif query.isdigit() and 0 < int(query) < len(self.colors) + 1:
@@ -360,6 +241,8 @@ class Guild():
                         break
         return user
 
+######################### IMPORT/EXPORT #########################
+
     def to_json(self):
         """Convert Guild object to valid JSON."""
         return {
@@ -374,17 +257,6 @@ class Guild():
             "colors": [color.to_json() for color in self.colors]
         }
 
-    @classmethod
-    def get(cls, id, catch_error=True):
-        """Find guild in the dictionary."""
-        guild = cls._guilds.get(id)
-        if not guild:
-            if catch_error:
-                raise auth.MissingGuild()
-            else:
-                return
-        return guild
-
     @staticmethod
     def from_json(data):
         """Convert valid JSON to guild object."""
@@ -398,8 +270,129 @@ class Guild():
             themes=[Theme.from_json(theme) for theme in data["themes"]],
             colors=[Color.from_json(color) for color in data["colors"]])
 
+######################### DRAWING #########################
 
-class Color():
+    def draw_colors(self):
+        """Draw colored boxes based on a colors.
+
+        Returns:
+            A byte array of the image
+        """
+        rows = math.ceil(len(self.colors) / 3)  # amt of rows needed
+        row_height = 50
+        column_width = 300
+        columns = 3
+
+        img = Image.new(mode='RGBA',
+                        size=(columns * column_width, rows * row_height),
+                        color=(0, 0, 0, 0))
+        draw = ImageDraw.Draw(img)  # set image for drawing
+        fnt = ImageFont.truetype(
+            font=f".{sep}assets{sep}Roboto.ttf", size=30)
+
+        # draws and labels boxes
+        for i, color in enumerate(self.colors):
+
+            # draw boxes
+            rem = i % 3  # 0,1,2 repeating
+            div = i//3  # increment every 3 elements
+            x1 = column_width * rem
+            x2 = row_height * div
+            y1 = column_width * (rem+1)
+            y2 = row_height * (div+1)
+            draw.rectangle([x1, x2, y1, y2], fill=color.rgb,
+                           outline=(0, 0, 0, 0), width=2)
+
+            W, H = column_width*rem, row_height*div+10  # origin to draw boxes
+            msg = f"{color.index}. {color.name}"
+            w, _ = draw.textsize(msg, fnt)  # width of text
+
+            # cut text until it fits
+            text_size_limit = column_width - (column_width/10)
+            while w > text_size_limit:
+                msg = msg[:-2]
+                w, _ = draw.textsize(msg, fnt)
+                if w <= text_size_limit:
+                    msg = msg + "..."
+
+            # Make text readable
+            r, g, b = color.rgb
+            luminance = (0.299 * r + 0.587 * g + 0.114 * b)/255
+            text_color = (0, 0, 0) if luminance > 0.5 else (255, 255, 255)
+
+            # Draw text on boxes
+            x = (column_width-w)/2 + W
+            y = H
+            draw.text((x, y), msg, font=fnt, fill=text_color)  # draw text
+
+        return img
+
+    def draw_themes(self):
+        """
+        Draws guild themes.
+
+        Returns:
+            list of Image: the list of images segmented by 5
+        """
+
+        color_height = 44  # height of color boxes
+        cont_height = 112 + 7  # container height
+        canvas_width = 900
+        padding_above_text = 20
+        padding_below_text = 10
+        box_margin = 5
+
+        fnt = ImageFont.truetype(f'assets{sep}Roboto.ttf', size=40)
+
+        theme_images = []
+
+        for x in range(math.ceil(len(self.themes)/5)):
+            # x is 1, 2, 3
+
+            start = x * 5
+            end = len(self.themes) if start + \
+                5 > len(self.themes) else start + 5
+
+            cut_themes = self.themes[start:end]
+            rows = len(cut_themes)
+
+            img = Image.new(mode='RGBA',
+                            size=(canvas_width, cont_height * rows),
+                            color=(0, 0, 0, 0))
+            draw = ImageDraw.Draw(img)  # set image for drawing
+
+            # draws themes
+            for i, theme in enumerate(cut_themes):
+                # draw text
+                msg = f"{theme.index}. {theme.name}"
+                text_width, text_height = draw.textsize(msg, fnt)
+
+                # text coords
+                x = (canvas_width/2)-(text_width/2)  # center
+                y = i * cont_height + padding_above_text
+
+                text_height += padding_above_text + padding_below_text
+
+                draw.text((x, y), msg, font=fnt, fill=(255, 255, 255))
+
+                width_of_rect = canvas_width/len(theme.colors)
+
+                # draw color preview
+                for j, color in enumerate(theme.colors, 0):
+                    # top left corner
+                    x0 = j * width_of_rect
+                    y0 = i * cont_height + text_height
+
+                    # bottom right corner
+                    x1 = x0 + width_of_rect - box_margin
+                    y1 = y0 + color_height
+
+                    draw.rectangle([(x0, y0), (x1, y1)], fill=color.rgb)
+            theme_images.append(img)
+        return theme_images
+
+
+class Color:
     """
     A color object that stores color data.
 
@@ -418,12 +411,12 @@ class Color():
         role_id(int): the discord role id of the color if created
     """
 
-    def __init__(self, name, hexcode, guild_id, role_id=None, member_ids=set()):
+    def __init__(self, name, hexcode, guild_id, **kwargs):
         self.name = name
         self.hexcode = hexcode
         self.guild_id = guild_id
-        self.role_id = role_id
-        self.member_ids = member_ids
+        self.role_id = kwargs.get("role_id", None)
+        self.member_ids = kwargs.get("member_ids", set())
 
     @property
     def rgb(self):
@@ -447,8 +440,10 @@ class Color():
         return (member for member in self.guild.members
                 if member.id in self.member_ids)
 
-    def __str__(self):
-        return self.name
+    @property
+    def role(self):
+        if self.role_id:
+            return self.guild.get_role(self.role_id)
 
     def __repr__(self):
         """Method for cleaner printing."""
@@ -489,7 +484,7 @@ class Color():
             member_ids=set(color["members"]))
 
 
-class Theme():
+class Theme:
     """An object that stores a list of color objects with name and description
 
     Args:
@@ -506,11 +501,11 @@ class Theme():
         index(int): The location in the list of themes in the guild
     """
 
-    def __init__(self, name, guild_id, description="", colors=[]):
+    def __init__(self, name, guild_id, **kwargs):
         self.name = name
         self.guild_id = guild_id
-        self.description = description
-        self.colors = colors
+        self.description = kwargs.get("description", name)
+        self.colors = kwargs.get("colors", [])
 
     @property
     def guild(self):
@@ -525,7 +520,7 @@ class Theme():
         try:
             self.guild.themes.remove(self)
         except ValueError:
-            return 1
+            pass
 
     def activate(self):
         """adds theme colors to the colors list of the guild"""

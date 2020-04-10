@@ -5,7 +5,7 @@ from discord.ext import commands
 
 from classes import Guild
 from authorization import authorize, is_disabled
-from functions import rgb_to_hex
+from utils import rgb_to_hex, to_sendable
 
 
 class ColorInfo(commands.Cog):
@@ -15,17 +15,11 @@ class ColorInfo(commands.Cog):
     @commands.command(name="colors", aliases=["colours", "c"])
     async def show_colors(self, ctx):
         """Display an image of equipped colors."""
-        authorize(ctx, "colors")
-        guild = Guild.get(ctx.guild.id)
-        img = guild.draw_colors()
-        file = discord.File(img, filename="colors.webp")
+        authorize(ctx, "disabled", "colors")
 
-        # send info to channel or user
-        if is_disabled(ctx.channel):
-            await ctx.message.delete()
-            await ctx.author.send(content=f"**{ctx.guild.name}**:", file=file)
-        else:
-            await ctx.send(file=file)
+        guild = Guild.get(ctx.guild.id)
+        file = to_sendable(guild.draw_colors(), "colors")
+        await ctx.send(file=file)
 
     @commands.command(name="info")
     async def show_color_info(self, ctx, *, query=""):

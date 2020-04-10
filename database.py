@@ -49,8 +49,7 @@ def get_prefs():
     data = list(coll.find())  # get mongo data
 
     for guild_dict in data:
-        guild = Guild.from_json(guild_dict)  # build guild
-        guild.reset_ids()
+        Guild.from_json(guild_dict)  # build guild
 
 
 def clear_abandoned_guilds():
@@ -59,9 +58,7 @@ def clear_abandoned_guilds():
     db_guilds = {guild.id for guild in Guild._guilds.values()}
 
     abandoned = db_guilds - guilds
-
-    print(len(abandoned))
-
     for id in abandoned:
+        print(f"Removed {id} from database")
         Guild._guilds.pop(id)  # remove from internal list
         coll.delete_one({"id": id})  # remove from MongoD

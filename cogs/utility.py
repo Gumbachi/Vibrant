@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 
 from classes import Guild
-from functions import rgb_to_hex
+from utils import rgb_to_hex
 import database as db
 from authorization import is_disabled, MissingGuild
 from vars import bot, emoji_dict
@@ -177,13 +177,6 @@ class UtilityCommands(commands.Cog):
             title="Stats",
             description=f"Servers: {len(bot.guilds)}\nUsers: {users}\nColors: {colors}\nThemes: {themes}\nExceptions: {exceptions}")
         await ctx.send(embed=stat_embed)
-
-    @commands.command(name="announce")
-    async def send_to_all_guilds(self, ctx, *message):
-        if ctx.author.id != 128595549975871488:
-            return
-        #announce_embed = discord.Embed(title="ColorBOT Announcement", description=" ".join(message))
-        # unfinished
 
     @commands.command(name="deleteguild")
     async def remove_guild(self, ctx, id):

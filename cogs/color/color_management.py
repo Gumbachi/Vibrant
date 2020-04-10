@@ -33,8 +33,7 @@ class ColorManagement(commands.Cog):
             hexcode == "#000001"
 
         # create and add color
-        color = Color(name=name, hexcode=hexcode,
-                      guild_id=ctx.guild.id, role_id=None, member_ids=set())
+        color = Color(name, hexcode, ctx.guild.id)
         guild.colors.append(color)
 
         # report success
@@ -42,6 +41,7 @@ class ColorManagement(commands.Cog):
             f"**{color.name}** has been added at index **{color.index}**.")
         await ctx.invoke(bot.get_command("colors"))  # show new set
         db.update_prefs(guild)
+        return color
 
     @commands.command(name="remove", aliases=["delete", "r"])
     async def remove_color(self, ctx, *, query):
@@ -50,7 +50,8 @@ class ColorManagement(commands.Cog):
         Args:
             color (tuple of str): The search query for color to remove
         """
-        authorize(ctx, "disabled", "roles", "colors", color_query=(query, 95))
+        authorize(ctx, "disabled", "roles", "heavy",
+                  "colors", color_query=(query, 95))
         guild = Guild.get(ctx.guild.id)
 
         # get color
@@ -69,7 +70,8 @@ class ColorManagement(commands.Cog):
         Args:
             color (tuple of str): The color to change the name of
         """
-        authorize(ctx, "disabled", "roles", "colors", swap_query=query)
+        authorize(ctx, "disabled", "roles", "heavy",
+                  "colors", swap_query=query)
 
         guild = Guild.get(ctx.guild.id)
 
@@ -103,7 +105,8 @@ class ColorManagement(commands.Cog):
         Args:
             color (tuple of str): The color to change the name of
         """
-        authorize(ctx, "disabled", "roles", "colors", swap_query=query)
+        authorize(ctx, "disabled", "roles", "heavy",
+                  "colors", swap_query=query)
 
         guild = Guild.get(ctx.guild.id)
 
@@ -142,7 +145,7 @@ class ColorManagement(commands.Cog):
         Args:
             backup (bool): Whether or not to send a backup JSON
         """
-        authorize(ctx, "disabled", "roles")
+        authorize(ctx, "disabled", "roles", "heavy")
 
         guild = Guild.get(ctx.guild.id)
 

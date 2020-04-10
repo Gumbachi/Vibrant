@@ -1,3 +1,4 @@
+import random
 from random import randint
 from itertools import islice, cycle, repeat
 
@@ -7,8 +8,8 @@ from discord.ext import commands
 import database as db
 from classes import Guild, Color
 from authorization import authorize, MissingPermissions, NotFoundError
-from vars import bot, waiting_on_reaction, waiting_on_hexcode, emoji_dict
-from vars import heavy_command_active
+from vars import bot, emoji_dict
+from utils import check_hex
 
 
 class ColorAssignment(commands.Cog):
@@ -34,11 +35,11 @@ class ColorAssignment(commands.Cog):
             if not color:
                 try:
                     authorize(ctx, "roles")
-                    return await add_color_UX(ctx, color_query)
+                    return await add_color_UX(ctx, color_query, user)
                 except MissingPermissions:
                     raise NotFoundError()
         else:
-            color = guild.random_color()
+            color = random.choice(guild.colors)
 
         await color_user(guild, user, color)
         await ctx.send(f"Gave **{user.name}** the **{color.name}** role")
@@ -56,11 +57,11 @@ class ColorAssignment(commands.Cog):
             if not color:
                 try:
                     authorize(ctx, "roles")
-                    return await add_color_UX(ctx, color_query)
+                    return await add_color_UX(ctx, color_query, ctx.author)
                 except MissingPermissions:
                     raise NotFoundError()
         else:
-            color = guild.random_color()
+            color = random.choice(guild.colors)
 
         await color_user(guild, ctx.author, color)
         await ctx.send(f"You are now colored **{color.name}**")
@@ -74,8 +75,11 @@ class ColorAssignment(commands.Cog):
         guild = Guild.get(ctx.guild.id)
         role = guild.get_color_role(ctx.author)
 
+        color = guild.get_color("role_id", role.id)
+
         # remove roles and send success message
         await ctx.author.remove_roles(role)
+        color.member_ids.discard(ctx.author.id)
         await ctx.send(f"You are no longer colored **{role.name}**")
         db.update_prefs(guild)
 
@@ -96,7 +100,7 @@ class ColorAssignment(commands.Cog):
             authorize(ctx, color_query=(color, 90))
             color = guild.find_color(color)
 
-        heavy_command_active[ctx.guild.id] = ctx.command.name
+        guild.heavy_command_active = ctx.command.name
 
         # get uncolored members
         uncolored = (member for member in ctx.guild.members
@@ -120,7 +124,7 @@ class ColorAssignment(commands.Cog):
             for member, color in zip(uncolored, color_cycle):
                 await color_user(guild, member, color, trace=False)
 
-        del heavy_command_active[ctx.guild.id]
+        guild.heavy_command_active = None
 
         # report success
         if trace:
@@ -144,24 +148,43 @@ class ColorAssignment(commands.Cog):
         if trace:
             await ctx.send("Uncoloring everyone...")
 
-        heavy_command_active[ctx.guild.id] = ctx.command.name
+        guild.heavy_command_active = ctx.command.name
 
         # loop through and color members
         async with ctx.channel.typing():
-            for member in guild.members:
-                role = guild.get_color_role(member)
-                if not role:
-                    continue
-                else:
-                    await member.remove_roles(role)
+            for color in guild.colors:
+                # delete role
+                if color.role:
+                    await color.role.delete()
 
-        del heavy_command_active[ctx.guild.id]
+                color.member_ids.clear()  # Clear members from color
+
+        guild.heavy_command_active = None
 
         # report success
         if trace:
             await ctx.send("Everyone has been uncolored!")
 
         db.update_prefs(guild)
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        # handles message verification if user is adding a color via reaction
+
+        guild = Guild.get(message.guild.id)
+
+        # listen for hexcode
+        if message.author.id == guild.waiting_on_hexcode.get("id"):
+            if check_hex(message.content):
+                ctx = await bot.get_context(message)
+                user = guild.waiting_on_hexcode.get("user")
+                color = await ctx.invoke(bot.get_command("add"),
+                                         hexcode=message.content,
+                                         name=guild.waiting_on_hexcode.get("color", "No Name"))
+                await color_user(guild, user, color)
+                await ctx.send(f"{user.name} has been colored **{color.name}**")
+            else:
+                guild.waiting_on_hexcode = {}
 
 
 def setup(bot):
@@ -172,15 +195,18 @@ async def color_user(guild, user, color, trace=True):
     """Color a specific user.
 
     Args:
-        guild (Guild): The username to look for
-        user (discord.Member): The name or index of the color to look up
-        color (Color): Whether to print anything to user
+        guild (Guild): The Guild object
+        user (discord.Member): The member to be colors
+        color (Color): The color
     """
 
     # remove user's current color roles
     role = guild.get_color_role(user)
     if role:
         await user.remove_roles(role)
+        old_color = guild.get_color("role_id", role.id)
+        if old_color:
+            old_color.member_ids.discard(user.id)
 
     # check if role already exists and assigns then ends process if true
     if color.role_id:
@@ -198,40 +224,12 @@ async def color_user(guild, user, color, trace=True):
         await user.add_roles(color_role)
 
     # Report success
+    color.member_ids.add(user.id)  # add user to color members
     print(f"COLORED {user} -> {color.name}")
 
 
-async def add_color_UX(ctx, color, hexcode=None):
-    msg = await ctx.send(f"**{color}** is not in your colors. Would you like to add it?")
-    await msg.add_reaction(emoji_dict["checkmark"])
-    await msg.add_reaction(emoji_dict["crossmark"])
-
-    waiting_on_reaction[ctx.author.id] = {
-        "message": msg, "color": color}
-    try:
-        del waiting_on_hexcode[ctx.author.id]
-    except:
-        pass
-
-
-@bot.event
-async def on_reaction_add(reaction, user):
-    if user.id == bot.user.id:
-        return
-
-    # check reaction for adding color
-    if user.id in waiting_on_reaction.keys():
-        waiting_data = waiting_on_reaction[user.id]
-        if reaction.message.id == waiting_data["message"].id:
-            if reaction.emoji == emoji_dict["checkmark"]:
-                await reaction.message.clear_reactions()
-                prompt = await reaction.message.channel.send(f"{user.mention}, What will be the hexcode for **{waiting_data['color']}**")
-                waiting_on_hexcode[user.id] = {
-                    "message": prompt, "color": waiting_data['color']}
-            elif reaction.emoji == emoji_dict["crossmark"]:
-                await reaction.message.clear_reactions()
-                await reaction.message.edit(content=f"{reaction.message.content} **Cancelled**")
-        else:
-            await waiting_data["message"].clear_reactions()
-            await waiting_data["message"].edit(content=f"{reaction.message.content} **Cancelled**")
-        del waiting_on_reaction[user.id]
+async def add_color_UX(ctx, color, user):
+    await ctx.send(f"**{color}** is not in your colors\nType the hexcode below to add it")
+    guild = Guild.get(ctx.guild.id)
+    guild.waiting_on_hexcode = {
+        "id": ctx.author.id, "color": color, "user": user}
