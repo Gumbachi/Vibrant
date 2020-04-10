@@ -4,8 +4,8 @@ from discord.ext import commands
 import database as db
 from classes import Guild
 from authorization import authorize
-from vars import bot, heavy_command_active
 from cogs.color.color_assignment import color_user
+from vars import bot
 
 
 class ThemeAssignment(commands.Cog):
@@ -20,8 +20,8 @@ class ThemeAssignment(commands.Cog):
         guild = Guild.get(ctx.guild.id)
         theme = guild.find_theme(query, 90)
 
-        print("Loading theme")
-        heavy_command_active[ctx.guild.id] = ctx.command.name
+        print(f"Loading {theme.name}")
+        guild.heavy_command_active = ctx.command.name
 
         # clear colors
         await guild.clear_colors()
@@ -41,7 +41,7 @@ class ThemeAssignment(commands.Cog):
         # report success and update DB
         await ctx.send(f"Loaded **{theme.name}**")
         await ctx.invoke(bot.get_command("colors"))
-        del heavy_command_active[ctx.guild.id]
+        guild.heavy_command_active = None
         db.update_prefs(guild)
 
 

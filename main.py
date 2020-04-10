@@ -10,7 +10,7 @@ from classes import Guild
 from cogs.color.color_assignment import color_user
 from utils import check_hex, rgb_to_hex
 from authorization import authorize
-from vars import bot, extensions, get_prefix, waiting_on_hexcode
+from vars import bot, extensions, get_prefix
 
 
 @bot.event
@@ -44,25 +44,10 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    # types prefix if bot is mentioned
+    # shows prefix if bot is mentioned
     if message.mentions and message.mentions[0].id == bot.user.id:
         return await message.channel.send(
             f"Type `{get_prefix(bot, message)}`help for help.")
-
-    # Make this a listener in the cog
-    # # handles message verification if user is adding a color via reaction
-    # if message.author.id in waiting_on_hexcode.keys():
-    #     id = message.author.id
-    #     hexcode_data = waiting_on_hexcode[id]
-    #     if message.channel.id == hexcode_data["message"].channel.id:
-    #         ctx = await bot.get_context(message)
-    #         if check_hex(message.content):
-    #             await ctx.invoke(bot.get_command("add"), hexcode=message.content, name=hexcode_data["color"])
-    #         else:
-    #             await ctx.send("Invalid Hexcode. Please try again")
-    #             await hexcode_data["message"].edit(
-    #                 content=f"{hexcode_data['message'].content}**Cancelled**")
-    #     del waiting_on_hexcode[id]  # remove user from pool
 
     await bot.process_commands(message)
 
@@ -73,12 +58,12 @@ async def on_member_join(member):
     member joins a server the bot is in"""
     guild = Guild.get(member.guild.id)
 
-    if not guild or not guild.welcome_channel:
+    if not guild.welcome_channel:
         return
 
     # make sure embed can be sent with or without colors
     if guild.colors:
-        color = guild.random_color()  # get random color
+        color = random.choice(guild.colors)  # get random color
         await color_user(guild, member, color)
         accent = discord.Color.from_rgb(*color.rgb)  # discord format
     else:
@@ -102,9 +87,10 @@ async def on_member_join(member):
 async def on_member_remove(member):
     """Sends a goodbye message when a member leaves a server the bot is in"""
     guild = Guild.get(member.guild.id)
+    guild.erase_user(member.id)
 
     # check if welcome channel or guild exists
-    if not guild or not guild.welcome_channel:
+    if not guild.welcome_channel:
         return
 
     # generate and send goodbye message
@@ -114,6 +100,7 @@ async def on_member_remove(member):
     embed.set_thumbnail(url=member.avatar_url)
 
     await guild.welcome_channel.send(embed=embed)
+    db.update_prefs(guild)
 
 
 @bot.event
@@ -224,6 +211,6 @@ if __name__ == '__main__':
             bot.load_extension(extension)
         except Exception as e:
             print(f"Couldnt load {extension}")
-            # print(e)
+            print(e)
 
 bot.run(os.environ["TOKEN"])  # runs the bot

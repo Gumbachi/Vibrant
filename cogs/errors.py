@@ -121,7 +121,7 @@ class CommandErrorHandler(commands.Cog):
             return await ctx.send(f"**{ctx.command}** must be used in a server channel")
 
         error_embed = discord.Embed(title=f'Your command: {ctx.message.content}',
-                                    description=ctx.guild.id,
+                                    description=f"{ctx.guild.id}: {error}",
                                     color=discord.Colour.red())
         await ctx.send(embed=error_embed, delete_after=30)
 

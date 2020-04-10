@@ -1,24 +1,35 @@
+"""Module holds Paginated sending class that allow a neatly functioning UI
+to save space with discord and provide easy navigation
+NGL this module kinda ugly and needs to be cleaned up
+"""
+
 import discord
 
 from vars import emoji_dict, bot
+from utils import to_sendable
 
 
 class PaginatedMessage:
+    """Base class for any paginated message"""
+
     def __init__(self, content, pointer=0):
-        """Pointer is the current index"""
-        self.content = list(content.items())
-        self.pointer = pointer
+        """Pointer is the current index
+
+        Args:
+            content: either a list of images or a list of dictionaries
+            pointer: The page index
+        """
+        if isinstance(content, dict):
+            self.content = list(content.items())
+        else:
+            self.content = content
+        self.pointer = pointer if -1 < pointer < len(content) else 0
         self.message = None
 
     @property
     def channel(self):
         """get the channel"""
         return self.message.channel
-
-    @property
-    def reactions(self):
-        """get the channel"""
-        return self.message.reactions
 
     async def add_reactions(self, *reactions, **kwargs):
         """Add reactions to the contained message"""
@@ -37,13 +48,80 @@ class PaginatedMessage:
 
 
 class PaginatedImage(PaginatedMessage):
-    # maybe use a jump url for this or something
-    pass
+    _items = {}
+    REACTIONS = {emoji_dict[name] for name in
+                 ("left_arrow", "right_arrow", "refresh", "updown")}
+
+    def __init__(self, content, pointer=0):
+        super().__init__(content, pointer)
+        self.img_message = None
+        self.pointer = pointer if -1 < pointer < len(content) else 0
+
+    @classmethod
+    def get(cls, id):
+        return cls._items.get(id)
+
+    async def send(self, channel):
+        if len(self.content) == 1:
+            file = to_sendable(self.content[0])
+            return await channel.send(file=file)
+
+        # Clear buttons from old message
+        old = PaginatedImage._items.pop(channel.id, None)
+        if old:
+            await old.message.clear_reactions()
+
+        # send new messages and add reaction
+        self.message = await channel.send(f"Page {self.pointer+1}/{len(self.content)}")
+
+        file = to_sendable(self.content[self.pointer])
+        self.img_message = await channel.send(file=file)
+        await self.add_reactions("left_arrow", "right_arrow", "refresh", "updown")
+        PaginatedImage._items[channel.id] = self
+
+    async def resend(self):
+        """Resend the controller and message"""
+        file = to_sendable(self.content[self.pointer])
+        msg = self.message.content
+
+        # delete old messages
+        await self.message.delete()
+        await self.img_message.delete()
+
+        self.message = await self.channel.send(msg)
+        self.img_message = await self.channel.send(file=file)
+        await self.add_reactions("left_arrow", "right_arrow", "refresh", "updown")
+
+    async def sendall(self):
+        """Send all of the image at once"""
+        await self.message.delete()
+        await self.img_message.delete()
+
+        for img in self.content:
+            file = to_sendable(img)
+            await self.channel.send(file=file)
+
+        PaginatedImage._items.pop(self.channel.id, None)
+
+    async def update(self):
+        """Change the currently displayed image."""
+        # delete old image
+        await self.img_message.delete()
+        file = to_sendable(self.content[self.pointer])
+
+        # send new message
+        self.img_message = await self.channel.send(file=file)
+
+        # edit page message
+        await self.message.edit(content=f"Page {self.pointer+1}/{len(self.content)}")
 
 
 class PaginatedEmbed(PaginatedMessage):
 
     _items = {}  # Channel id: self
+    REACTIONS = {emoji_dict[name] for name in
+                 ("left_arrow", "right_arrow", "home_arrow",
+                  "up_arrow", "refresh")}
 
     def __init__(self, content, pointer=0):
         super().__init__(content, pointer)
@@ -111,6 +189,11 @@ async def on_reaction_add(reaction, user):
     pe = PaginatedEmbed.get(reaction.message.channel.id)
 
     if not pe or reaction.message.id != pe.message.id:
+        pe = PaginatedImage.get(reaction.message.channel.id)
+        if not pe or reaction.message.id != pe.message.id:
+            return
+
+    if reaction.emoji not in type(pe).REACTIONS:
         return
 
     if reaction.emoji == emoji_dict["left_arrow"]:
@@ -147,3 +230,6 @@ async def on_reaction_add(reaction, user):
     elif reaction.emoji == emoji_dict["refresh"]:
         await pe.message.remove_reaction(emoji_dict["refresh"], user)
         await pe.resend()
+
+    elif reaction.emoji == emoji_dict["updown"]:
+        await pe.sendall()

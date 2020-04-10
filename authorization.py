@@ -7,7 +7,6 @@ import discord
 from discord.ext.commands import CommandError, UserInputError
 
 import classes
-from vars import heavy_command_active
 
 
 class MissingGuild(CommandError):
@@ -99,8 +98,8 @@ def authorize(ctx, *checks, **input_checks):
         raise MissingPermissions("Manage Channels")
 
     # Command related checks
-    if "heavy" in checks and ctx.guild.id in heavy_command_active:
-        raise HeavyCommandActive(heavy_command_active[ctx.guild.id])
+    if "heavy" in checks and guild.heavy_command_active:
+        raise HeavyCommandActive(guild.heavy_command_active)
 
     # Color related checks
     if "colors" in checks and not guild.colors:

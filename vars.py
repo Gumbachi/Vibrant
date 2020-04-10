@@ -30,7 +30,8 @@ emoji_dict = {"checkmark": "✅",
               "up_arrow": "🔼",
               "down_arrow": "🔽",
               "double_down": "⏬",
-              "refresh": "🔄"}
+              "refresh": "🔄",
+              "updown": "↕️"}
 
 
 def get_prefix(bot, message):
@@ -459,11 +460,6 @@ change_log = {
         "Help update": "Help command is simplified and now works like a book with buttons",
         "Overwrite simpler": "Overwrite just overwrite a theme now without changing name",
         "imports command": "You can now view all presets",
+        "Pages for everything": "Everything that can be paginated is"
     }
 }
-
-# wait lists with for reaction based UX
-waiting_on_reaction = {}
-waiting_on_hexcode = {}
-
-heavy_command_active = {}

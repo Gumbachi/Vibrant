@@ -41,6 +41,7 @@ class ColorManagement(commands.Cog):
             f"**{color.name}** has been added at index **{color.index}**.")
         await ctx.invoke(bot.get_command("colors"))  # show new set
         db.update_prefs(guild)
+        return color
 
     @commands.command(name="remove", aliases=["delete", "r"])
     async def remove_color(self, ctx, *, query):
