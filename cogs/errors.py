@@ -32,11 +32,18 @@ class CommandErrorHandler(commands.Cog):
 
         # Missing Guild
         if isinstance(error, auth.MissingGuild):
-            await gumbachi.send(f"Missing guild {ctx.guild.id} {ctx.guild.name}")
-            await ctx.send("Something went wrong. I couldn't find the data for this server.")
-            guild = Guild(id=ctx.guild.id)
+            data = db.pull(ctx.guild.id)
+            if data:
+                guild = Guild.from_json(data)
+                await gumbachi.send(f"Missing guild Recovered {ctx.guild.id} {ctx.guild.name}")
+                await ctx.send("Something went wrong. Please try your command again")
+            else:
+                guild = Guild(id=ctx.guild.id)
+                await gumbachi.send(f"Missing guild Not Recovered {ctx.guild.id} {ctx.guild.name}")
+                await ctx.send("Something went wrong. I couldn't find the data for this server.")
+                await ctx.send("A blank profile has been added for this server. Try your command again and if this issue persists please try reinviting the bot")
             db.update_prefs(guild)
-            return await ctx.send("A blank profile has been added for this server. Try your command again and if this issue persists please try reinviting the bot")
+            return
 
         # Channel Disabled
         elif isinstance(error, auth.ChannelDisabled):

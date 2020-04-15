@@ -32,7 +32,6 @@ async def on_ready():
     # update DB with new guilds
     print("Updating Database...")
     db.update_prefs(*new_guilds)
-    db.clear_abandoned_guilds()
 
     print("Ready Player One.")
 

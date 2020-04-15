@@ -170,7 +170,10 @@ class PaginatedEmbed(PaginatedMessage):
         # Clear buttons from old message
         old = PaginatedEmbed._items.pop(channel.id, None)
         if old:
-            await old.message.clear_reactions()
+            try:
+                await old.message.clear_reactions()
+            except:
+                pass
 
         self.message = await channel.send(embed=self.embed)
         await self.add_reactions(default=True)

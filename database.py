@@ -62,3 +62,8 @@ def clear_abandoned_guilds():
         print(f"Removed {id} from database")
         Guild._guilds.pop(id)  # remove from internal list
         coll.delete_one({"id": id})  # remove from MongoD
+
+
+def pull(id):
+    # find a document based on ID
+    return coll.find_one({"id": id})
