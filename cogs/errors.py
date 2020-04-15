@@ -127,6 +127,8 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(ctx.channel, discord.channel.DMChannel):
             return await ctx.send(f"**{ctx.command}** must be used in a server channel")
 
+        guild.heavy_command_active = None
+
         error_embed = discord.Embed(title=f'Your command: {ctx.message.content}',
                                     description=f"{ctx.guild.id}: {error}",
                                     color=discord.Colour.red())
