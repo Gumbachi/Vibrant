@@ -7,7 +7,7 @@ import random
 from os.path import sep
 
 import discord
-from fuzzywuzzy import process
+from rapidfuzz import process
 from PIL import Image, ImageDraw, ImageFont
 
 from vars import bot
@@ -186,10 +186,11 @@ class Guild:
 
         # get color by name
         else:
-            name, rating = process.extractOne(
-                query, [color.name for color in self.colors])
-            if rating >= threshold:
-                return self.get_color('name', name)
+            match = process.extractOne(
+                query, [color.name for color in self.colors],
+                score_cutoff=threshold)
+            if match:
+                return self.get_color('name', match[0])
 
     def find_theme(self, query, threshold=80):
         """Find a theme in the guild's themes based on index or name
@@ -207,10 +208,11 @@ class Guild:
 
         # get theme by name
         else:
-            best_theme, rating = process.extractOne(
-                query, [theme.name for theme in self.themes])
-            if rating >= threshold:
-                return self.get_theme('name', best_theme)
+            match = process.extractOne(
+                query, [theme.name for theme in self.themes],
+                score_cutoff=threshold)
+            if match:
+                return self.get_theme('name', match[0])
 
     def find_user(self, query, message=None, threshold=80):
         """Search for a user in the guild with a query.
@@ -226,20 +228,20 @@ class Guild:
         """
         # check mentions
         if message and message.mentions:
-            user = message.mentions[0]
+            return message.mentions[0]
 
         # try fuzzy matching
-        else:
-            member_names = (member.name for member in self.members)
-            best_user, rating = process.extractOne(query, member_names)
-            for member in self.members:
-                if member.name == best_user:
-                    if rating <= threshold:
-                        user = None
-                    else:
-                        user = member
-                        break
-        return user
+        member_names = [member.name for member in self.members]
+        match = process.extractOne(query, member_names,
+            score_cutoff=threshold)
+
+        if not match:
+            return None
+
+        best_user = match[0]
+        for member in self.members:
+            if member.name == best_user:
+                return member
 
 ######################### IMPORT/EXPORT #########################
 
