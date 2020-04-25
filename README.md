@@ -35,7 +35,7 @@ Optional arguments are marked with a \*
 
 |      **Command**       | **Example**  |               **Description**               |
 | :--------------------: | :----------: | :-----------------------------------------: |
-|     help \<page\*>     | \$help setup |            Standard help command            |
+|     help \<page\*>     |   \$help     |            Standard help command            |
 | prefix \<new prefix\*> |  \$prefix %  | Changes the prefix you use to call commands |
 
 ### Color General Commands
