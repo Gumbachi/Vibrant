@@ -158,14 +158,11 @@ class ColorAssignment(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         # handles message verification if user is adding a color via reaction
-        try:
+        if check_hex(message.content):
             guild = Guild.get(message.guild.id)
-        except:
-            return
 
-        # listen for hexcode
-        if message.author.id == guild.waiting_on_hexcode.get("id"):
-            if check_hex(message.content):
+            # listen for hexcode
+            if message.author.id == guild.waiting_on_hexcode.get("id"):
                 ctx = await bot.get_context(message)
                 user = guild.waiting_on_hexcode.get("user")
                 color = await ctx.invoke(bot.get_command("add"),
