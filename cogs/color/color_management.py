@@ -24,6 +24,8 @@ class ColorManagement(commands.Cog):
 
         guild = Guild.get(ctx.guild.id)
 
+        print("GUILD GOT")
+
         # auto name if name not given
         if not name:
             name = f"Color {len(guild.colors) + 1}"
@@ -36,10 +38,14 @@ class ColorManagement(commands.Cog):
         color = Color(name, hexcode, ctx.guild.id)
         guild.colors.append(color)
 
+        print("ADDED")
+
         # report success
         await ctx.send(
             f"**{color.name}** has been added at index **{color.index}**.")
         await ctx.invoke(bot.get_command("colors"))  # show new set
+
+        print("C CALLED")
         db.update_prefs(guild)
         return color
 

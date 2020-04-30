@@ -84,7 +84,7 @@ class ColorAssignment(commands.Cog):
         db.update_prefs(guild)
 
     @commands.command(name="splash")
-    async def color_server(self, ctx, color=None, trace=True):
+    async def color_server(self, ctx, color=None):
         """Gather all of the uncolored users and assigns them a color.
 
         Args:
@@ -105,11 +105,8 @@ class ColorAssignment(commands.Cog):
         # get uncolored members
         uncolored = (member for member in ctx.guild.members
                      if not guild.get_color_role(member))
-        # members_to_color = sum(1 for _ in uncolored)
 
-        # estimate time to complete
-        if trace:
-            await ctx.send("Coloring everyone...")
+        await ctx.send("Coloring everyone...")
 
         # color generator for splashing
         if not color:
@@ -121,19 +118,16 @@ class ColorAssignment(commands.Cog):
 
         # loop through and color members
         async with ctx.channel.typing():
-            for member, color in zip(uncolored, color_cycle):
-                await color_user(guild, member, color, trace=False)
+            for member in uncolored:
+                await color_user(guild, member, next(color_cycle))
 
         guild.heavy_command_active = None
 
-        # report success
-        if trace:
-            await ctx.send("Everyone visible has been colored!")
-
+        await ctx.send("Everyone visible has been colored!")
         db.update_prefs(guild)
 
     @commands.command(name="unsplash")
-    async def uncolor_server(self, ctx, trace=True):
+    async def uncolor_server(self, ctx):
         """Gather all of the uncolored users and assigns them a color.
 
         Args:
@@ -144,10 +138,7 @@ class ColorAssignment(commands.Cog):
 
         guild = Guild.get(ctx.guild.id)
 
-        # estimate time to complete
-        if trace:
-            await ctx.send("Uncoloring everyone...")
-
+        await ctx.send("Uncoloring everyone...")
         guild.heavy_command_active = ctx.command.name
 
         # loop through and color members
@@ -160,10 +151,7 @@ class ColorAssignment(commands.Cog):
                 color.member_ids.clear()  # Clear members from color
 
         guild.heavy_command_active = None
-
-        # report success
-        if trace:
-            await ctx.send("Everyone has been uncolored!")
+        await ctx.send("Everyone has been uncolored!")
 
         db.update_prefs(guild)
 
@@ -193,7 +181,7 @@ def setup(bot):
     bot.add_cog(ColorAssignment(bot))
 
 
-async def color_user(guild, user, color, trace=True):
+async def color_user(guild, user, color):
     """Color a specific user.
 
     Args:

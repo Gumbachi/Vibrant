@@ -462,5 +462,10 @@ change_log = {
         "imports command": "You can now view all presets",
         "Pages for everything": "Everything that can be paginated is",
         "Better UX": "Asks for hexcode and then colors the user you wanted"
-    }
+    },
+    "1.3": {
+        "title": "Vibrant 1.3",
+        "description": " ",
+        "Smarter data handling": "Tries to fill in gaps with the data before reporting error",
+    },
 }

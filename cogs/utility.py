@@ -21,62 +21,67 @@ class UtilityCommands(commands.Cog):
         db.update_prefs(*list(Guild._guilds.values()))
         await ctx.send("update complete")
 
-    @commands.command(name="correct_members")
-    async def fix_member_roles(self, ctx):
-        if ctx.author.id != 128595549975871488:
-            return
+    @commands.command(name="dstats")
+    async def devstats(self, ctx):
+        print(len(Guild._guilds))
+        print(Guild._guilds)
 
-        for guild in Guild._guilds.values():
-            for color in guild.colors:
-                if color.role_id:
-                    try:
-                        role = guild.discord_guild.get_role(color.role_id)
-                        color.member_ids = {
-                            member.id for member in role.members}
-                    except:
-                        print("broke")
+        # @commands.command(name="correct_members")
+        # async def fix_member_roles(self, ctx):
+        #     if ctx.author.id != 128595549975871488:
+        #         return
 
-                else:
-                    color.member_ids = set()
-            db.update_prefs(guild)
-        print("Finished")
+        #     for guild in Guild._guilds.values():
+        #         for color in guild.colors:
+        #             if color.role_id:
+        #                 try:
+        #                     role = guild.discord_guild.get_role(color.role_id)
+        #                     color.member_ids = {
+        #                         member.id for member in role.members}
+        #                 except:
+        #                     print("broke")
 
-    @commands.command(name="trim_members")
-    async def purge_members(self, ctx, *, id=None):
-        if ctx.author.id != 128595549975871488:
-            return
+        #             else:
+        #                 color.member_ids = set()
+        #         db.update_prefs(guild)
+        #     print("Finished")
 
-        if not id:
-            for guild in Guild._guilds.values():
-                all_members = set()
-                verified_members = {
-                    member.id for member in guild.discord_guild.members}
-                for color in guild.colors:
-                    color.member_ids &= verified_members
-                    color.member_ids -= all_members
-                    all_members |= color.member_ids
-        else:
-            guild = Guild.get(int(id), catch_error=False)
-            all_members = set()
-            verified_members = {
-                member.id for member in guild.discord_guild.members}
-            for color in guild.colors:
-                if not color.member_ids:
-                    continue
-                color.member_ids &= verified_members
-                color.member_ids -= all_members
-                all_members |= color.member_ids
+        # @commands.command(name="trim_members")
+        # async def purge_members(self, ctx, *, id=None):
+        #     if ctx.author.id != 128595549975871488:
+        #         return
 
-            for theme in guild.themes:
-                for color in theme.colors:
-                    if not color.member_ids:
-                        continue
-                    color.member_ids &= verified_members
-                    color.member_ids -= all_members
-                    all_members |= color.member_ids
+        #     if not id:
+        #         for guild in Guild._guilds.values():
+        #             all_members = set()
+        #             verified_members = {
+        #                 member.id for member in guild.discord_guild.members}
+        #             for color in guild.colors:
+        #                 color.member_ids &= verified_members
+        #                 color.member_ids -= all_members
+        #                 all_members |= color.member_ids
+        #     else:
+        #         guild = Guild.get(int(id), catch_error=False)
+        #         all_members = set()
+        #         verified_members = {
+        #             member.id for member in guild.discord_guild.members}
+        #         for color in guild.colors:
+        #             if not color.member_ids:
+        #                 continue
+        #             color.member_ids &= verified_members
+        #             color.member_ids -= all_members
+        #             all_members |= color.member_ids
 
-            db.update_prefs(guild)
-        await ctx.send("Done")
+        #         for theme in guild.themes:
+        #             for color in theme.colors:
+        #                 if not color.member_ids:
+        #                     continue
+        #                 color.member_ids &= verified_members
+        #                 color.member_ids -= all_members
+        #                 all_members |= color.member_ids
+
+        #         db.update_prefs(guild)
+        #     await ctx.send("Done")
 
     @commands.command(name="guildinfo")
     async def show_guild_info(self, ctx, id=None):
@@ -178,7 +183,7 @@ class UtilityCommands(commands.Cog):
             description=f"Servers: {len(bot.guilds)}\nUsers: {users}\nColors: {colors}\nThemes: {themes}\nExceptions: {exceptions}")
         await ctx.send(embed=stat_embed)
 
-    @commands.command(name="deleteguild")
+    @commands.command(name="deletelocal")
     async def remove_guild(self, ctx, id):
         if ctx.author.id != 128595549975871488:
             return

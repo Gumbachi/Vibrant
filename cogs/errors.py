@@ -18,7 +18,7 @@ class CommandErrorHandler(commands.Cog):
     async def on_command_error(self, ctx, error):
         """The event triggered when an error is raised while invoking a command."""
 
-        p = get_prefix(bot, ctx.message)  # prefix
+        p = ctx.prefix
         gumbachi = bot.get_user(128595549975871488)
         if hasattr(ctx.command, 'on_error'):
             return
@@ -30,19 +30,17 @@ class CommandErrorHandler(commands.Cog):
 
         ################ COMMAND ERROR HANDLING ################
 
-        # Missing Guild
+        # Check for data and if not data make a blank entry
         if isinstance(error, auth.MissingGuild):
-            data = db.pull(ctx.guild.id)
-            if data:
-                guild = Guild.from_json(data)
-                await gumbachi.send(f"Missing guild Recovered {ctx.guild.id} {ctx.guild.name}")
-                await ctx.send("Something went wrong. Please try your command again")
-            else:
+            data = db.find_guild(ctx.guild.id)
+            if not data:
                 guild = Guild(id=ctx.guild.id)
                 await gumbachi.send(f"Missing guild Not Recovered {ctx.guild.id} {ctx.guild.name}")
-                await ctx.send("Something went wrong. I couldn't find the data for this server.")
-                await ctx.send("A blank profile has been added for this server. Try your command again and if this issue persists please try reinviting the bot")
-            db.update_prefs(guild)
+                await ctx.send(f"Couldn't find data for {ctx.guild.name}, so a blank profile has been created.\n"
+                               "Please try your command again and if this issue persists, please inform Gumbachi in the support server.")
+                db.update_prefs(guild)
+            else:
+                await ctx.send("Sorry, please try that command again.")
             return
 
         # Channel Disabled
@@ -51,7 +49,7 @@ class CommandErrorHandler(commands.Cog):
                 await ctx.message.delete()
                 guild = Guild.get(ctx.guild.id)
                 embed = discord.Embed(title=f"{ctx.channel.name} is disabled",
-                                      description=(f"Enabled channels:\n"
+                                      description=(f"Enabled channels include:\n"
                                                    f"{', '.join([channel.mention for channel in guild.enabled_channels])}"))
                 return await ctx.author.send(embed=embed)
             except:

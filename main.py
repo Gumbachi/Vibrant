@@ -20,18 +20,14 @@ async def on_ready():
         activity=discord.Activity(type=discord.ActivityType.playing,
                                   name="@Vibrant for help"))
 
-    # get preferences from DB
-    print("Fetching Preferences...")
-    db.get_prefs()
+    # # collect new guilds and create objects for them
+    # print("Generating Objects...")
+    # new_ids = {guild.id for guild in bot.guilds} - set(Guild._guilds.keys())
+    # new_guilds = [Guild(id) for id in new_ids]
 
-    # collect new guilds and create objects for them
-    print("Generating Objects...")
-    new_ids = {guild.id for guild in bot.guilds} - set(Guild._guilds.keys())
-    new_guilds = [Guild(id) for id in new_ids]
-
-    # update DB with new guilds
-    print("Updating Database...")
-    db.update_prefs(*new_guilds)
+    # # update DB with new guilds
+    # print("Updating Database...")
+    # db.update_prefs(*new_guilds)
 
     print("Ready Player One.")
 

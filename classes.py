@@ -6,6 +6,7 @@ import os
 import random
 from os.path import sep
 
+import database as db
 import discord
 from rapidfuzz import process
 from PIL import Image, ImageDraw, ImageFont
@@ -88,15 +89,19 @@ class Guild:
         return out
 
     @classmethod
-    def get(cls, id, catch_error=True):
-        """Find guild in the dictionary."""
-        guild = cls._guilds.get(id)
-        if not guild:
-            if catch_error:
-                raise auth.MissingGuild()
+    def get(cls, id):
+        """Find guild in the dictionary or db."""
+        try:
+            return cls._guilds[id]
+        except KeyError:
+            data = db.find_guild(id)
+            if data:
+                print("Guild retrieved from database")
+                return Guild.from_json(data)
             else:
-                return
-        return guild
+                print("Missing")
+                raise auth.MissingGuild()
+
 
 ######################### COLOR/THEME MANAGEMENT #########################
 
@@ -233,7 +238,7 @@ class Guild:
         # try fuzzy matching
         member_names = [member.name for member in self.members]
         match = process.extractOne(query, member_names,
-            score_cutoff=threshold)
+                                   score_cutoff=threshold)
 
         if not match:
             return None
