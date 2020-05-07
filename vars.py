@@ -467,5 +467,8 @@ change_log = {
         "title": "Vibrant 1.3",
         "description": " ",
         "Smarter data handling": "Tries to fill in gaps with the data before reporting error",
+        "Paginated Images changed": "No more double images its just one now for simplicity",
+        "Back to PNG": "Apparently WebP doesn't work on iOS :(",
+        "Visual Changes": "Switched a lot of responses to embeds"
     },
 }

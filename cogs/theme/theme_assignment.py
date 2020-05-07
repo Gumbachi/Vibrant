@@ -1,9 +1,12 @@
 import discord
 from discord.ext import commands
 
+from rapidfuzz import process
+
 import database as db
 from classes import Guild
 from authorization import authorize
+from converters import ThemeConverter
 from cogs.color.color_assignment import color_user
 from vars import bot
 
@@ -13,14 +16,13 @@ class ThemeAssignment(commands.Cog):
         self.bot = bot
 
     @commands.command(name="theme.load", aliases=["t.l"])
-    async def load_theme(self, ctx, *, query):
+    async def load_theme(self, ctx, *, theme: ThemeConverter):
         """Change the active colors to a theme."""
-        authorize(ctx, "disabled", "roles", "themes",
-                  "heavy", theme_query=(query, 90))
+        authorize(ctx, "disabled", "roles", "themes", "heavy")
         guild = Guild.get(ctx.guild.id)
-        theme = guild.find_theme(query, 90)
 
-        print(f"Loading {theme.name}")
+        msg = await ctx.send(embed=discord.Embed(title=f"Clearing colors..."))
+
         guild.heavy_command_active = ctx.command.name
 
         # clear colors
@@ -29,7 +31,8 @@ class ThemeAssignment(commands.Cog):
         # apply colors
         theme.activate()
 
-        await ctx.send(f"Loading the **{theme.name}** theme. This may take a while...")
+        await msg.edit(embed=discord.Embed(title=f"Loading **{theme.name}**..."))
+
         async with ctx.channel.typing():
             for color in guild.colors:
                 if not color.members:
@@ -39,7 +42,8 @@ class ThemeAssignment(commands.Cog):
                     await color_user(guild, member, color)
 
         # report success and update DB
-        await ctx.send(f"Loaded **{theme.name}**")
+        await msg.edit(embed=discord.Embed(title=f"Loaded **{theme.name}**",
+                                           color=discord.Color.green()))
         await ctx.invoke(bot.get_command("colors"))
         guild.heavy_command_active = None
         db.update_prefs(guild)

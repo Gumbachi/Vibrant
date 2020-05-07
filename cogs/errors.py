@@ -40,11 +40,14 @@ class CommandErrorHandler(commands.Cog):
                                "Please try your command again and if this issue persists, please inform Gumbachi in the support server.")
                 db.update_prefs(guild)
             else:
+                await gumbachi.send("Try again")
                 await ctx.send("Sorry, please try that command again.")
             return
 
+        guild = Guild.get(ctx.guild.id)
+
         # Channel Disabled
-        elif isinstance(error, auth.ChannelDisabled):
+        if isinstance(error, auth.ChannelDisabled):
             try:
                 await ctx.message.delete()
                 guild = Guild.get(ctx.guild.id)

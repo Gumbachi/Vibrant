@@ -34,10 +34,10 @@ def to_sendable(image, name="image"):
     # Convert PIL Image to discord File
     im = image.copy()
     byte_arr = io.BytesIO()
-    im.save(byte_arr, format='WEBP')
+    im.save(byte_arr, format='PNG')
     byte_arr = byte_arr.getvalue()
     im = io.BytesIO(byte_arr)
-    return discord.File(im, filename=f"{name}.webp")
+    return discord.File(im, filename=f"{name}.png")
 
 
 def draw_imports():

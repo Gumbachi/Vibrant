@@ -68,7 +68,10 @@ class PaginatedImage(PaginatedMessage):
         # Clear buttons from old message
         old = PaginatedImage._items.pop(channel.id, None)
         if old:
-            await old.message.clear_reactions()
+            try:
+                await old.message.clear_reactions()
+            except discord.errors.NotFound:
+                pass
 
         file = to_sendable(self.content[self.pointer])
         self.message = await channel.send(file=file)

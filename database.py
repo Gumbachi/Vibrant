@@ -6,14 +6,15 @@ from vars import bot
 
 # database setup
 client = MongoClient(
-    f"mongodb+srv://Gumbachi:{os.environ['MONGO_PASS']}@cluster0-wglq9.mongodb.net/test?retryWrites=true&w=majority")
+    f"mongodb+srv://Gumbachi:{os.getenv('MONGO_PASS')}@cluster0-wglq9.mongodb.net/test?retryWrites=true&w=majority")
 db = client.VibrantDB
 
+version = os.getenv("BOT_VERSION")
 # Choose collection in database
-if os.environ["BOT_VERSION"] == "real":
+if version == "real":
     print("Using Real Collection")
     coll = db.VibrantData
-elif os.environ["BOT_VERSION"] == "test":
+elif version == "test":
     print("Using Test Collection")
     coll = db.VibrantTestData
 else:
@@ -28,7 +29,6 @@ def update_prefs(*guilds):
     Args:
         guilds (list of Guild): list of guild to update
     """
-    print("Update")
     for guild in guilds:
         json_data = guild.to_json()  # serialize objects
 
@@ -39,30 +39,6 @@ def update_prefs(*guilds):
         else:
             # add new document if guild is not found
             coll.insert_one(json_data)
-
-
-def get_prefs():
-    """Generates objects from json format to python objects from mongoDB
-
-    Only runs on start of program
-    """
-    Guild._guilds.clear()  # remove all guilds to be remade
-    data = list(coll.find())  # get mongo data
-
-    for guild_dict in data:
-        Guild.from_json(guild_dict)  # build guild
-
-
-# def clear_abandoned_guilds():
-#     """Remove guilds that the bot cannot see"""
-#     guilds = {guild.id for guild in bot.guilds}
-#     db_guilds = {guild.id for guild in Guild._guilds.values()}
-
-#     abandoned = db_guilds - guilds
-#     for id in abandoned:
-#         print(f"Removed {id} from database")
-#         Guild._guilds.pop(id)  # remove from internal list
-#         coll.delete_one({"id": id})  # remove from MongoD
 
 
 def find_guild(id):

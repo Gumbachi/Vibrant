@@ -18,77 +18,20 @@ class UtilityCommands(commands.Cog):
         if ctx.author.id != 128595549975871488:
             return
 
-        db.update_prefs(*list(Guild._guilds.values()))
+        db.update_prefs(*list(Guild._cache.values()))
         await ctx.send("update complete")
 
     @commands.command(name="dstats")
     async def devstats(self, ctx):
-        print(len(Guild._guilds))
-        print(Guild._guilds)
-
-        # @commands.command(name="correct_members")
-        # async def fix_member_roles(self, ctx):
-        #     if ctx.author.id != 128595549975871488:
-        #         return
-
-        #     for guild in Guild._guilds.values():
-        #         for color in guild.colors:
-        #             if color.role_id:
-        #                 try:
-        #                     role = guild.discord_guild.get_role(color.role_id)
-        #                     color.member_ids = {
-        #                         member.id for member in role.members}
-        #                 except:
-        #                     print("broke")
-
-        #             else:
-        #                 color.member_ids = set()
-        #         db.update_prefs(guild)
-        #     print("Finished")
-
-        # @commands.command(name="trim_members")
-        # async def purge_members(self, ctx, *, id=None):
-        #     if ctx.author.id != 128595549975871488:
-        #         return
-
-        #     if not id:
-        #         for guild in Guild._guilds.values():
-        #             all_members = set()
-        #             verified_members = {
-        #                 member.id for member in guild.discord_guild.members}
-        #             for color in guild.colors:
-        #                 color.member_ids &= verified_members
-        #                 color.member_ids -= all_members
-        #                 all_members |= color.member_ids
-        #     else:
-        #         guild = Guild.get(int(id), catch_error=False)
-        #         all_members = set()
-        #         verified_members = {
-        #             member.id for member in guild.discord_guild.members}
-        #         for color in guild.colors:
-        #             if not color.member_ids:
-        #                 continue
-        #             color.member_ids &= verified_members
-        #             color.member_ids -= all_members
-        #             all_members |= color.member_ids
-
-        #         for theme in guild.themes:
-        #             for color in theme.colors:
-        #                 if not color.member_ids:
-        #                     continue
-        #                 color.member_ids &= verified_members
-        #                 color.member_ids -= all_members
-        #                 all_members |= color.member_ids
-
-        #         db.update_prefs(guild)
-        #     await ctx.send("Done")
+        print(len(Guild._cache))
+        print(Guild._cache)
 
     @commands.command(name="guildinfo")
     async def show_guild_info(self, ctx, id=None):
         """Shows guild info in an embed and in terminal"""
         if not id:
             id = ctx.guild.id
-        guild = Guild.get(int(id), catch_error=False)
+        guild = Guild.get(int(id))
         embed = discord.Embed(title="Guild info", description=repr(guild))
         await ctx.send(embed=embed)
 
@@ -165,31 +108,26 @@ class UtilityCommands(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name="botstats")
-    async def count_guilds(self, ctx):
-        users = 0
-        colors = 0
-        themes = 0
-        exceptions = 0
-        for guild in Guild._guilds.values():
-            try:
-                users += len(guild.discord_guild.members)
-                colors += len(guild.colors)
-                themes += len(guild.themes)
-            except:
-                exceptions += 1
-        stat_embed = discord.Embed(
-            title="Stats",
-            description=f"Servers: {len(bot.guilds)}\nUsers: {users}\nColors: {colors}\nThemes: {themes}\nExceptions: {exceptions}")
-        await ctx.send(embed=stat_embed)
-
     @commands.command(name="deletelocal")
     async def remove_guild(self, ctx, id):
         if ctx.author.id != 128595549975871488:
             return
 
-        guild = Guild._guilds.pop(int(id), "None")
-        print(f"Forcibly removed {guild.name}")
+        guild = Guild._cache.pop(int(id), "None")
+        await ctx.send(f"Forcibly removed {str(guild)}")
+
+    @commands.command(name="len")
+    async def count_local(self, ctx):
+        if ctx.author.id != 128595549975871488:
+            return
+        await ctx.send(len(Guild._cache))
+
+    @commands.command(name="testrole")
+    async def make_test_role(self, ctx):
+        await ctx.send("Making role")
+        role = await ctx.guild.create_role(
+            name="Testing Role", color=discord.Color.green())
+        await ctx.author.add_roles(role)
 
 
 def setup(bot):
