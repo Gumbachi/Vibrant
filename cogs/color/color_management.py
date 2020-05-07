@@ -29,16 +29,13 @@ class ColorManagement(commands.Cog):
             name = f"Color {len(guild.colors) + 1}"
 
         # change black color because #000000 in discord is transparent
-        if hexcode == "#000000":
+        if hexcode in ("#000000", "#000"):
             hexcode == "#000001"
 
         # create and add color
         color = Color(name, hexcode, ctx.guild.id)
         guild.colors.append(color)
 
-        # report success
-        await ctx.send(
-            f"**{color.name}** has been added at index **{color.index}**.")
         await ctx.invoke(bot.get_command("colors"))  # show new set
         db.update_prefs(guild)
         return color
@@ -54,12 +51,9 @@ class ColorManagement(commands.Cog):
                   "colors", color_query=(query, 95))
         guild = Guild.get(ctx.guild.id)
 
-        # get color
-        color = guild.find_color(query, 95)
+        color = guild.find_color(query, 95)  # get color
+        await color.delete()  # Remove color
 
-        # remove color and response
-        await color.delete()
-        await ctx.send(f"**{color.name}** has been deleted!")
         await ctx.invoke(bot.get_command("colors"))  # show updated set
         db.update_prefs(guild)
 
@@ -83,6 +77,7 @@ class ColorManagement(commands.Cog):
 
         authorize(ctx, color_query=(before, 90))
 
+        # find and rename color
         color = guild.find_color(before, 90)
         old_name = color.name
         color.name = after
@@ -95,7 +90,12 @@ class ColorManagement(commands.Cog):
             else:
                 color.role_id = None
 
-        await ctx.send(f"**{old_name}** is now named **{after}**")
+        # Send success message
+        rn_embed = discord.Embed(
+            title=f"Renamed {old_name} to **{after}**!",
+            color=color.to_discord())
+        await ctx.send(embed=rn_embed)
+
         db.update_prefs(guild)
 
     @commands.command(name="recolor", aliases=["rc", "recolour"])
@@ -133,13 +133,12 @@ class ColorManagement(commands.Cog):
         rc_embed = discord.Embed(
             title=f"{color.name} is now colored {after}",
             description=discord.Embed.Empty,
-            color=discord.Color.from_rgb(*color.rgb))
-
+            color=color.to_discord())
         await ctx.send(embed=rc_embed)
         db.update_prefs(guild)
 
     @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
-    async def clear_colors(self, ctx, backup=True):
+    async def clear_colors(self, ctx):
         """Remove all colors from the Guild's colors.
 
         Args:
@@ -149,12 +148,18 @@ class ColorManagement(commands.Cog):
 
         guild = Guild.get(ctx.guild.id)
 
-        await ctx.send("Removing all colors...")
+        msg = await ctx.send(embed=discord.Embed(title="Clearing colors.."))
+
+        guild.heavy_command_active = ctx.command.name
+
         # remove all colors and clear roles
         async with ctx.channel.typing():
             await guild.clear_colors()
 
-        await ctx.send(f"Success! All colors have been removed.")
+        guild.heavy_command_active = None
+
+        await msg.edit(embed=discord.Embed(title="All colors removed!",
+                                           color=discord.Color.green()))
         db.update_prefs(guild)
 
 

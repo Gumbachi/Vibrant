@@ -6,13 +6,16 @@ import os
 import random
 from os.path import sep
 
+import database as db
 import discord
+from discord.ext import commands
 from rapidfuzz import process
 from PIL import Image, ImageDraw, ImageFont
 
 from vars import bot
 from utils import hex_to_rgb
 import authorization as auth
+from expiringdict import ExpiringDict
 
 
 class Guild:
@@ -29,7 +32,7 @@ class Guild:
         theme_limit (int): The maximum amount of themes a guild can have
         color_limit (int): The maximum number of colors a guild can have
     """
-    _guilds = {}  # dict of guilds that have been created
+    _cache = ExpiringDict(max_len=100, max_age_seconds=3600)
 
     def __init__(self, id, **kwargs):
         self.name = str(bot.get_guild(id))
@@ -44,7 +47,7 @@ class Guild:
         self.heavy_command_active = None
         self.waiting_on_hexcode = {}
 
-        Guild._guilds[id] = self  # add guild to the dict
+        Guild._cache[id] = self  # add guild to the dict
 
     @property
     def enabled_channels(self):
@@ -88,17 +91,22 @@ class Guild:
         return out
 
     @classmethod
-    def get(cls, id, catch_error=True):
-        """Find guild in the dictionary."""
-        guild = cls._guilds.get(id)
-        if not guild:
-            if catch_error:
-                raise auth.MissingGuild()
+    def get(cls, id):
+        """Find guild in the dictionary or db."""
+        try:
+            return cls._cache[id]
+        except KeyError:
+            data = db.find_guild(id)
+            if data:
+                print("DB")
+                return Guild.from_json(data)
             else:
-                return
-        return guild
+                print("Missing")
+                raise auth.MissingGuild()
+
 
 ######################### COLOR/THEME MANAGEMENT #########################
+
 
     async def clear_colors(self):
         """Remove all colors and associated roles from the guild."""
@@ -233,7 +241,7 @@ class Guild:
         # try fuzzy matching
         member_names = [member.name for member in self.members]
         match = process.extractOne(query, member_names,
-            score_cutoff=threshold)
+                                   score_cutoff=threshold)
 
         if not match:
             return None
@@ -394,7 +402,7 @@ class Guild:
         return theme_images
 
 
-class Color:
+class Color(commands.Converter):
     """
     A color object that stores color data.
 
@@ -444,8 +452,16 @@ class Color:
 
     @property
     def role(self):
+        """Get associated discord role."""
         if self.role_id:
-            return self.guild.get_role(self.role_id)
+            role = self.guild.get_role(self.role_id)
+            if not role:
+                self.role_id = None
+            return role
+
+    def to_discord(self):
+        """Convert color to discord.Color."""
+        return discord.Color.from_rgb(*self.rgb)
 
     def __repr__(self):
         """Method for cleaner printing."""

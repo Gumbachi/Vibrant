@@ -50,11 +50,10 @@ class PaginatedMessage:
 class PaginatedImage(PaginatedMessage):
     _items = {}
     REACTIONS = {emoji_dict[name] for name in
-                 ("left_arrow", "right_arrow", "refresh", "updown")}
+                 ("left_arrow", "right_arrow", "updown")}
 
     def __init__(self, content, pointer=0):
         super().__init__(content, pointer)
-        self.img_message = None
         self.pointer = pointer if -1 < pointer < len(content) else 0
 
     @classmethod
@@ -69,51 +68,34 @@ class PaginatedImage(PaginatedMessage):
         # Clear buttons from old message
         old = PaginatedImage._items.pop(channel.id, None)
         if old:
-            await old.message.clear_reactions()
-
-        # send new messages and add reaction
-        self.message = await channel.send(f"Page {self.pointer+1}/{len(self.content)}")
+            try:
+                await old.message.clear_reactions()
+            except discord.errors.NotFound:
+                pass
 
         file = to_sendable(self.content[self.pointer])
-        self.img_message = await channel.send(file=file)
-        await self.add_reactions("left_arrow", "right_arrow", "refresh", "updown")
+        self.message = await channel.send(file=file)
+        await self.add_reactions("left_arrow", "right_arrow", "updown")
         PaginatedImage._items[channel.id] = self
-
-    async def resend(self):
-        """Resend the controller and message"""
-        file = to_sendable(self.content[self.pointer])
-        msg = self.message.content
-
-        # delete old messages
-        await self.message.delete()
-        await self.img_message.delete()
-
-        self.message = await self.channel.send(msg)
-        self.img_message = await self.channel.send(file=file)
-        await self.add_reactions("left_arrow", "right_arrow", "refresh", "updown")
 
     async def sendall(self):
         """Send all of the image at once"""
-        await self.message.delete()
-        await self.img_message.delete()
+        await self.message.delete()  # Delete current message
 
+        # Send all files
         for img in self.content:
-            file = to_sendable(img)
-            await self.channel.send(file=file)
+            await self.channel.send(file=to_sendable(img))
 
         PaginatedImage._items.pop(self.channel.id, None)
 
     async def update(self):
         """Change the currently displayed image."""
-        # delete old image
-        await self.img_message.delete()
-        file = to_sendable(self.content[self.pointer])
+        await self.message.delete()  # delete old image
 
         # send new message
-        self.img_message = await self.channel.send(file=file)
-
-        # edit page message
-        await self.message.edit(content=f"Page {self.pointer+1}/{len(self.content)}")
+        file = to_sendable(self.content[self.pointer])
+        self.message = await self.channel.send(file=file)
+        await self.add_reactions("left_arrow", "right_arrow", "updown")
 
 
 class PaginatedEmbed(PaginatedMessage):
@@ -200,7 +182,11 @@ async def on_reaction_add(reaction, user):
         return
 
     if reaction.emoji == emoji_dict["left_arrow"]:
-        await pe.message.remove_reaction(emoji_dict["left_arrow"], user)
+        # Only remove reactions on embed because images are resent
+        if isinstance(pe, PaginatedEmbed):
+            await pe.message.remove_reaction(emoji_dict["left_arrow"], user)
+
+        # Adjust pointer and update message
         if pe.pointer == 0:
             return
         else:
@@ -208,7 +194,11 @@ async def on_reaction_add(reaction, user):
             await pe.update()
 
     elif reaction.emoji == emoji_dict["right_arrow"]:
-        await pe.message.remove_reaction(emoji_dict["right_arrow"], user)
+        # Only remove reactions on embed because images are resent
+        if isinstance(pe, PaginatedEmbed):
+            await pe.message.remove_reaction(emoji_dict["right_arrow"], user)
+
+        # Adjust pointer and update message
         if pe.pointer == len(pe.content) - 1:
             return
         else:

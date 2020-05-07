@@ -12,7 +12,7 @@ class TopGG(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.token = os.environ["DBL_API_KEY"]
+        self.token = os.getenv("DBL_API_KEY")
         # Autopost will post your guild count every 30 minutes
         self.dblpy = DBLClient(self.bot, self.token, autopost=True)
 

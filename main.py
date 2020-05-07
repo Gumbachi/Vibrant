@@ -16,23 +16,8 @@ from vars import bot, extensions, get_prefix
 @bot.event
 async def on_ready():
     """Change presence and collects data from mongo database"""
-    await bot.change_presence(
-        activity=discord.Activity(type=discord.ActivityType.playing,
-                                  name="@Vibrant for help"))
-
-    # get preferences from DB
-    print("Fetching Preferences...")
-    db.get_prefs()
-
-    # collect new guilds and create objects for them
-    print("Generating Objects...")
-    new_ids = {guild.id for guild in bot.guilds} - set(Guild._guilds.keys())
-    new_guilds = [Guild(id) for id in new_ids]
-
-    # update DB with new guilds
-    print("Updating Database...")
-    db.update_prefs(*new_guilds)
-
+    activity = discord.Game(name="@Vibrant for help")
+    await bot.change_presence(activity=activity)
     print("Ready Player One.")
 
 
@@ -151,7 +136,7 @@ async def on_guild_join(guild):
 async def on_guild_remove(guild):
     """Delete guild object and db document when bot leaves a guild."""
     print(f"REMOVED FROM {guild.name}")
-    Guild._guilds.pop(guild.id)  # remove from internal list
+    Guild._cache.pop(guild.id, None)  # remove from internal list
     db.coll.delete_one({"id": guild.id})  # remove from MongoD
 
 
@@ -188,7 +173,8 @@ async def on_guild_role_delete(role):
     color = guild.get_color("role_id", role.id)
     if color:
         color.role_id = None
-        db.update_prefs(guild)  # update MongoDB
+        if not guild.heavy_command_active:
+            db.update_prefs(guild)  # update MongoDB
 
 
 @bot.event
@@ -201,7 +187,8 @@ async def on_guild_role_update(before, after):
     if color:
         color.name = after.name
         color.hexcode = str(after.color)
-        db.update_prefs(guild)  # update MongoDB
+        if not guild.heavy_command_active:
+            db.update_prefs(guild)  # update MongoDB
 
 # loads extensions(cogs) listed in vars.py
 if __name__ == '__main__':
@@ -212,4 +199,4 @@ if __name__ == '__main__':
             print(f"Couldnt load {extension}")
             print(e)
 
-bot.run(os.environ["TOKEN"])  # runs the bot
+bot.run(os.getenv("TOKEN"))  # runs the bot
