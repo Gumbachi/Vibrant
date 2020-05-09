@@ -74,21 +74,14 @@ class Guild:
     def members(self):
         return self.discord_guild.members
 
-    def __repr__(self):
-        """
-        Output a string that represents the guild object and
-        cleanly displays data
-        """
-        out = (f"Name: {self.name}\nID: {self.id}\nPrefix: {self.prefix}\n"
-               f"Welcome: {str(self.welcome_channel)}\n"
-               f"Theme Limit: {self.theme_limit}\n"
-               f"Color Limit: {self.color_limit}\n")
-
-        out += "Colors\n"
-        for color in self.colors:
-            out += f"    {repr(color)}\n"
-
-        return out
+    def __str__(self):
+        """String that represents the guild."""
+        return (f"Name: {self.name}\nID: {self.id}\nPrefix: {self.prefix}\n"
+                f"Welcome: {self.welcome_channel.mention}\n"
+                f"Disabled Channels: {len(self.disabled_channel_ids)}/{len(self.discord_guild.text_channels)}\n"
+                f"Colors: {len(self.colors)}/{self.color_limit}\n"
+                f"Themes: {len(self.themes)}/{self.theme_limit}\n"
+                f"Members: {len(self.members)}")
 
     @classmethod
     def get(cls, id):
@@ -98,7 +91,6 @@ class Guild:
         except KeyError:
             data = db.find_guild(id)
             if data:
-                print("DB")
                 return Guild.from_json(data)
             else:
                 print("Missing")
@@ -463,11 +455,9 @@ class Color(commands.Converter):
         """Convert color to discord.Color."""
         return discord.Color.from_rgb(*self.rgb)
 
-    def __repr__(self):
-        """Method for cleaner printing."""
-        has_role = bool(self.role_id)
-        return (f"{self.index}.{self.name} {self.hexcode} "
-                f"Active:{has_role} Members:{len(self.member_ids)}")
+    def __str__(self):
+        """String representing the color"""
+        return f"{self.index}.{self.name} ({self.hexcode}) ({len(self.member_ids)})"
 
     async def delete(self):
         """Remove a color from the guild. Deletes associated roles"""
@@ -524,6 +514,10 @@ class Theme:
         self.guild_id = guild_id
         self.description = kwargs.get("description", name)
         self.colors = kwargs.get("colors", [])
+
+    def __str__(self):
+        """String representing the theme"""
+        return f"{self.index}.{self.name} ({len(self.colors)} colors)"
 
     @property
     def guild(self):

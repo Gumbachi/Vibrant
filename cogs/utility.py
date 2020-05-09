@@ -12,37 +12,30 @@ class UtilityCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="update")
-    async def update_mongo(self, ctx):
-        """Update all documents in database"""
-        if ctx.author.id != 128595549975871488:
-            return
-
-        db.update_prefs(*list(Guild._cache.values()))
-        await ctx.send("update complete")
-
-    @commands.command(name="dstats")
-    async def devstats(self, ctx):
-        print(len(Guild._cache))
-        print(Guild._cache)
-
     @commands.command(name="guildinfo")
     async def show_guild_info(self, ctx, id=None):
-        """Shows guild info in an embed and in terminal"""
-        if not id:
-            id = ctx.guild.id
+        """Shows guild info in an embed."""
+        id = ctx.guild.id if not id else id
         guild = Guild.get(int(id))
-        embed = discord.Embed(title="Guild info", description=repr(guild))
+        embed = discord.Embed(title=guild.name, description=str(guild))
         await ctx.send(embed=embed)
 
     @commands.command(name="colorinfo")
-    async def show_all_color_info(self, ctx):
+    async def show_all_color_info(self, ctx, id=None):
         """Shows the info of all colors in a guild"""
-        guild = Guild.get(ctx.guild.id)
-        s = "Colors\n"
-        for color in guild.colors:
-            s += f"    {repr(color)}\n"
-        embed = discord.Embed(title="Colors info", description=s)
+        id = ctx.guild.id if not id else id
+        guild = Guild.get(int(id))
+        cinfo = "\n".join([str(color) for color in guild.colors])
+        embed = discord.Embed(title=guild.name, description=cinfo)
+        await ctx.send(embed=embed)
+
+    @commands.command(name="themeinfo")
+    async def show_all_theme_info(self, ctx, id=None):
+        """Shows the info of all colors in a guild"""
+        id = ctx.guild.id if not id else id
+        guild = Guild.get(int(id))
+        cinfo = "\n".join([str(theme) for theme in guild.themes])
+        embed = discord.Embed(title=guild.name, description=cinfo)
         await ctx.send(embed=embed)
 
     @commands.command(name='purge')
@@ -121,13 +114,6 @@ class UtilityCommands(commands.Cog):
         if ctx.author.id != 128595549975871488:
             return
         await ctx.send(len(Guild._cache))
-
-    @commands.command(name="testrole")
-    async def make_test_role(self, ctx):
-        await ctx.send("Making role")
-        role = await ctx.guild.create_role(
-            name="Testing Role", color=discord.Color.green())
-        await ctx.author.add_roles(role)
 
 
 def setup(bot):
