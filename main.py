@@ -12,6 +12,7 @@ from utils import check_hex, rgb_to_hex
 from authorization import authorize
 from vars import bot, extensions, get_prefix
 
+print("Starting")
 
 @bot.event
 async def on_ready():

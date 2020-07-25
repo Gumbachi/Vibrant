@@ -1,10 +1,10 @@
 import discord
 from discord.ext import commands
 
+import database as db
+from authorization import MissingGuild, is_disabled
 from classes import Guild
 from utils import rgb_to_hex
-import database as db
-from authorization import is_disabled, MissingGuild
 from vars import bot, emoji_dict
 
 
