@@ -110,6 +110,12 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, discord.HTTPException) and error.code == 50007:
             return await ctx.send(f"Couldn't DM {ctx.author.mention}. Probably has me blocked")
 
+        elif isinstance(error, discord.HTTPException) and error.code == 500013:
+            return await ctx.send(f"The bot is missing permissions. If the bot has all required permissions then clicking the role and hitting save changes may fix it")
+
+        elif isinstance(error, discord.HTTPException) and error.code == 30005:
+            return await ctx.send(f"You have too many roles(250). Delete some to make room for the color roles")
+
         elif isinstance(error, discord.errors.Forbidden):
             return await ctx.send(
                 f"I don't have permission to do this. Make sure the bot has required permissions")
