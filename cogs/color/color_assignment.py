@@ -223,10 +223,14 @@ async def color_user(guild, member, color):
 
         # put role positions under bot role
         positions = {
-            bot_role: bot_role.position,  # penultimate role
             new_role: bot_role.position-1,
+            bot_role: bot_role.position,  # penultimate role
         }
-        await dg.edit_role_positions(positions=positions)
+
+        try:
+            await dg.edit_role_positions(positions=positions)
+        except:
+            print("Error positioning roles")
 
     await member.add_roles(new_role)
     color.member_ids.add(member.id)  # add user to color members
