@@ -110,7 +110,7 @@ class CommandErrorHandler(commands.Cog):
         elif isinstance(error, discord.HTTPException) and error.code == 50007:
             return await ctx.send(f"Couldn't DM {ctx.author.mention}. Probably has me blocked")
 
-        elif isinstance(error, discord.HTTPException) and error.code == 500013:
+        elif isinstance(error, discord.HTTPException) and error.code == 50013:
             return await ctx.send(f"The bot is missing permissions. If the bot has all required permissions then clicking the role and hitting save changes may fix it")
 
         elif isinstance(error, discord.HTTPException) and error.code == 30005:
