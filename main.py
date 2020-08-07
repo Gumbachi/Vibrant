@@ -12,12 +12,11 @@ from utils import check_hex, rgb_to_hex
 from authorization import authorize
 from vars import bot, extensions, get_prefix
 
-print("Starting")
 
 @bot.event
 async def on_ready():
-    """Change presence and collects data from mongo database"""
-    activity = discord.Game(name="@Vibrant for help")
+    """Change presence and report ready."""
+    activity = discord.Game(name=f"@Vibrant for help ({len(bot.guilds)})")
     await bot.change_presence(activity=activity)
     print("Ready Player One.")
 

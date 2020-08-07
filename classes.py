@@ -40,7 +40,7 @@ class Guild:
         self.prefix = kwargs.get("prefix", "$")
         self.welcome_channel_id = kwargs.get("welcome_channel_id", None)
         self.disabled_channel_ids = kwargs.get("disabled_channel_ids", set())
-        self.theme_limit = kwargs.get("theme_limit", 3)
+        self.theme_limit = kwargs.get("theme_limit", 5)
         self.color_limit = kwargs.get("color_limit", 25)
         self.themes = kwargs.get("themes", [])
         self.colors = kwargs.get("colors", [])

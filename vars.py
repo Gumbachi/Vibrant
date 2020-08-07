@@ -471,4 +471,11 @@ change_log = {
         "Back to PNG": "Apparently WebP doesn't work on iOS :(",
         "Visual Changes": "Switched a lot of responses to embeds"
     },
+    "1.4": {
+        "title": "Vibrant 1.4",
+        "description": " ",
+        "Role positioning": "Creates roles under the bot role instead of at the bottom",
+        "Theme limit": "Changed default limit to 5"
+    },
+
 }
