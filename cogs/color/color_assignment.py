@@ -217,17 +217,17 @@ async def color_user(guild, member, color):
                                         color=color.to_discord())
         color.role_id = new_role.id
 
-        # get top role of bot member
-        bot_roles = dg.get_member(bot.user.id).roles
-        bot_role = [role for role in bot_roles if role.managed][-1]
-
-        # put role positions under bot role
-        positions = {
-            new_role: bot_role.position-1,
-            bot_role: bot_role.position,  # penultimate role
-        }
-
         try:
+            # get top role of bot member
+            bot_roles = dg.get_member(bot.user.id).roles
+            bot_role = [role for role in bot_roles if role.managed][-1]
+
+            # put role positions under bot role
+            positions = {
+                new_role: bot_role.position-1,
+                bot_role: bot_role.position,  # penultimate role
+            }
+
             await dg.edit_role_positions(positions=positions)
         except:
             print("Error positioning roles")
