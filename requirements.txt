@@ -1,8 +1,0 @@
-discord.py==1.4.0
-dnspython==2.0.0
-dblpy==0.3.4
-Pillow==7.1.1
-pymongo==3.10.1
-rapidfuzz==0.7.6
-requests==2.23.0
-expiringdict==1.2.0

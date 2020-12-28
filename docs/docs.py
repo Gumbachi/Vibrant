@@ -1,70 +1,4 @@
-import discord
-from discord.ext import commands
-import database as db
-
-# Cogs the bot loads
-extensions = [
-    # General
-    "cogs.basic",
-    "cogs.channels",
-    "cogs.errors",
-    "cogs.utility",
-    "cogs.dbl",
-
-    # Color
-    "cogs.color.color_assignment",
-    "cogs.color.color_info",
-    "cogs.color.color_management",
-
-    # Theme
-    "cogs.theme.theme_assignment",
-    "cogs.theme.theme_info",
-    "cogs.theme.theme_management",
-]
-
-emoji_dict = {"checkmark": "✅",
-              "crossmark": "❌",
-              "left_arrow": "⬅️",
-              "right_arrow": "➡️",
-              "home_arrow": "↩️",
-              "up_arrow": "🔼",
-              "down_arrow": "🔽",
-              "double_down": "⏬",
-              "refresh": "🔄",
-              "updown": "↕️"}
-
-
-def get_prefix(bot, message):
-    """Gets the prefix per server"""
-    if isinstance(message.channel, discord.channel.DMChannel):
-        for guild in bot.guilds:
-            if guild.get_member(message.author.id) is not None:
-                id = guild.id
-    else:
-        id = message.guild.id
-
-    try:
-        data = db.coll.find_one({"id": id})
-    except:
-        print("no coll found for prefix")
-        return '$'
-    if not data:
-        return '$'
-    if "prefix" not in data.keys():
-        data["prefix"] = '$'
-    return data["prefix"]
-
-
-bot = commands.Bot(command_prefix=get_prefix,
-                   help_command=None)  # creates bot object
-
-none_embed = discord.Embed(
-    title="No active colors",
-    description=f"To add colors use the `add` command or import a theme",
-    color=discord.Color.blurple())
-
-disabled_embed = discord.Embed(
-    title="Channel is Disabled", description=f"The channel you tried to use is disabled")
+"""Holds documentation for the bot."""
 
 
 def get_help(p):
@@ -187,7 +121,6 @@ def get_help(p):
                        """,
         },
     }
-
 
 def get_commands(p):
     return {
@@ -358,7 +291,6 @@ def get_commands(p):
         },
     }
 
-
 change_log = {
     "0.1": {
         "title": "Vibrant 0.1",
@@ -477,5 +409,5 @@ change_log = {
         "Role positioning": "Creates roles under the bot role instead of at the bottom",
         "Theme limit": "Changed default limit to 5"
     },
-
-}
+} 
+  
