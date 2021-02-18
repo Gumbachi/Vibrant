@@ -34,7 +34,7 @@ def get_help(p):
                                    2. Type `{p}disable` in a channel to disable it and type `{p}enable` to re-enable it
                                    3. Type `{p}disable all` to disable all channels if you dont want the bot to run in every channel
                                    """,
-            "Themes": f"Hit {emoji_dict['right_arrow']} to learn about themes and how to use them"
+            "Themes": f"Click the right arrow to learn about themes and how to use them"
         },
         "themes": {
             "title": "2: Theme Guide",
@@ -121,6 +121,7 @@ def get_help(p):
                        """,
         },
     }
+
 
 def get_commands(p):
     return {
@@ -291,6 +292,7 @@ def get_commands(p):
         },
     }
 
+
 change_log = {
     "0.1": {
         "title": "Vibrant 0.1",
@@ -409,5 +411,12 @@ change_log = {
         "Role positioning": "Creates roles under the bot role instead of at the bottom",
         "Theme limit": "Changed default limit to 5"
     },
-} 
-  
+    "2.0": {
+        "title": "Vibrant 2.0(rewrite)",
+        "description": "Same bot but written better",
+        "No more channel disabling": "got rid of a useless feature",
+        "Better databasing": "better database interaction",
+        "less code": "less code = better",
+        "less data": "bot stores less data"
+    }
+}

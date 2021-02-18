@@ -1,8 +1,8 @@
 import os
 
 import discord
-
-from cfg import bot, extensions, get_prefix
+import common.cfg as cfg
+from common.cfg import bot
 
 
 @bot.event
@@ -23,61 +23,9 @@ async def on_message(message):
     # shows prefix if bot is mentioned
     if message.mentions and message.mentions[0].id == bot.user.id:
         return await message.channel.send(
-            f"Type `{get_prefix(bot, message)}`help for help.")
+            f"Type `{cfg.get_prefix(bot, message)}`help for help.")
 
     await bot.process_commands(message)
-
-
-# @bot.event
-# async def on_member_join(member):
-#     """Sends a welcome message and attempts to randomly color a user when a
-#     member joins a server the bot is in"""
-#     guild = Guild.get(member.guild.id)
-
-#     if not guild.welcome_channel:
-#         return
-
-#     # make sure embed can be sent with or without colors
-#     if guild.colors:
-#         color = random.choice(guild.colors)  # get random color
-#         await color_user(guild, member, color)
-#         accent = discord.Color.from_rgb(*color.rgb)  # discord format
-#     else:
-#         color = None
-#         accent = discord.Color.green()
-
-#     # generate and send weclome embed message
-#     embed = discord.Embed(
-#         title=f"{member.name} has joined the server!",
-#         description=f"Please give {member.mention} a warm welcome!",
-#         color=accent)
-#     embed.set_thumbnail(url=member.avatar_url)
-
-#     await guild.welcome_channel.send(embed=embed)
-
-#     if color:
-#         db.update_prefs(guild)
-
-
-# @bot.event
-# async def on_member_remove(member):
-#     """Sends a goodbye message when a member leaves a server the bot is in"""
-#     guild = Guild.get(member.guild.id)
-#     guild.erase_user(member.id)
-
-#     # check if welcome channel or guild exists
-#     if not guild.welcome_channel:
-#         return
-
-#     # generate and send goodbye message
-#     embed = discord.Embed(title=f"{member.name} has left the server!",
-#                           description="They won't be missed",
-#                           color=discord.Color.red())
-#     embed.set_thumbnail(url=member.avatar_url)
-
-#     await guild.welcome_channel.send(embed=embed)
-#     db.update_prefs(guild)
-
 
 # @bot.event
 # async def on_member_update(before, after):
@@ -117,46 +65,6 @@ async def on_message(message):
 
 
 # @bot.event
-# async def on_guild_join(guild):
-#     """Create new object and update database when the bot joins a guild."""
-#     print(f"ADDED TO {guild.name}")
-#     new_guild = Guild(guild.id)
-#     db.update_prefs(new_guild)
-
-
-# @bot.event
-# async def on_guild_remove(guild):
-#     """Delete guild object and db document when bot leaves a guild."""
-#     print(f"REMOVED FROM {guild.name}")
-#     Guild._cache.pop(guild.id, None)  # remove from internal list
-#     db.coll.delete_one({"id": guild.id})  # remove from MongoD
-
-
-# @bot.event
-# async def on_guild_update(before, after):
-#     """Updates Guild object name if changed"""
-#     guild = Guild.get(before.id)
-#     guild.name = after.name  # change name
-#     db.update_prefs(guild)  # update mongoDB
-
-
-# @bot.event
-# async def on_guild_channel_delete(channel):
-#     """Removes a channel from the Guild object if user deletes it"""
-#     guild = Guild.get(channel.guild.id)
-
-#     # remove from disabled channels
-#     if channel.id in guild.disabled_channel_ids:
-#         guild.disabled_channel_ids.remove(channel.id)
-
-#     # unsets welcome channel if deleted
-#     if channel.id == guild.welcome_channel_id:
-#         guild.welcome_channel_id = None
-
-#     db.update_prefs(guild)
-
-
-# @bot.event
 # async def on_guild_role_delete(role):
 #     """Removes a role from the Guild object if user deletes it"""
 #     guild = Guild.get(role.guild.id)
@@ -184,7 +92,7 @@ async def on_message(message):
 
 # loads extensions(cogs) listed in vars.py
 if __name__ == '__main__':
-    for extension in extensions:
+    for extension in cfg.extensions:
         try:
             bot.load_extension(extension)
         except Exception as e:

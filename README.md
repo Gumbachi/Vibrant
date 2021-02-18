@@ -38,14 +38,6 @@ Optional arguments are marked with a \*
 |     help \<page\*>     |   \$help     |            Standard help command            |
 | prefix \<new prefix\*> |  \$prefix %  | Changes the prefix you use to call commands |
 
-### Color General Commands
-
-|  **Command**   |      **Example**      |           **Description**            |
-| :------------: | :-------------------: | :----------------------------------: |
-|     colors     |       \$colors        | Shows an image of your active colors |
-| info \<color>  |      \$info Red       |  Shows info about a specific color   |
-| convert \<rgb> | \$convert 123,123,123 |        Convert RGB to hexcode        |
-
 ### Color Management Commands
 
 |          **Command**           |      **Example**       |             **Description**             |
