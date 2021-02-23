@@ -33,7 +33,7 @@ admin_ids = {
 color_limit = 50
 theme_limit = 10
 
-heavy_cmd = set()
+heavy_command_active = set()
 
 
 def get_prefix(bot, message):

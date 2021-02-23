@@ -6,6 +6,7 @@ import discord
 from PIL import ImageColor
 from discord.ext import commands
 
+import common.cfg as cfg
 import common.database as db
 import cogs.errors as errors
 
@@ -13,6 +14,10 @@ import cogs.errors as errors
 def to_rgb(hexcode):
     """Convert hexcode to rgb tuple."""
     return ImageColor.getrgb(hexcode)
+
+
+def heavy_command_not_running(ctx):
+    return ctx.guild.id not in cfg.heavy_cmd
 
 
 class ColorConverter(commands.Converter):

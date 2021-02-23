@@ -1,15 +1,16 @@
 """Handles all color assignment and roles."""
 
 import random
+from itertools import cycle, islice, repeat
 
-from itertools import islice, cycle, repeat
-from common.cfg import emojis, bot, heavy_cmd
-from discord.ext.commands.converter import ColorConverter
-import common.database as db
-import discord
-import common.utils as utils
-from discord.ext import commands
 import cogs.errors as errors
+import common.database as db
+import common.utils as utils
+from common.utils import heavy_command_not_running
+import discord
+from common.cfg import bot, emojis, heavy_command_active
+from discord.ext import commands
+from discord.ext.commands.converter import ColorConverter
 
 
 class ColorAssignment(commands.Cog):
@@ -17,6 +18,10 @@ class ColorAssignment(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    def cog_check(self, ctx):
+        """Disable all commands in cog if heavy command is running."""
+        return ctx.guild.id not in heavy_command_active
 
     @staticmethod
     async def color(member, color):
@@ -29,15 +34,7 @@ class ColorAssignment(commands.Cog):
 
         # create and apply role
         else:
-            role = await guild.create_role(
-                name=color["name"],
-                color=utils.discord_color(color)
-            )
-            # update db
-            db.guilds.update_one(
-                {"_id": member.guild.id, "colors": color},
-                {"$set": {"colors.$.role": role.id}}
-            )
+            role = await ColorAssignment.create_role(guild, color)
             await member.add_roles(role)
 
     @staticmethod
@@ -50,6 +47,20 @@ class ColorAssignment(commands.Cog):
         role = member.guild.get_role(color["role"])
         await member.remove_roles(role)
 
+    @staticmethod
+    async def create_role(guild, color):
+        """Create a role and update database."""
+        print(f"Creating {color['name']}")
+        role = await guild.create_role(
+            name=color["name"],
+            color=utils.discord_color(color)
+        )
+        db.guilds.update_one(
+            {"_id": guild.id, "colors": color},
+            {"$set": {"colors.$.role": role.id}}
+        )
+        return role
+
     ################ COMMANDS #################
 
     @commands.command(name="color", aliases=["colour", "cu"])
@@ -60,7 +71,6 @@ class ColorAssignment(commands.Cog):
         colors = db.get(ctx.guild.id, "colors")
         ucolor = utils.find_user_color(member, colors)
 
-        # Determine color
         if not colors:
             raise errors.ColorError("There are no active colors")
 
@@ -109,11 +119,16 @@ class ColorAssignment(commands.Cog):
         await ctx.send(embed=discord.Embed(title=response))
 
     @commands.command(name="splash")
-    async def color_server(self, ctx, color: utils.ColorConverter = None):
+    @commands.has_guild_permissions(manage_roles=True)
+    async def color_server(self, ctx, *, color: utils.ColorConverter = None):
         """Gather all of the uncolored users and assigns them a color"""
 
-        heavy_cmd.add(ctx.guild.id)  # begin heavy command
         colors = db.get(ctx.guild.id, "colors")
+
+        if not colors:
+            raise errors.ColorError("There are no active colors")
+
+        heavy_command_active.add(ctx.guild.id)  # begin heavy command
 
         # get uncolored members
         uncolored = (member for member in ctx.guild.members
@@ -123,21 +138,51 @@ class ColorAssignment(commands.Cog):
 
         # color generator for splashing
         if not color:
-            color_cycle = islice(cycle(colors),
-                                 random.randint(0, len(colors)-1),
-                                 None)
+            color_cycle = islice(
+                cycle(colors),
+                random.randint(0, len(colors)-1),
+                None)
         else:
             color_cycle = repeat(color)
 
-        # loop and color people
-        async with ctx.channel.typing():
-            for member in uncolored:
-                color = next(color_cycle)
-                await ColorAssignment.color(member, next(color_cycle))
+        color_memory = {}  # remember roles assigned during command
 
-        heavy_cmd.discard(ctx.guild.id)
+        # loop and color people
+        for member in uncolored:
+            color = next(color_cycle)
+
+            # Create role and add it to db instead of in color
+            # This is to avoid more db calls than necessary to check a colors existence
+            if not color["role"]:
+                color["role"] = color_memory.get(color["name"], None)
+                if not color["role"]:
+                    role = await ColorAssignment.create_role(ctx.guild, color)
+                    color_memory[color["name"]] = role.id
+                    color["role"] = role.id
+
+            await ColorAssignment.color(member, color)
+
+        heavy_command_active.discard(ctx.guild.id)
 
         await msg.edit(embed=discord.Embed(title="Everyone is now colored",
+                                           color=discord.Color.green()))
+
+    @commands.command(name="unsplash")
+    @commands.has_guild_permissions(manage_roles=True)
+    async def uncolor_server(self, ctx):
+        """Remove all colors but not delete them."""
+
+        colors = db.get(ctx.guild.id, "colors")
+        heavy_command_active.add(ctx.guild.id)  # begin heavy command
+
+        for color in colors:
+            if color["role"]:
+                role = ctx.guild.get_role(color["role"])
+                await role.delete()
+
+        heavy_command_active.discard(ctx.guild.id)
+
+        await ctx.send(embed=discord.Embed(title="Everyone has been uncolored",
                                            color=discord.Color.green()))
 
     ############# EVENT LISTENERS #############

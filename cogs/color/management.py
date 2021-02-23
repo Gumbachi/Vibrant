@@ -13,8 +13,15 @@ class ColorManagement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    def cog_check(self, ctx):
+        """Ensure user has permissions and heavy command is not active for cog commands."""
+        if not ctx.author.guild_permissions.manage_roles:
+            raise CommandError(f"You need Manage Roles permission")
+        if ctx.guild.id in cfg.heavy_command_active:
+            raise CommandError("Please wait for the current command to finish")
+        return True
+
     @commands.command(name="add", aliases=["new"])
-    @commands.has_guild_permissions(manage_roles=True)
     async def add_color(self, ctx, hexcode, *, name=""):
         """Add a color to the database colors."""
         colors = db.get(ctx.guild.id, "colors")
@@ -54,7 +61,6 @@ class ColorManagement(commands.Cog):
         await ctx.invoke(bot.get_command("colors"))  # show new set
 
     @commands.command(name="remove", aliases=["delete"])
-    @commands.has_guild_permissions(manage_roles=True)
     async def remove_color(self, ctx, *, color: utils.ColorConverter):
         """Remove a color from a guild's colors."""
 
@@ -72,7 +78,6 @@ class ColorManagement(commands.Cog):
         await ctx.invoke(bot.get_command("colors"))  # show updated set
 
     @commands.command(name="rename", aliases=["rn"])
-    @commands.has_guild_permissions(manage_roles=True)
     async def rename_color(self, ctx, *, query):
         """Rename a color."""
         colors = db.get(ctx.guild.id, "colors")
@@ -113,7 +118,6 @@ class ColorManagement(commands.Cog):
         await ctx.invoke(bot.get_command("colors"))
 
     @commands.command(name="recolor", aliases=["rc", "recolour"])
-    @commands.has_guild_permissions(manage_roles=True)
     async def recolor(self, ctx, *, query):
         """Change the way a color looks."""
         colors = db.get(ctx.guild.id, "colors")
@@ -154,7 +158,6 @@ class ColorManagement(commands.Cog):
         await ctx.invoke(bot.get_command("colors"))
 
     @commands.command(name="clear_colors", aliases=["clear_colours"])
-    @commands.has_guild_permissions(manage_roles=True)
     async def clear_colors(self, ctx):
         """Removes all active colors."""
         colors = db.get(ctx.guild.id, "colors")
@@ -180,8 +183,24 @@ class ColorManagement(commands.Cog):
         """Removes a role from a color if user deletes it"""
         db.guilds.update_one(
             {"_id": role.guild.id, "colors.role": role.id},
-            {"$set": {"colors.$.role": None}}
+            {"$set": {"colors.$.role": None, "colors.$.members": []}}
         )
+
+    @commands.Cog.listener()
+    async def on_guild_role_update(self, before, after):
+        """Updated a color if the associated role is updated"""
+        # Name has changed
+        if before.name != after.name:
+            db.guilds.update_one(
+                {"_id": before.guild.id, "colors.role": before.id},
+                {"$set": {"colors.$.name": after.name}}
+            )
+        # Hexcode has changed
+        if before.color != after.color:
+            db.guilds.update_one(
+                {"_id": before.guild.id, "colors.role": before.id},
+                {"$set": {"colors.$.hexcode": str(after.color)}}
+            )
 
 
 def setup(bot):
