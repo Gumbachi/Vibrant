@@ -43,4 +43,5 @@ def get_prefix(bot, message):
 
 intents = discord.Intents(guilds=True, members=True, messages=True)
 bot = commands.Bot(command_prefix=get_prefix,
-                   help_command=None, intents=intents)
+                   help_command=None,
+                   intents=intents)

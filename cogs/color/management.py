@@ -21,6 +21,8 @@ class ColorManagement(commands.Cog):
             raise CommandError("Please wait for the current command to finish")
         return True
 
+    ################ COMMANDS #################
+
     @commands.command(name="add", aliases=["new"])
     async def add_color(self, ctx, hexcode, *, name=""):
         """Add a color to the database colors."""
@@ -177,6 +179,8 @@ class ColorManagement(commands.Cog):
             title="Colors Removed!",
             color=discord.Color.green())
         )
+
+    ############# EVENT LISTENERS #############
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):

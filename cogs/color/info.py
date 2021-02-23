@@ -2,9 +2,10 @@ import io
 import math
 from os.path import sep
 
+from common.cfg import bot
 import common.utils as utils
 import common.database as db
-import discord
+from discord import Embed, File
 from discord.ext import commands
 from PIL import Image, ImageDraw, ImageFont
 
@@ -72,7 +73,7 @@ class ColorInfo(commands.Cog):
         img.save(byte_arr, format='PNG')
         byte_arr = byte_arr.getvalue()
         im = io.BytesIO(byte_arr)
-        return discord.File(im, filename="colors.png")
+        return File(im, filename="colors.png")
 
     @commands.command(name="colors", aliases=["colours", "c"])
     async def show_colors(self, ctx):
@@ -80,10 +81,22 @@ class ColorInfo(commands.Cog):
         colors = db.get(ctx.guild.id, "colors")
 
         if not colors:
-            embed = discord.Embed(title="You have no colors")
-            return await ctx.send(embed=embed)
+            return await ctx.send(embed=Embed(title="You have no colors"))
 
         await ctx.send(file=self.draw_colors(colors))
+
+    @commands.command(name="colorinfo", aliases=["cinfo"])
+    async def show_colors_in_detail(self, ctx):
+        """Show what the database thinks colors are (For testing/support)."""
+        colors = db.get(ctx.guild.id, "colors")
+        cinfo = Embed(title="Detailed Color Info", description="")
+        for color in colors:
+            members = [bot.get_user(id).name for id in color["members"]]
+            cinfo.add_field(
+                name=color["name"],
+                value=f"**ROLE:** {color['role']}\n**MEMBERS:** {', '.join(members)}")
+
+        await ctx.send(embed=cinfo)
 
 
 def setup(bot):
