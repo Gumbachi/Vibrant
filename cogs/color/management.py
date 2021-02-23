@@ -28,7 +28,7 @@ class ColorManagement(commands.Cog):
 
         if "|" in name or len(name) > 100:
             raise UserInputError(
-                "Color names must be shorter than 100 characters and cannot include '|'")
+                "Color names must be shorter than 100 characters and cannot include `|`")
 
         # auto name if name not given
         if not name:
@@ -43,10 +43,11 @@ class ColorManagement(commands.Cog):
             "name": name,
             "hexcode": hexcode,
             "role": None,
+            "members": []
         }
 
         # update database
-        db.guildcoll.update_one(
+        db.guilds.update_one(
             {"_id": ctx.guild.id},
             {"$push": {"colors": new_color}}
         )
@@ -55,25 +56,27 @@ class ColorManagement(commands.Cog):
     @commands.command(name="remove", aliases=["delete"])
     @commands.has_guild_permissions(manage_roles=True)
     async def remove_color(self, ctx, *, color: utils.ColorConverter):
-        """Remove a color from a guilds colors."""
-
-        # remove role if assigned
-        if color["role"]:
-            role = ctx.guild.get_role(color["role"])
-            if role:
-                await role.delete()
+        """Remove a color from a guild's colors."""
 
         # remove color from db
-        db.guildcoll.update_one({"_id": ctx.guild.id}, {
-                                "$pull": {"colors": color}})
+        db.guilds.update_one(
+            {"_id": ctx.guild.id},
+            {"$pull": {"colors": color}}
+        )
+
+        # remove role if exists
+        if color["role"]:
+            role = ctx.guild.get_role(color["role"])
+            await role.delete()
+
         await ctx.invoke(bot.get_command("colors"))  # show updated set
 
     @commands.command(name="rename", aliases=["rn"])
     @commands.has_guild_permissions(manage_roles=True)
     async def rename_color(self, ctx, *, query):
         """Rename a color."""
-
         colors = db.get(ctx.guild.id, "colors")
+
         try:
             before, after = query.split("|")
         except ValueError:
@@ -93,8 +96,7 @@ class ColorManagement(commands.Cog):
         # adjust roles if color is changed
         if color["role"]:
             role = ctx.guild.get_role(color["role"])
-            if role:
-                await role.edit(name=after)
+            await role.edit(name=after)
             # else:
             #     # remove false role value in database
             #     db.coll.update_one(
@@ -103,23 +105,19 @@ class ColorManagement(commands.Cog):
             #     )
 
         # update database
-        db.guildcoll.update_one(
+        db.guilds.update_one(
             {"_id": ctx.guild.id, "colors": color},
             {"$set": {"colors.$.name": after}}
         )
 
-        # Send message
-        rn_embed = discord.Embed(
-            title=f"Renamed {color['name']} to **{after}**!",
-            color=utils.discord_color(color))
-        await ctx.send(embed=rn_embed)
+        await ctx.invoke(bot.get_command("colors"))
 
     @commands.command(name="recolor", aliases=["rc", "recolour"])
     @commands.has_guild_permissions(manage_roles=True)
     async def recolor(self, ctx, *, query):
         """Change the way a color looks."""
+        colors = db.get(ctx.guild.id, "colors")
 
-        colors = db.get(ctx.guild.id, "colors")  # query database
         try:
             before, after = query.split("|")
         except ValueError:
@@ -139,9 +137,8 @@ class ColorManagement(commands.Cog):
         # adjust roles if color is changed
         if color["role"]:
             role = ctx.guild.get_role(color["role"])
-            if role:
-                new_color = utils.to_rgb(after)
-                await role.edit(color=utils.discord_color(new_color))
+            new_color = utils.to_rgb(after)
+            await role.edit(color=new_color)
             # else:
             #     db.coll.update_one(
             #         {"_id": ctx.guild.id, "colors": color},
@@ -149,34 +146,42 @@ class ColorManagement(commands.Cog):
             #     )
 
         # update database
-        db.guildcoll.update_one(
+        db.guilds.update_one(
             {"_id": ctx.guild.id, "colors": color},
             {"$set": {"colors.$.hexcode": after}}
         )
 
-        # Send message
-        rc_embed = discord.Embed(
-            title=f"Changed {color['name']} to **{after}**!",
-            color=utils.discord_color({"hexcode": after}))
-        await ctx.send(embed=rc_embed)
+        await ctx.invoke(bot.get_command("colors"))
 
-    @commands.command(name="clear_all_colors", aliases=["clear_all_colours"])
+    @commands.command(name="clear_colors", aliases=["clear_colours"])
     @commands.has_guild_permissions(manage_roles=True)
     async def clear_colors(self, ctx):
         """Removes all active colors."""
-        colors = db.get(ctx.guild.id, "colors")  # query database
+        colors = db.get(ctx.guild.id, "colors")
         msg = await ctx.send(embed=discord.Embed(title="Clearing colors.."))
 
         # remove roles
         for color in colors:
             if color["role"]:
                 role = ctx.guild.get_role(color["role"])
-                if role:
-                    await role.delete()
+                await role.delete()
 
-        db.update_guild(ctx.guild.id, {"colors": []})  # update database
-        await msg.edit(embed=discord.Embed(title="Colors Removed!",
-                                           color=discord.Color.green()))
+        db.guilds.update_one(
+            {"_id": ctx.guild.id},
+            {"$set": {"colors": []}}
+        )
+        await msg.edit(embed=discord.Embed(
+            title="Colors Removed!",
+            color=discord.Color.green())
+        )
+
+    @commands.Cog.listener()
+    async def on_guild_role_delete(self, role):
+        """Removes a role from a color if user deletes it"""
+        db.guilds.update_one(
+            {"_id": role.guild.id, "colors.role": role.id},
+            {"$set": {"colors.$.role": None}}
+        )
 
 
 def setup(bot):

@@ -23,14 +23,12 @@ class GeneralCommands(commands.Cog):
     @commands.command(name="prefix", aliases=["vibrantprefix"])
     @commands.has_guild_permissions(manage_guild=True)
     async def change_server_prefix(self, ctx, *, new_prefix):
-        """Change the bots prefix for the guild"""
-        db.update_guild(ctx.guild.id, {"prefix": new_prefix})
-        await ctx.send(f"New Prefix is `{new_prefix}`")
-
-    @commands.command(name="get_id")
-    async def get_guild_id(self, ctx):
-        """fetches and prints the guilds id"""
-        await ctx.send(str(ctx.guild.id))
+        """Change the bots prefix for the guild."""
+        db.guilds.update_one(
+            {"_id": ctx.guild.id},
+            {"$set": {"prefix": new_prefix}}
+        )
+        await ctx.send(f"Prefix changed to `{new_prefix}`")
 
 
 def setup(bot):

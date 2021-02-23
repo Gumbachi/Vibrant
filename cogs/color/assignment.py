@@ -1,8 +1,15 @@
+"""Handles all color assignment and roles."""
+
+import random
+
+from itertools import islice, cycle, repeat
+from common.cfg import emojis, bot, heavy_cmd
+from discord.ext.commands.converter import ColorConverter
 import common.database as db
 import discord
-from common.utils import ColorConverter as Color
-from common.utils import color_lookup, discord_color
+import common.utils as utils
 from discord.ext import commands
+import cogs.errors as errors
 
 
 class ColorAssignment(commands.Cog):
@@ -24,107 +31,208 @@ class ColorAssignment(commands.Cog):
         else:
             role = await guild.create_role(
                 name=color["name"],
-                color=discord_color(color)
+                color=utils.discord_color(color)
+            )
+            # update db
+            db.guilds.update_one(
+                {"_id": member.guild.id, "colors": color},
+                {"$set": {"colors.$.role": role.id}}
             )
             await member.add_roles(role)
 
-        db.update_member(member.id, {str(member.guild.id): role.id})
-        db.guildcoll.update_one(
-            {"_id": member.guild.id, "colors": color},
-            {"$set": {"colors.$.role": role.id}}
-        )
-
     @staticmethod
-    async def uncolor(member, role_id):
+    async def uncolor(member, color):
         """Removes the color role if a user has one."""
-        role = member.guild.get_role(role_id)
-        if role:
-            await member.remove_roles(role)
-        db.update_member(member.id, {str(member.guild.id): None})
+        # do nothing if there is no associated role
+        if not color["role"]:
+            return
 
-    @commands.command(name="colorme", aliases=["colourme", "me"])
-    async def colorme(self, ctx, *, color=""):
-        """Display an image of equipped colors."""
+        role = member.guild.get_role(color["role"])
+        await member.remove_roles(role)
+
+    ################ COMMANDS #################
+
+    @commands.command(name="color", aliases=["colour", "cu"])
+    @commands.has_guild_permissions(manage_roles=True)
+    async def color_user(self, ctx, member: discord.Member, *, cstring=""):
+        """Color a specified user a specified color."""
+
         colors = db.get(ctx.guild.id, "colors")
-        color = color_lookup(color, colors)  # find right color
+        ucolor = utils.find_user_color(member, colors)
 
-        member = db.find_member(ctx.author.id)
+        # Determine color
+        if not colors:
+            raise errors.ColorError("There are no active colors")
 
-        # remove color if necessary
-        role_id = member.get(str(ctx.guild.id), None)
-        if role_id:
-            await ColorAssignment.uncolor(ctx, role_id)
+        # to eliminate random coloring the same color
+        if len(colors) > 1 and not cstring:
+            exclusive_colors = [color for color in colors if color != ucolor]
+            color = utils.color_lookup(cstring, exclusive_colors)
+        else:
+            color = utils.color_lookup(cstring, colors)
 
-        # apply color
-        await ColorAssignment.color(ctx.author, color)
+        if not color:
+            raise errors.ColorError("Color Not Found")
+
+        if color == ucolor:
+            raise errors.ColorError(f"{member.name} already has that color")
+
+        # attempt to uncolor and then color user
+        if ucolor:
+            await ColorAssignment.uncolor(member, ucolor)
+        await ColorAssignment.color(member, color)
 
         embed = discord.Embed(
-            title=f"You have been painted {color['name']}",
-            color=discord_color(color))
+            title=f"{member.name} is {color['name']}",
+            color=utils.discord_color(color)
+        )
         await ctx.send(embed=embed)
 
-    @ commands.command(name="uncolorme", aliases=["uncolourme", "unme"])
+    @commands.command(name="colorme", aliases=["colourme", "cm", "me"])
+    async def colorme(self, ctx, *, cstring=""):
+        """Display an image of equipped colors."""
+        await ctx.invoke(bot.get_command("color"), member=ctx.author, cstring=cstring)
+
+    @commands.command(name="uncolorme", aliases=["uncolourme", "unme", "ucm"])
     async def uncolorme(self, ctx):
         """Display an image of equipped colors."""
         colors = db.get(ctx.guild.id, "colors")
+        ucolor = utils.find_user_color(ctx.author, colors)
 
-        # Switch colors
-        await ColorAssignment.uncolor(ctx.author, colors)
+        # remove color
+        if ucolor:
+            await ColorAssignment.uncolor(ctx.author, ucolor)
+            response = "You have been uncolored"
+        else:
+            response = "You don't have a color"
 
-        embed = discord.Embed(title=f"You have been uncolored")
-        await ctx.send(embed=embed)
+        await ctx.send(embed=discord.Embed(title=response))
 
-    # @commands.Cog.listener()
-    # async def on_member_update(before, after):
-    #     """updates color info if a users color role is manually removed"""
-    #     # check if any roles changed
-    #     if before.roles == after.roles:
-    #         return
+    @commands.command(name="splash")
+    async def color_server(self, ctx, color: utils.ColorConverter = None):
+        """Gather all of the uncolored users and assigns them a color"""
 
-    #     # convert roles to set for comparison
-    #     roles_before = set(before.roles)
-    #     roles_after = set(after.roles)
+        heavy_cmd.add(ctx.guild.id)  # begin heavy command
+        colors = db.get(ctx.guild.id, "colors")
 
-    #     # find difference between sets
-    #     removed_roles = roles_before - roles_after
-    #     added_roles = roles_after - roles_before
+        # get uncolored members
+        uncolored = (member for member in ctx.guild.members
+                     if not utils.find_user_color(member, colors))
 
-    #     for role in removed_roles:
-    #         db.coll.update(
-    #             {"_id": after.guild.id}
-    #         )
+        msg = await ctx.send(embed=discord.Embed(title="Coloring everyone(may take a while)..."))
 
-    #     # role removed
-    #     if removed_roles:
-    #         for role in removed_roles:
-    #             color = guild.get_color("role_id", role.id)
-    #             if color:
-    #                 color.member_ids.discard(before.id)
-    #                 if not color.member_ids:
-    #                     try:
-    #                         await role.delete()
-    #                     except discord.errors.NotFound:
-    #                         pass
+        # color generator for splashing
+        if not color:
+            color_cycle = islice(cycle(colors),
+                                 random.randint(0, len(colors)-1),
+                                 None)
+        else:
+            color_cycle = repeat(color)
 
-    #     # role added
-    #     if added_roles:
-    #         for role in added_roles:
-    #             color = guild.get_color("role_id", role.id)
-    #             if color:
-    #                 color.member_ids.add(before.id)
+        # loop and color people
+        async with ctx.channel.typing():
+            for member in uncolored:
+                color = next(color_cycle)
+                await ColorAssignment.color(member, next(color_cycle))
 
+        heavy_cmd.discard(ctx.guild.id)
 
-# @bot.event
-# async def on_guild_role_delete(role):
-#     """Removes a role from the Guild object if user deletes it"""
-#     guild = Guild.get(role.guild.id)
+        await msg.edit(embed=discord.Embed(title="Everyone is now colored",
+                                           color=discord.Color.green()))
 
-#     # sets color role id to none if it is deleted
-#     color = guild.get_color("role_id", role.id)
-#     if color:
-#         color.role_id = None
-#         if not guild.heavy_command_active:
-#             db.update_prefs(guild)  # update MongoDB
+    ############# EVENT LISTENERS #############
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        """Welcome and attempt to randomly color a new user."""
+
+        # get required data
+        wc, colors = db.get_many(member.guild.id, "wc", "colors")
+
+        # do nothing if no welcome channel
+        if not wc:
+            return
+        welcome_channel = member.guild.get_channel(wc)
+
+        if colors:
+            color = random.choice(colors)
+            await ColorAssignment.color(member, color)
+            accent = utils.discord_color(color)
+        else:
+            accent = discord.Colour.blurple()
+
+        # generate and send weclome embed message
+        embed = discord.Embed(
+            title=f"{member.name} has joined the server!",
+            description=f"Please give {member.mention} a warm welcome!",
+            color=accent)
+        embed.set_thumbnail(url=member.avatar_url)
+
+        await welcome_channel.send(embed=embed)
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        """Sends a goodbye message when a member leaves the server."""
+
+        wc, colors = db.get_many(member.guild.id, "wc", "colors")
+        ucolor = utils.find_user_color(member, colors)
+
+        # do nothing if no welcome channel
+        if not wc:
+            return
+        welcome_channel = member.guild.get_channel(wc)
+
+        # generate and send goodbye message
+        embed = discord.Embed(title=f"{member.name} has left the server!",
+                              description="They won't be missed",
+                              color=discord.Color.red())
+        embed.set_thumbnail(url=member.avatar_url)
+        await welcome_channel.send(embed=embed)
+
+        # remove member and update db
+        if ucolor:
+            members = ucolor["members"]
+            members.remove(member.id)
+            db.guilds.update_one(
+                {"_id": member.guild.id, "colors.name": ucolor["name"]},
+                {"$set": {"colors.$.members": members}}
+            )
+
+    @commands.Cog.listener()
+    async def on_member_update(self, before, after):
+        """Updates color info if a users color role is manually removed"""
+        # check if any roles changed
+        if before.roles == after.roles:
+            return
+
+        # convert roles to set for comparison
+        roles_before = set(before.roles)
+        roles_after = set(after.roles)
+
+        # find difference between sets
+        removed_roles = roles_before - roles_after
+        added_roles = roles_after - roles_before
+
+        # Role removed
+        for role in removed_roles:
+            db.guilds.update_one(
+                {"_id": after.guild.id, "colors.role": role.id},
+                {"$pull": {"colors.$.members": after.id}}
+            )
+
+            # clear role if empty
+            if not role.members:
+                try:
+                    await role.delete()
+                except discord.errors.NotFound:
+                    pass
+
+        # Role added
+        for role in added_roles:
+            db.guilds.update_one(
+                {"_id": after.guild.id, "colors.role": role.id},
+                {"$push": {"colors.$.members": after.id}}
+            )
 
 
 def setup(bot):

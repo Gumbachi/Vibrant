@@ -5,7 +5,7 @@ import discord
 from discord.ext import commands
 
 import common.cfg as cfg
-from common.cfg import bot
+import common.database as db
 
 
 class CommandErrorHandler(commands.Cog):
@@ -16,7 +16,7 @@ class CommandErrorHandler(commands.Cog):
     async def on_command_error(self, ctx, error):
         """The event triggered when an error is raised while invoking a command."""
 
-        gumbachi = bot.get_user(128595549975871488)
+        gumbachi = cfg.bot.get_user(128595549975871488)
         if hasattr(ctx.command, 'on_error'):
             return
 
@@ -24,6 +24,21 @@ class CommandErrorHandler(commands.Cog):
 
         if isinstance(error, commands.CommandNotFound):
             return
+
+        if isinstance(error, MissingData):
+            db.guilds.insert_one(
+                {
+                    "_id": ctx.guild.id,
+                    "prefix": "$",
+                    "wc": None,
+                    "colors": [],
+                    "themes": []
+                }
+            )
+            embed = discord.Embed(
+                title="Something went wrong. Please try again.",
+                color=discord.Color.red())
+            return await ctx.send(embed=embed)
 
         if isinstance(error, ColorError):
             embed = discord.Embed(title=str(error), color=discord.Color.red())
@@ -51,4 +66,8 @@ def setup(bot):
 
 
 class ColorError(commands.CommandError):
+    pass
+
+
+class MissingData(commands.CommandError):
     pass

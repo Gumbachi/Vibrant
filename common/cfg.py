@@ -1,5 +1,6 @@
 """Holds globals like the bot objects and extensions."""
 
+import discord
 from discord.ext import commands
 from . import database as db
 
@@ -14,23 +15,25 @@ extensions = [
     "cogs.color.assignment"
 ]
 
-emoji_dict = {"checkmark": "✅",
-              "crossmark": "❌",
-              "left_arrow": "⬅️",
-              "right_arrow": "➡️",
-              "home_arrow": "↩️",
-              "up_arrow": "🔼",
-              "down_arrow": "🔽",
-              "double_down": "⏬",
-              "refresh": "🔄",
-              "updown": "↕️"}
+emojis = {"checkmark": "✅",
+          "crossmark": "❌",
+          "left_arrow": "⬅️",
+          "right_arrow": "➡️",
+          "home_arrow": "↩️",
+          "up_arrow": "🔼",
+          "down_arrow": "🔽",
+          "double_down": "⏬",
+          "refresh": "🔄",
+          "updown": "↕️"}
 
 admin_ids = {
-    128595549975871488,  # Gum
+    128595549975871488,  # me
 }
 
 color_limit = 50
 theme_limit = 10
+
+heavy_cmd = set()
 
 
 def get_prefix(bot, message):
@@ -38,10 +41,6 @@ def get_prefix(bot, message):
     return db.get(message.guild.id, "prefix")
 
 
+intents = discord.Intents(guilds=True, members=True, messages=True)
 bot = commands.Bot(command_prefix=get_prefix,
-                   help_command=None)  # creates bot object
-
-# none_embed = discord.Embed(
-#     title="No active colors",
-#     description=f"To add colors use the `add` command or import a theme",
-#     color=discord.Color.blurple())
+                   help_command=None, intents=intents)
