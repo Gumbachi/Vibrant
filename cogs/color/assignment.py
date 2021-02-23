@@ -89,8 +89,8 @@ class ColorAssignment(commands.Cog):
 
         # attempt to uncolor and then color user
         if ucolor:
-            await ColorAssignment.uncolor(member, ucolor)
-        await ColorAssignment.color(member, color)
+            await self.uncolor(member, ucolor)
+        await self.color(member, color)
 
         embed = discord.Embed(
             title=f"{member.name} is {color['name']}",
@@ -111,7 +111,7 @@ class ColorAssignment(commands.Cog):
 
         # remove color
         if ucolor:
-            await ColorAssignment.uncolor(ctx.author, ucolor)
+            await self.uncolor(ctx.author, ucolor)
             response = "You have been uncolored"
         else:
             response = "You don't have a color"
@@ -156,11 +156,11 @@ class ColorAssignment(commands.Cog):
             if not color["role"]:
                 color["role"] = color_memory.get(color["name"], None)
                 if not color["role"]:
-                    role = await ColorAssignment.create_role(ctx.guild, color)
+                    role = await self.create_role(ctx.guild, color)
                     color_memory[color["name"]] = role.id
                     color["role"] = role.id
 
-            await ColorAssignment.color(member, color)
+            await self.color(member, color)
 
         heavy_command_active.discard(ctx.guild.id)
 
@@ -201,7 +201,7 @@ class ColorAssignment(commands.Cog):
 
         if colors:
             color = random.choice(colors)
-            await ColorAssignment.color(member, color)
+            await self.color(member, color)
             accent = utils.discord_color(color)
         else:
             accent = discord.Colour.blurple()

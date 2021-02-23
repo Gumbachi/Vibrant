@@ -1,25 +1,19 @@
 # Vibrant
 
-A discord bot that can make a server fun and colorful.  
-This bot manages colorful roles for a discord server ie. creation, deletion, editing of roles in a server.  
+A discord bot that can apply themes to spice up your server.  
+This bot manages roles for a discord server ie. creation, deletion, editing of roles in a server.  
 You can view how to setup and use commands with the bot using the help command after inviting the bot to your server.  
-If you forgot your prefix then you can @mention the bot for help.
+If you forgot your prefix then you can type @Vibrant for help.
 
-## What makes this bot special
-
-1. This bot is special because it can do things like save and use different themes, disable channels, and has helpful commands like splash which can color everybody so you don't have to do it all yourself.
-2. The syntax for commands is intuitive for commands like colorme, add, remove which are also aliased for ease of use (e.g. colourme works too for those with the extra 'u')
-3. The bot also manages your roles so if you aren't using a color then it is removed until you use it again. This cuts down on role clutter
-
-## More Features
+## Features
 
 - Create and manage custom color roles
 - Color people and yourself with commands
+- Save themes/presets for when you feel like change but dont want to lose your current setup
+- Auto role management keeps the server clean and also updates info if somebody changes a role to keep your colors and discord connected perfectly
 - Customizable prefix
 - Randomly color everyone or specific people
 - Welcome new members and assign them colors
-- Save themes/presets for when you feel like change but dont want to lose your current setup
-- Auto role management keeps the server clean and also updates info if somebody changes a role to keep your colors and discord connected perfectly
 
 ## Setup
 
@@ -29,14 +23,14 @@ If you forgot your prefix then you can @mention the bot for help.
 
 ## Commands
 
-Optional arguments are marked with a \*
+Optional fields are marked with a \*
 
 ### General Commands
 
-|      **Command**       | **Example**  |               **Description**               |
-| :--------------------: | :----------: | :-----------------------------------------: |
-|     help \<page\*>     |   \$help     |            Standard help command            |
-| prefix \<new prefix\*> |  \$prefix %  | Changes the prefix you use to call commands |
+|      **Command**       | **Example** |               **Description**               |
+| :--------------------: | :---------: | :-----------------------------------------: |
+|     help \<page\*>     |   \$help    |            Standard help command            |
+| prefix \<new prefix\*> | \$prefix %  | Changes the prefix you use to call commands |
 
 ### Color Management Commands
 
