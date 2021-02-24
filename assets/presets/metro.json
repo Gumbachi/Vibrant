@@ -1,132 +1,94 @@
 {
   "name": "Metro",
-  "description": "Not as bright as Vibrant",
-  "guild_id": null,
   "colors": [
     {
       "name": "Lime",
       "hexcode": "#a4c400",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Green",
       "hexcode": "#60a917",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Emerald",
       "hexcode": "#008a00",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Teal",
       "hexcode": "#00aba9",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Cyan",
       "hexcode": "#1ba1e2",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Cobalt",
       "hexcode": "#0050ef",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Inidigo",
       "hexcode": "#6a00ff",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Violet",
       "hexcode": "#aa00ff",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Pink",
       "hexcode": "#f472d0",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Magenta",
       "hexcode": "#d80073",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Crimson",
       "hexcode": "#a20025",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Red",
       "hexcode": "#e51400",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Orange",
       "hexcode": "#fa6800",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Amber",
       "hexcode": "#f0a30a",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Yellow",
       "hexcode": "#e3c800",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Steel",
       "hexcode": "#647687",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Mauve",
       "hexcode": "#76608a",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Sienna",
       "hexcode": "#a0522d",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     }
   ]

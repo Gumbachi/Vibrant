@@ -94,7 +94,7 @@ class ColorInfo(commands.Cog):
             members = [bot.get_user(id).name for id in color["members"]]
             cinfo.add_field(
                 name=color["name"],
-                value=f"**ROLE:** {color['role']}\n**MEMBERS:** {', '.join(members)}")
+                value=f"**ROLE:** {color['role']}\n**MEMBERS({len(members)}):** {', '.join(members)}")
 
         await ctx.send(embed=cinfo)
 

@@ -12,7 +12,9 @@ extensions = [
     "cogs.welcome",
     "cogs.color.info",
     "cogs.color.management",
-    "cogs.color.assignment"
+    "cogs.color.assignment",
+    "cogs.theme.info",
+    "cogs.theme.management"
 ]
 
 emojis = {"checkmark": "✅",

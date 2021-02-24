@@ -1,83 +1,59 @@
 {
   "name": "Pastel",
-  "description": "Soft, easy-going colors",
-  "guild_id": null,
   "colors": [
     {
       "name": "Magic Mint",
       "hexcode": "#aaf0d1",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Turquoise Pastel",
       "hexcode": "#9adedb",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Baby Blue",
       "hexcode": "#89cff0",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Light Pastel Green",
       "hexcode": "#b2fba5",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Lilac",
       "hexcode": "#bdb0d0",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Periwinkle",
       "hexcode": "#c1c6fc",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Pastel Violet",
       "hexcode": "#cb99c9",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Pale Blue",
       "hexcode": "#d6fffe",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Pastel Yellow",
       "hexcode": "#fdfd96",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Baby Pink",
       "hexcode": "#ffb7ce",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Baby Purple",
       "hexcode": "#ca9bf7",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     }
   ]

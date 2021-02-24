@@ -28,7 +28,13 @@ class ThemeInfo(commands.Cog):
     async def show_themes_in_detail(self, ctx):
         """Shows a detailed, textbased view of your themes."""
         themes = db.get(ctx.guild.id, "themes")
-        await ctx.send("Not Finished")
+        themes_embed = Embed(title="Themes in Detail", description="")
+        for theme in themes:
+            colors = [f"**{color['name']}**: {color['hexcode']}"
+                      for color in theme["colors"]]
+            themes_embed.add_field(name=theme["name"], value="\n".join(colors))
+
+        await ctx.send(embed=themes_embed)
 
     @commands.command(name="imports", aliases=["presets"])
     async def show_imports(self, ctx):

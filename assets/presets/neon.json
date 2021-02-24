@@ -1,55 +1,39 @@
 {
   "name": "Neon",
-  "description": "The brightest colors",
-  "guild_id": null,
   "colors": [
     {
       "name": "UFO Green",
       "hexcode": "#7FFF00",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Neon Magenta",
       "hexcode": "#FF1493",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Proton Purple",
       "hexcode": "#8A2BE2",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Neon Red",
       "hexcode": "#FF073A",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Neon Blue",
       "hexcode": "#04D9FF",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Electric Yellow",
       "hexcode": "#FFFC00",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Electric Orange",
       "hexcode": "#FF3503",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     }
   ]

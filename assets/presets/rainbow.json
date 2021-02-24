@@ -1,55 +1,39 @@
 {
   "name": "Rainbow",
-  "description": "Double rainbow",
-  "guild_id": null,
   "colors": [
     {
       "name": "Red",
       "hexcode": "#ff0000",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Orange",
       "hexcode": "#ffa500",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Yellow",
       "hexcode": "#ffff00",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Green",
       "hexcode": "#008000",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Blue",
       "hexcode": "#0000ff",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Indigo",
       "hexcode": "#4b0082",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Violet",
       "hexcode": "#ee82ee",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     }
   ]

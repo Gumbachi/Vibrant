@@ -1,48 +1,34 @@
 {
   "name": "Outrun",
-  "description": "Gotta go fast",
-  "guild_id": null,
   "colors": [
     {
       "name": "Orange Sun",
       "hexcode": "#F57800",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Purple Sky",
       "hexcode": "#7308CA",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Magenta Sky",
       "hexcode": "#C403E8",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Blue Violet",
       "hexcode": "#3D048E",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Cyan",
       "hexcode": "#3EB0FF",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Light Red",
       "hexcode": "#F5384E",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     }
   ]

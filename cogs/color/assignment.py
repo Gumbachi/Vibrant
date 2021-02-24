@@ -3,14 +3,13 @@
 import random
 from itertools import cycle, islice, repeat
 
-import cogs.errors as errors
+import discord
+from discord.ext import commands
+from discord.ext.commands import CommandError
+
+import common.cfg as cfg
 import common.database as db
 import common.utils as utils
-from common.utils import heavy_command_not_running
-import discord
-from common.cfg import bot, emojis, heavy_command_active
-from discord.ext import commands
-from discord.ext.commands.converter import ColorConverter
 
 
 class ColorAssignment(commands.Cog):
@@ -21,7 +20,9 @@ class ColorAssignment(commands.Cog):
 
     def cog_check(self, ctx):
         """Disable all commands in cog if heavy command is running."""
-        return ctx.guild.id not in heavy_command_active
+        if ctx.guild.id in cfg.heavy_command_active:
+            raise CommandError("A command is running, please wait")
+        return True
 
     @staticmethod
     async def color(member, color):
@@ -72,7 +73,7 @@ class ColorAssignment(commands.Cog):
         ucolor = utils.find_user_color(member, colors)
 
         if not colors:
-            raise errors.ColorError("There are no active colors")
+            raise CommandError("There are no active colors")
 
         # to eliminate random coloring the same color
         if len(colors) > 1 and not cstring:
@@ -82,10 +83,10 @@ class ColorAssignment(commands.Cog):
             color = utils.color_lookup(cstring, colors)
 
         if not color:
-            raise errors.ColorError("Color Not Found")
+            raise CommandError("Color Not Found")
 
         if color == ucolor:
-            raise errors.ColorError(f"{member.name} already has that color")
+            raise CommandError(f"{member.name} already has that color")
 
         # attempt to uncolor and then color user
         if ucolor:
@@ -101,7 +102,11 @@ class ColorAssignment(commands.Cog):
     @commands.command(name="colorme", aliases=["colourme", "cm", "me"])
     async def colorme(self, ctx, *, cstring=""):
         """Display an image of equipped colors."""
-        await ctx.invoke(bot.get_command("color"), member=ctx.author, cstring=cstring)
+        await ctx.invoke(
+            self.bot.get_command("color"),
+            member=ctx.author,
+            cstring=cstring
+        )
 
     @commands.command(name="uncolorme", aliases=["uncolourme", "unme", "ucm"])
     async def uncolorme(self, ctx):
@@ -126,9 +131,9 @@ class ColorAssignment(commands.Cog):
         colors = db.get(ctx.guild.id, "colors")
 
         if not colors:
-            raise errors.ColorError("There are no active colors")
+            raise CommandError("There are no active colors")
 
-        heavy_command_active.add(ctx.guild.id)  # begin heavy command
+        cfg.heavy_command_active.add(ctx.guild.id)  # begin heavy command
 
         # get uncolored members
         uncolored = (member for member in ctx.guild.members
@@ -148,6 +153,7 @@ class ColorAssignment(commands.Cog):
         color_memory = {}  # remember roles assigned during command
 
         # loop and color people
+        colored_members = 0
         for member in uncolored:
             color = next(color_cycle)
 
@@ -161,10 +167,11 @@ class ColorAssignment(commands.Cog):
                     color["role"] = role.id
 
             await self.color(member, color)
+            colored_members += 1
 
-        heavy_command_active.discard(ctx.guild.id)
+        cfg.heavy_command_active.discard(ctx.guild.id)
 
-        await msg.edit(embed=discord.Embed(title="Everyone is now colored",
+        await msg.edit(embed=discord.Embed(title=f"Colored {colored_members} members!",
                                            color=discord.Color.green()))
 
     @commands.command(name="unsplash")
@@ -173,14 +180,14 @@ class ColorAssignment(commands.Cog):
         """Remove all colors but not delete them."""
 
         colors = db.get(ctx.guild.id, "colors")
-        heavy_command_active.add(ctx.guild.id)  # begin heavy command
+        cfg.heavy_command_active.add(ctx.guild.id)  # begin heavy command
 
         for color in colors:
             if color["role"]:
                 role = ctx.guild.get_role(color["role"])
                 await role.delete()
 
-        heavy_command_active.discard(ctx.guild.id)
+        cfg.heavy_command_active.discard(ctx.guild.id)
 
         await ctx.send(embed=discord.Embed(title="Everyone has been uncolored",
                                            color=discord.Color.green()))

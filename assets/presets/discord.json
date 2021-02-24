@@ -1,41 +1,29 @@
 {
   "name": "Discord",
-  "description": "Looks like discord",
-  "guild_id": null,
   "colors": [
     {
       "name": "Blurple",
       "hexcode": "#7289da",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "White",
       "hexcode": "#ffffff",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Light Gray",
       "hexcode": "#99aab5",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Medium Gray",
       "hexcode": "#2c2f33",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Dark Gray",
       "hexcode": "#23272a",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     }
   ]

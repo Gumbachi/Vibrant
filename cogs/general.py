@@ -3,9 +3,7 @@ import common.database as db
 
 
 class GeneralCommands(commands.Cog):
-    """Handles all of the simple commands such as saying howdy or
-    the help command.
-    """
+    """Handles all of the geeral commands like help."""
 
     def __init__(self, bot):
         self.bot = bot

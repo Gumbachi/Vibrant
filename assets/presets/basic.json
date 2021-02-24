@@ -1,90 +1,64 @@
 {
   "name": "Basic",
-  "description": "A simple set of colors",
-  "guild_id": null,
   "colors": [
     {
       "name": "Aqua",
       "hexcode": "#00ffff",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Black",
       "hexcode": "#000001",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Blue",
       "hexcode": "#0000ff",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Fuchsia",
       "hexcode": "#ff00ff",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Green",
       "hexcode": "#008000",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Lime",
       "hexcode": "#00ff00",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Maroon",
       "hexcode": "#800000",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Orange",
       "hexcode": "#ffa500",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Purple",
       "hexcode": "#800080",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Red",
       "hexcode": "#ff0000",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Teal",
       "hexcode": "#008080",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     },
     {
       "name": "Yellow",
       "hexcode": "#ffff00",
-      "guild_id": null,
-      "role_id": null,
       "members": []
     }
   ]
