@@ -61,7 +61,7 @@ class ColorInfo(commands.Cog):
             # Make text readable
             r, g, b = rgb
             luminance = (0.299 * r + 0.587 * g + 0.114 * b)/255
-            text_color = (0, 0, 0) if luminance > 0.5 else (255, 255, 255)
+            text_color = (0, 0, 0) if luminance > 0.5 else (240, 240, 240)
 
             # Draw text on boxes
             x = (column_width-w)/2 + W
