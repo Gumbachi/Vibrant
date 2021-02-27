@@ -10,6 +10,7 @@ extensions = [
     "cogs.errors",
     "cogs.general",
     "cogs.welcome",
+    "cogs.catalog",
     "cogs.color.info",
     "cogs.color.management",
     "cogs.color.assignment",
@@ -17,16 +18,15 @@ extensions = [
     "cogs.theme.management"
 ]
 
-emojis = {"checkmark": "✅",
-          "crossmark": "❌",
-          "left_arrow": "⬅️",
-          "right_arrow": "➡️",
-          "home_arrow": "↩️",
-          "up_arrow": "🔼",
-          "down_arrow": "🔽",
-          "double_down": "⏬",
-          "refresh": "🔄",
-          "updown": "↕️"}
+emojis = {
+    "checkmark": "✅",
+    "crossmark": "❌",
+    "left_arrow": "⬅️",
+    "right_arrow": "➡️",
+    "home_arrow": "↩️",
+    "double_down": "⏬",
+    "updown_arrow": "↕️"
+}
 
 admin_ids = {
     128595549975871488,  # me
@@ -43,7 +43,12 @@ def get_prefix(bot, message):
     return db.get(message.guild.id, "prefix")
 
 
-intents = discord.Intents(guilds=True, members=True, messages=True)
-bot = commands.Bot(command_prefix=get_prefix,
-                   help_command=None,
-                   intents=intents)
+intents = discord.Intents(
+    guilds=True, members=True,
+    messages=True, reactions=True
+)
+bot = commands.Bot(
+    command_prefix=get_prefix,
+    help_command=None,
+    intents=intents
+)

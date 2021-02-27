@@ -1,5 +1,6 @@
 import io
 import math
+import os
 from os.path import sep
 import json
 
@@ -9,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 import common.database as db
 import common.utils as utils
+from ..catalog import Catalog
 
 
 class ThemeInfo(commands.Cog):
@@ -89,9 +91,6 @@ class ThemeInfo(commands.Cog):
                     )
 
             theme_images.append(img)
-
-        for img in theme_images:
-            img.show()
         return theme_images
 
     @commands.command(name="themes", aliases=["temes", "t"])
@@ -102,9 +101,11 @@ class ThemeInfo(commands.Cog):
         if not themes:
             return await ctx.send(embed=Embed(title="You have no themes"))
 
-        timgs = self.draw_themes(themes)
+        theme_files = self.draw_themes(themes)
 
-        await ctx.send("Not finished yet")
+        # create and send catalog
+        catalog = Catalog(theme_files)
+        await catalog.send(ctx.channel)
 
     @commands.command(name="themeinfo", aliases=["tinfo"])
     async def show_themes_in_detail(self, ctx):
@@ -121,8 +122,14 @@ class ThemeInfo(commands.Cog):
     @commands.command(name="imports", aliases=["presets"])
     async def show_imports(self, ctx):
         """Draw and send an image of all presets"""
+        themes = []
+        for fname in os.listdir(f"assets{sep}presets{sep}"):
+            with open(f"assets{sep}presets{sep}{fname}", "r") as preset:
+                themes.append(json.load(preset))
 
-        await ctx.send("Not Finished")
+        # Create catalog and send
+        catalog = Catalog(self.draw_themes(themes))
+        await catalog.send(ctx.channel)
 
 
 def setup(bot):
