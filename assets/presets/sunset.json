@@ -1,0 +1,35 @@
+{
+  "name": "Sunset",
+  "colors": [
+    {
+      "name": "Maastricht Blue",
+      "hexcode": "#08183A",
+      "members": []
+    },
+    {
+      "name": "Space Cadet",
+      "hexcode": "#152852",
+      "members": []
+    },
+    {
+      "name": "English Violet",
+      "hexcode": "#4b3d60",
+      "members": []
+    },
+    {
+      "name": "Sunset Orange",
+      "hexcode": "#fd5e53",
+      "members": []
+    },
+    {
+      "name": "Sandy Brown",
+      "hexcode": "#fc9c54",
+      "members": []
+    },
+    {
+      "name": "Shandy",
+      "hexcode": "#ffe373",
+      "members": []
+    }
+  ]
+}

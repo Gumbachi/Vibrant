@@ -1,0 +1,35 @@
+{
+  "name": "Outrun",
+  "colors": [
+    {
+      "name": "Orange Sun",
+      "hexcode": "#F57800",
+      "members": []
+    },
+    {
+      "name": "Purple Sky",
+      "hexcode": "#7308CA",
+      "members": []
+    },
+    {
+      "name": "Magenta Sky",
+      "hexcode": "#C403E8",
+      "members": []
+    },
+    {
+      "name": "Blue Violet",
+      "hexcode": "#3D048E",
+      "members": []
+    },
+    {
+      "name": "Cyan",
+      "hexcode": "#3EB0FF",
+      "members": []
+    },
+    {
+      "name": "Light Red",
+      "hexcode": "#F5384E",
+      "members": []
+    }
+  ]
+}
