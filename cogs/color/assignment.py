@@ -51,13 +51,12 @@ class ColorAssignment(commands.Cog):
     @staticmethod
     async def create_role(guild, color):
         """Create a role and update database."""
-        print(f"Creating {color['name']}")
         role = await guild.create_role(
             name=color["name"],
             color=utils.discord_color(color)
         )
         db.guilds.update_one(
-            {"_id": guild.id, "colors": color},
+            {"_id": guild.id, "colors.name": color["name"]},
             {"$set": {"colors.$.role": role.id}}
         )
         return role

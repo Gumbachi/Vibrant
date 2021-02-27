@@ -6,7 +6,7 @@ def help_book(p):
         # Table of Contents
         {
             "title": "Table of Contents",
-            "description": f"Navigate between pages with the reaction buttons or use `{p}help <page>`",
+            "description": f"Navigate between pages with the reaction buttons",
             "1. Vibrant Tutorial": ["Learn how to use the bot and its commands"],
             "2. Theme Tutorial": ["Learn how to use themes"],
             "3. General Commands": ["Shows a list of general commands"],

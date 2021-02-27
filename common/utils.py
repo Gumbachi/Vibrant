@@ -40,9 +40,6 @@ class ColorConverter(commands.Converter):
     async def convert(self, ctx, arg):
         """Find a color in a list of colors based on a query"""
         colors = db.get(ctx.guild.id, "colors")
-
-        print("Converting", arg)
-
         if not colors:
             raise CommandError("You have no active colors")
 

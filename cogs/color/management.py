@@ -39,6 +39,9 @@ class ColorManagement(commands.Cog):
             raise UserInputError(
                 "Color names must be shorter than 100 characters and cannot include `|`")
 
+        if name in [color["name"] for color in colors]:
+            raise UserInputError("Cannot have duplicate color names")
+
         # auto name if name not given
         if not name:
             name = f"Color {len(colors) + 1}"

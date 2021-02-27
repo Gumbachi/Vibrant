@@ -7,13 +7,14 @@ from . import database as db
 # Cogs the bot loads
 extensions = [
     "cogs.admin",
+    "cogs.catalog",
     "cogs.errors",
     "cogs.general",
     "cogs.welcome",
-    "cogs.catalog",
+    "cogs.color.assignment",
     "cogs.color.info",
     "cogs.color.management",
-    "cogs.color.assignment",
+    "cogs.theme.assignment",
     "cogs.theme.info",
     "cogs.theme.management"
 ]

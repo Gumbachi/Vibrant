@@ -1,3 +1,5 @@
+"""Holds all command related to modifying or managing themes."""
+
 import json
 from os.path import sep
 
@@ -6,7 +8,7 @@ from discord.ext.commands import CommandError, UserInputError
 
 import common.database as db
 import common.cfg as cfg
-from common.utils import ThemeConverter, heavy_command_not_running, theme_lookup
+from common.utils import ThemeConverter, theme_lookup
 
 
 class ThemeManagement(commands.Cog):
@@ -53,7 +55,7 @@ class ThemeManagement(commands.Cog):
             {"_id": ctx.guild.id},
             {"$push": {"themes": new_theme}}
         )
-        await ctx.invoke(self.bot.get_command("themeinfo"))  # show new set
+        await ctx.invoke(self.bot.get_command("themes"))  # show new set
 
     @commands.command(name="theme.remove", aliases=["theme.delete", "erase"])
     async def remove_theme(self, ctx, *, theme: ThemeConverter):
@@ -62,10 +64,9 @@ class ThemeManagement(commands.Cog):
             {"_id": ctx.guild.id},
             {"$pull": {"themes": theme}}
         )
-        await ctx.invoke(self.bot.get_command("themeinfo"))
+        await ctx.invoke(self.bot.get_command("themes"))
 
     @commands.command(name="theme.overwrite", aliases=["overwrite"])
-    @commands.check(heavy_command_not_running)
     async def overwrite_theme(self, ctx, *, themename):
         """Overwrite one of the Guild's themes with another."""
 
@@ -90,7 +91,7 @@ class ThemeManagement(commands.Cog):
             {"_id": ctx.guild.id, "themes": old_theme},
             {"$set": {"themes.$": new_theme}}
         )
-        await ctx.invoke(self.bot.get_command("themeinfo"))
+        await ctx.invoke(self.bot.get_command("themes"))
 
     @commands.command(name="theme.rename", aliases=["t.rn"])
     async def rename_theme(self, ctx, *, query):
@@ -117,7 +118,7 @@ class ThemeManagement(commands.Cog):
             {"_id": ctx.guild.id, "themes": theme},
             {"$set": {"themes.$.name": after}}
         )
-        await ctx.invoke(self.bot.get_command("themeinfo"))
+        await ctx.invoke(self.bot.get_command("themes"))
 
     @commands.command(name="import")
     async def import_colors(self, ctx, *, name):
@@ -139,7 +140,7 @@ class ThemeManagement(commands.Cog):
             {"_id": ctx.guild.id},
             {"$push": {"themes": preset}}
         )
-        await ctx.invoke(self.bot.get_command("tinfo"))
+        await ctx.invoke(self.bot.get_command("themes"))
 
 
 def setup(bot):
