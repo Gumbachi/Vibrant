@@ -37,6 +37,8 @@ theme_limit = 10
 
 heavy_command_active = set()
 
+catalogs = {}
+
 
 def get_prefix(bot, message):
     """Gets the prefix per server"""

@@ -55,7 +55,7 @@ class ThemeManagement(commands.Cog):
         )
         await ctx.invoke(self.bot.get_command("themeinfo"))  # show new set
 
-    @commands.command(name="theme.remove", aliases=["theme.delete", "t.d", "t.r", "erase"])
+    @commands.command(name="theme.remove", aliases=["theme.delete", "erase"])
     async def remove_theme(self, ctx, *, theme: ThemeConverter):
         """Remove a theme."""
         db.guilds.update_one(
@@ -64,7 +64,7 @@ class ThemeManagement(commands.Cog):
         )
         await ctx.invoke(self.bot.get_command("themeinfo"))
 
-    @commands.command(name="theme.overwrite", aliases=["t.o", "overwrite"])
+    @commands.command(name="theme.overwrite", aliases=["overwrite"])
     @commands.check(heavy_command_not_running)
     async def overwrite_theme(self, ctx, *, themename):
         """Overwrite one of the Guild's themes with another."""

@@ -2,6 +2,7 @@ from discord.ext import commands
 from common.cfg import admin_ids
 
 import common.database as db
+from .catalog import Catalog
 
 
 class AdminCommands(commands.Cog):
@@ -19,10 +20,7 @@ class AdminCommands(commands.Cog):
 
     @commands.command(name="test")
     async def test_database(self, ctx):
-        db.guilds.update_one(
-            {"_id": ctx.guild.id, "colors.role": 812422706863013919},
-            {"$push": {"colors.$.members": 123}}
-        )
+        print(Catalog.instances)
 
 
 def setup(bot):

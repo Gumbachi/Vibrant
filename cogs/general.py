@@ -1,5 +1,7 @@
 from discord.ext import commands
 import common.database as db
+import docs.docs as docs
+from .catalog import Catalog
 
 
 class GeneralCommands(commands.Cog):
@@ -16,7 +18,8 @@ class GeneralCommands(commands.Cog):
     @commands.command(name="help")
     async def help(self, ctx):
         """The standard help command."""
-        await ctx.send("Help dont exist yet")
+        catalog = Catalog(docs.help_book(ctx.prefix))
+        await catalog.send(ctx.channel)
 
     @commands.command(name="prefix", aliases=["vibrantprefix"])
     @commands.has_guild_permissions(manage_guild=True)
