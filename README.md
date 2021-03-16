@@ -17,7 +17,7 @@ If you forgot your prefix then you can type @Vibrant for help.
 
 ## Setup
 
-1. Invite the [bot](tinyurl.com/xynj73n5) to your server
+1. Invite the [bot](https://discord.com/api/oauth2/authorize?client_id=821278454711320576&permissions=268494912&redirect_uri=https%3A%2F%2Fdiscord.com%2Fapi%2Foauth2%2Fauthorize%3Fclient_id%3D821278454711320576%26permissions%3D268494912%26redirect_uri%3Dhttps%253A%252F%252Fdiscord.com%252Fapi%252Foauth2%252Fauthorize%253Fclient_id%25&scope=bot) to your server
 2. Type `$help` in a text channel to view setup instructions and to get a basic understanding of how to use the bot. Note that '\$' is the default prefix and may change if you decide to, in which case you need to use your custom prefix
 3. Navigate through the help pages until the end and you should have a basic understanding of how to use the bot
 
