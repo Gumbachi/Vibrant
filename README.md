@@ -4,6 +4,7 @@ A discord bot that can apply themes to spice up your server.
 This bot manages roles for a discord server ie. creation, deletion, editing of roles in a server.  
 You can view how to setup and use commands with the bot using the help command after inviting the bot to your server.  
 If you forgot your prefix then you can type @Vibrant for help.
+[Invite Link](https://discord.com/api/oauth2/authorize?client_id=821278454711320576&permissions=268494912&redirect_uri=https%3A%2F%2Fdiscord.com%2Fapi%2Foauth2%2Fauthorize%3Fclient_id%3D821278454711320576%26permissions%3D268494912%26redirect_uri%3Dhttps%253A%252F%252Fdiscord.com%252Fapi%252Foauth2%252Fauthorize%253Fclient_id%25&scope=bot) 
 
 ## Features
 
