@@ -18,10 +18,6 @@ class AdminCommands(commands.Cog):
             await ctx.channel.purge(limit=int(amount)+1)
             await ctx.send(f"purged {amount} messages", delete_after=2)
 
-    @commands.command(name="test")
-    async def test_database(self, ctx):
-        print(Catalog.instances)
-
 
 def setup(bot):
     bot.add_cog(AdminCommands(bot))

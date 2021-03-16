@@ -27,7 +27,7 @@ async def on_message(message):
 
     await bot.process_commands(message)
 
-# loads extensions(cogs) listed in vars.py
+# loads extensions(cogs) listed in cfg.py
 if __name__ == '__main__':
     for extension in cfg.extensions:
         try:

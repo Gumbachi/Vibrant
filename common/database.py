@@ -12,8 +12,10 @@ print("Connected to Database.")
 
 def get(gid, field):
     """Fetches and unpacks one field from the database."""
-    data = guilds.find_one({"_id": gid}, {field: 1, "_id": 0})
-    if not data:
+    try:
+        data = guilds.find_one({"_id": gid}, {field: 1, "_id": 0})
+        return data[field]
+    except TypeError:
         data = {
             "_id": gid,
             "prefix": "$",
@@ -22,16 +24,20 @@ def get(gid, field):
             "themes": []
         }
         guilds.insert_one(data)
-    return data[field]
+        return data[field]
 
 
 def get_many(gid, *fields):
     """Fetches and unpacks many field from the database."""
-    projection = {field: 1 for field in fields}
-    projection.update({"_id": 0})
+    # Query document
+    try:
+        projection = {field: 1 for field in fields}
+        projection.update({"_id": 0})  # ignore id field
+        data = guilds.find_one({"_id": gid}, projection)
+        return data.values()
 
-    data = guilds.find_one({"_id": gid}, projection)
-    if not data:
+    # Fix empty document
+    except TypeError:
         data = {
             "_id": gid,
             "prefix": "$",
@@ -40,4 +46,4 @@ def get_many(gid, *fields):
             "themes": []
         }
         guilds.insert_one(data)
-    return data.values()
+        return [data[f] for f in fields]

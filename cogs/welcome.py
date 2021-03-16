@@ -15,17 +15,21 @@ class WelcomeCommands(commands.Cog):
     @commands.has_guild_permissions(manage_channels=True)  # check permissions
     async def set_welcome_channel(self, ctx):
         """Sets or unsets a welcome channel."""
-        # Unset channel
-        if db.get(ctx.guild.id, "wc") == ctx.channel.id:
-            db.guilds.update_one({"_id": ctx.guild.id}, {"$set": {"wc": None}})
-            await ctx.send(f"{ctx.channel.mention} is no longer the welcome channel")
-        # Set channel
-        else:
-            db.guilds.update_one(
-                {"_id": ctx.guild.id},
-                {"$set": {"wc": ctx.channel.id}}
-            )
-            await ctx.send(f"{ctx.channel.mention} is set as the welcoming channel")
+        response = db.guilds.update_one(
+            {"_id": ctx.guild.id, "wc": ctx.channel.id},
+            {"$set": {"wc": None}}
+        )
+
+        # Check for found and changed document
+        if response.matched_count == 1:
+            return await ctx.send(f"{ctx.channel.mention} is no longer the welcome channel")
+
+        # else change it to new channel
+        db.guilds.update_one(
+            {"_id": ctx.guild.id},
+            {"$set": {"wc": ctx.channel.id}}
+        )
+        await ctx.send(f"{ctx.channel.mention} is set as the welcoming channel")
 
     @commands.Cog.listener()
     async def on_guild_join(guild):

@@ -29,12 +29,12 @@ class ColorAssignment(commands.Cog):
         """Colors a guild member"""
         guild = member.guild
         # Apply already created role
-        if color["role"]:
-            role = guild.get_role(color["role"])
+        role = guild.get_role(color["role"])
+        try:
             await member.add_roles(role)
-
-        # create and apply role
-        else:
+        except AttributeError:
+            # Role was not found
+            # create and apply new role
             role = await ColorAssignment.create_role(guild, color)
             await member.add_roles(role)
 

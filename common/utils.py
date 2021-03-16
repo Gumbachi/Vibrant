@@ -18,6 +18,7 @@ def to_rgb(hexcode):
 
 
 def heavy_command_not_running(ctx):
+    """Checks if a heavy command is running."""
     return ctx.guild.id not in cfg.heavy_command_active
 
 
