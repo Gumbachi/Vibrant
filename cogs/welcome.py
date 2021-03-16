@@ -32,7 +32,7 @@ class WelcomeCommands(commands.Cog):
         await ctx.send(f"{ctx.channel.mention} is set as the welcoming channel")
 
     @commands.Cog.listener()
-    async def on_guild_join(guild):
+    async def on_guild_join(self, guild):
         """Add new guild to database."""
         db.guilds.insert_one(
             {
@@ -45,12 +45,12 @@ class WelcomeCommands(commands.Cog):
         )
 
     @commands.Cog.listener()
-    async def on_guild_remove(guild):
+    async def on_guild_remove(self, guild):
         """Delete guild from database if bot is kicked/removed"""
         db.guilds.delete_one({"_id": guild.id})
 
     @commands.Cog.listener()
-    async def on_guild_channel_delete(channel):
+    async def on_guild_channel_delete(self, channel):
         """Update database if welcome channel is deleted."""
         db.guilds.update_one(
             {"_id": channel.guild.id, "wc": channel.id},
