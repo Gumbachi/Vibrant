@@ -76,7 +76,3 @@ Optional fields are marked with a \*
 ## Support Server
 
 If you couldn't find what you were looking for with the help command, have any general questions you need answered, or just want to see the bot in action before you invite it then join the [Support Server](https://discord.gg/rhvyup5)
-
-<a href="https://top.gg/bot/589685258841096206" >
-  <img src="https://top.gg/api/widget/589685258841096206.svg" alt="Vibrant" />
-</a>
