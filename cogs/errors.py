@@ -30,6 +30,25 @@ class CommandErrorHandler(commands.Cog):
             embed = discord.Embed(title=str(error), color=discord.Color.red())
             return await ctx.send(embed=embed)
 
+        # 403 Error
+        if isinstance(error, discord.Forbidden):
+            # Missing Access
+            if error.code == 50001:
+                embed = discord.Embed(
+                    title="Missing Access",
+                    description="The bot is not able to access the channel\nPlease ensure the bot has the correct permissions",
+                    color=discord.Color.red()
+                )
+            # Missing Permissions
+            elif error.code == 50013:
+                embed = discord.Embed(
+                    title="Bot Missing Permissions",
+                    description="The bot is missing permissions\nPlease ensure the bot has its required permissions",
+                    color=discord.Color.red()
+                )
+
+            return await ctx.send(embed=embed)
+
         # Unusual error to be fixed
         error_embed = discord.Embed(
             title=f'Your command: {ctx.message.content}',
