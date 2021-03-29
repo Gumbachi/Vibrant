@@ -277,6 +277,8 @@ class ColorAssignment(commands.Cog):
                     await role.delete()
                 except discord.errors.NotFound:
                     pass
+                except discord.Forbidden:
+                    pass
 
         # Role added
         for role in added_roles:
