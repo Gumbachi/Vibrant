@@ -138,7 +138,8 @@ class ColorAssignment(commands.Cog):
         uncolored = (member for member in ctx.guild.members
                      if not utils.find_user_color(member, colors))
 
-        msg = await ctx.send(embed=discord.Embed(title="Coloring everyone(may take a while)..."))
+        if ctx.guild.id not in cfg.suppress_output:
+            msg = await ctx.send(embed=discord.Embed(title="Coloring everyone(may take a while)..."))
 
         # color generator for splashing
         if not color:
@@ -169,9 +170,12 @@ class ColorAssignment(commands.Cog):
             colored_members += 1
 
         cfg.heavy_command_active.discard(ctx.guild.id)
-
-        await msg.edit(embed=discord.Embed(title=f"Colored {colored_members} members!",
-                                           color=discord.Color.green()))
+        if ctx.guild.id not in cfg.suppress_output:
+            embed = embed = discord.Embed(
+                title=f"Colored {colored_members} members!",
+                color=discord.Color.green()
+            )
+            await msg.edit(embed=embed)
 
     @commands.command(name="unsplash")
     @commands.has_guild_permissions(manage_roles=True)

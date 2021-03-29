@@ -91,7 +91,9 @@ class ThemeManagement(commands.Cog):
             {"_id": ctx.guild.id, "themes": old_theme},
             {"$set": {"themes.$": new_theme}}
         )
-        await ctx.invoke(self.bot.get_command("themes"))
+
+        if ctx.guild.id not in cfg.suppress_output:
+            await ctx.invoke(self.bot.get_command("themes"))
 
     @commands.command(name="theme.rename", aliases=["t.rn"])
     async def rename_theme(self, ctx, *, query):
@@ -140,7 +142,9 @@ class ThemeManagement(commands.Cog):
             {"_id": ctx.guild.id},
             {"$push": {"themes": preset}}
         )
-        await ctx.invoke(self.bot.get_command("themes"))
+
+        if ctx.guild.id not in cfg.suppress_output:
+            await ctx.invoke(self.bot.get_command("themes"))
 
 
 def setup(bot):

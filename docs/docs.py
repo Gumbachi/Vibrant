@@ -12,7 +12,8 @@ def help_book(p):
             "3. General Commands": ["Shows a list of general commands"],
             "4. Color Commands": ["Shows a list of color related commands"],
             "5. Theme Commands": ["Shows a list of theme related commands"],
-            "6. Alias Dictionary": ["All of the aliases that commands have to make input easier"],
+            "6. Macros": ["Shows a list of macros the bot has"],
+            "7. Alias Dictionary": ["All of the aliases that commands have to make input easier"],
             "-----------------------------": ["[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant)"]
         },
 
@@ -105,6 +106,17 @@ def help_book(p):
                 f"`{p}theme.rename <theme>|<name>` -- Changes a theme's name",
                 f"`{p}import <name>` -- Adds a preset as a theme"
             ]
+        },
+
+        # Macros
+        {
+            "title": "Macros",
+            "description": f"Macros are a way to execute multiple commands with one single command.\nThey make things clean and convenient",
+            "Import, Load, Splash, Overwrite": [
+                f"`{p}ilso <name>` -- Imports a preset, Loads that preset, Splashes everyone with a random color, Overwrites the imported theme with member colors"
+            ],
+            "Add, Colorme": [f"`{p}acm` -- Adds a color and then applies it to you"],
+            "Suggestions": ["If you have suggestions for macros you would like then please let me know in the support server"]
         },
 
         # Alias Dictionary
@@ -262,5 +274,11 @@ change_log = {
         "Better databasing": "better database interaction",
         "less code": "less code = better",
         "less data": "bot stores less data",
+    },
+    "2.1": {
+        "title": "Vibrant 2.1",
+        "description": "Added Macros",
+        "Macros": "Run multiple commands in common patterns with one command",
+        "Caught some errors": "Caught 50001 and 50013 API Errors"
     }
 }

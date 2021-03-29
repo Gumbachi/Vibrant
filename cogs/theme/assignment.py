@@ -1,8 +1,8 @@
 import copy
 import discord
 from discord.ext import commands
-from discord.ext.commands import CommandError
-from common.utils import ThemeConverter
+from discord.ext.commands import CommandError, UserInputError
+from common.utils import theme_lookup
 import common.cfg as cfg
 import common.database as db
 from cogs.color.assignment import ColorAssignment
@@ -20,12 +20,21 @@ class ThemeAssignment(commands.Cog):
         return True
 
     @commands.command(name="load", aliases=["theme.load"])
-    async def load_theme(self, ctx, *, theme: ThemeConverter):
+    async def load_theme(self, ctx, *, themename):
         """Change the active colors to a theme."""
+
+        themes = db.get(ctx.guild.id, "themes")
+        theme = theme_lookup(themename, themes)
+
+        try:
+            embed = discord.Embed(title=f"Loading **{theme['name']}**...")
+            if ctx.guild.id not in cfg.suppress_output:
+                msg = await ctx.send(embed=embed)
+        except TypeError:
+            raise UserInputError("Could not find that theme")
+
         cfg.heavy_command_active.add(ctx.guild.id)
         await ctx.invoke(self.bot.get_command("clear_colors"))  # clear colors
-
-        msg = await ctx.send(embed=discord.Embed(title=f"Loading **{theme['name']}**..."))
 
         # Update colors in db
         theme_ref = copy.deepcopy(theme)
@@ -61,8 +70,10 @@ class ThemeAssignment(commands.Cog):
             title=f"Loaded **{theme['name']}**",
             color=discord.Color.green()
         )
-        await msg.edit(embed=success_embed)
-        await ctx.invoke(self.bot.get_command("colors"))
+
+        if ctx.guild.id not in cfg.suppress_output:
+            await msg.edit(embed=success_embed)
+            await ctx.invoke(self.bot.get_command("colors"))
         cfg.heavy_command_active.discard(ctx.guild.id)
 
 

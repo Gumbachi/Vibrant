@@ -166,7 +166,9 @@ class ColorManagement(commands.Cog):
     async def clear_colors(self, ctx):
         """Removes all active colors."""
         colors = db.get(ctx.guild.id, "colors")
-        msg = await ctx.send(embed=discord.Embed(title="Clearing colors.."))
+
+        if ctx.guild.id not in cfg.suppress_output:
+            msg = await ctx.send(embed=discord.Embed(title="Clearing colors.."))
 
         # remove roles
         for color in colors:
@@ -178,10 +180,11 @@ class ColorManagement(commands.Cog):
             {"_id": ctx.guild.id},
             {"$set": {"colors": []}}
         )
-        await msg.edit(embed=discord.Embed(
-            title="Colors Removed!",
-            color=discord.Color.green())
-        )
+        if ctx.guild.id not in cfg.suppress_output:
+            await msg.edit(embed=discord.Embed(
+                title="Colors Removed!",
+                color=discord.Color.green())
+            )
 
     ############# EVENT LISTENERS #############
 

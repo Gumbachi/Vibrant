@@ -11,6 +11,7 @@ extensions = [
     "cogs.errors",
     "cogs.general",
     "cogs.welcome",
+    "cogs.macros",
     "cogs.color.assignment",
     "cogs.color.info",
     "cogs.color.management",
@@ -37,7 +38,7 @@ color_limit = 50
 theme_limit = 10
 
 heavy_command_active = set()
-
+suppress_output = set()
 catalogs = {}
 
 

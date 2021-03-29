@@ -119,7 +119,7 @@ class ThemeInfo(commands.Cog):
 
         await ctx.send(embed=themes_embed)
 
-    @commands.command(name="imports", aliases=["presets"])
+    @commands.command(name="imports", aliases=["presets", "i"])
     async def show_imports(self, ctx):
         """Draw and send an image of all presets"""
         themes = []

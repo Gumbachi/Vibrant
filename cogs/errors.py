@@ -25,6 +25,9 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, commands.CommandNotFound):
             return
 
+        cfg.heavy_command_active.discard(ctx.guild.id)  # reset heavy command
+        cfg.suppress_output.discard(ctx.guild.id)
+
         # General command error (should go last)
         if isinstance(error, commands.CommandError):
             embed = discord.Embed(title=str(error), color=discord.Color.red())
