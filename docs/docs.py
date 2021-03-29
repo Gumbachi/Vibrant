@@ -115,7 +115,7 @@ def help_book(p):
             "Import, Load, Splash, Overwrite": [
                 f"`{p}ilso <name>` -- Imports a preset, Loads that preset, Splashes everyone with a random color, Overwrites the imported theme with member colors"
             ],
-            "Add, Colorme": [f"`{p}acm` -- Adds a color and then applies it to you"],
+            "Add, Colorme": [f"`{p}acm <hexcode> <name*>` -- Adds a color and then applies it to you"],
             "Suggestions": ["If you have suggestions for macros you would like then please let me know in the support server"]
         },
 
