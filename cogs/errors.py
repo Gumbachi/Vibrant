@@ -52,6 +52,25 @@ class CommandErrorHandler(commands.Cog):
 
             return await ctx.send(embed=embed)
 
+        # NotFound
+        if isinstance(error, discord.errors.NotFound):
+            # Missing Message
+            if error.code == 10008:
+                embed = discord.Embed(
+                    title="Missing Message",
+                    description="Kindly don't delete the progress message",
+                    color=discord.Color.red()
+                )
+            # Missing Role
+            elif error.code == 50011:
+                embed = discord.Embed(
+                    title="Bot couldn't find role",
+                    description="Bot couldn't find a role. Try resetting your colors if this persists",
+                    color=discord.Color.red()
+                )
+
+            return await ctx.send(embed=embed)
+
         # Unusual error to be fixed
         error_embed = discord.Embed(
             title=f'Your command: {ctx.message.content}',
