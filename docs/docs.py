@@ -14,7 +14,7 @@ def help_book(p):
             "5. Theme Commands": ["Shows a list of theme related commands"],
             "6. Macros": ["Shows a list of macros the bot has"],
             "7. Alias Dictionary": ["All of the aliases that commands have to make input easier"],
-            "-----------------------------": ["[Vote for Vibrant](https://top.gg/bot/589685258841096206/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant)"]
+            "-----------------------------": ["[Vote for Vibrant](https://top.gg/bot/821278454711320576/vote) | [Support Server](https://discord.gg/rhvyup5) | [Github](https://github.com/Gumbachi/Vibrant)"]
         },
 
         # Tutorial
