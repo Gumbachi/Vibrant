@@ -1,0 +1,50 @@
+{
+    "name": "Super Blue",
+    "colors": [
+      {
+        "name": "Navy Blue",
+        "hexcode": "#03045E",
+        "members": []
+      },
+      {
+        "name": "Cornflower Blue",
+        "hexcode": "#023E8A",
+        "members": []
+      },
+      {
+        "name": "Star Command Blue",
+        "hexcode": "#0077B6",
+        "members": []
+      },
+      {
+        "name": "Blue Green",
+        "hexcode": "#0096C7",
+        "members": []
+      },
+      {
+        "name": "Cerulean",
+        "hexcode": "#00B4D8",
+        "members": []
+      },
+      {
+        "name": "Sky Blue",
+        "hexcode": "#48CAE4",
+        "members": []
+      },
+      {
+        "name": "Light Sky Blue",
+        "hexcode": "#90E0EF",
+        "members": []
+      },
+      {
+        "name": "Blizzard Blue",
+        "hexcode": "#ADE8F4",
+        "members": []
+      },
+      {
+        "name": "Powder Blue",
+        "hexcode": "#CAF0F8",
+        "members": []
+      }
+    ]
+  }
