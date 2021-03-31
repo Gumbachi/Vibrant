@@ -57,7 +57,7 @@ class ThemeManagement(commands.Cog):
         )
         await ctx.invoke(self.bot.get_command("themes"))  # show new set
 
-    @commands.command(name="theme.remove", aliases=["theme.delete", "erase"])
+    @commands.command(name="theme.remove", aliases=["erase", "t.r"])
     async def remove_theme(self, ctx, *, theme: ThemeConverter):
         """Remove a theme."""
         db.guilds.update_one(
@@ -95,7 +95,7 @@ class ThemeManagement(commands.Cog):
         if ctx.guild.id not in cfg.suppress_output:
             await ctx.invoke(self.bot.get_command("themes"))
 
-    @commands.command(name="theme.rename", aliases=["t.rn"])
+    @commands.command(name="theme.rename", aliases=["trn", "t.rn"])
     async def rename_theme(self, ctx, *, query):
         """Rename a theme in the guild."""
         themes = db.get(ctx.guild.id, "themes")

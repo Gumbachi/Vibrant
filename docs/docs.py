@@ -138,9 +138,9 @@ def help_book(p):
                 f"`{p}imports` -- `{p}presets`",
                 f"`{p}load` -- `{p}theme.load`",
                 f"`{p}save` -- `{p}saveas`, `{p}theme.save`",
-                f"`{p}theme.remove` -- `{p}t.r`, `{p}t.d`",
+                f"`{p}erase` -- `{p}t.r`, `{p}theme.remove`",
                 f"`{p}overwrite` -- `{p}theme.overwrite`",
-                f"`{p}theme.rename` - - `{p}t.rn`"
+                f"`{p}trn` - - `{p}t.rn`, `{p}theme.rename`"
             ],
             "Other Commands": [
                 f"`{p}prefix` -- `{p}vibrantprefix`"

@@ -5,7 +5,7 @@ This bot manages roles for a discord server ie. creation, deletion, editing of r
 You can view how to setup and use commands with the bot using the help command after inviting the bot to your server.  
 If you forgot your prefix then you can type `@Vibrant` for help.
 
-[Invite Link](https://discord.com/oauth2/authorize?client_id=821278454711320576&permissions=268495936&scope=bot) 
+[Invite Link](https://discord.com/oauth2/authorize?client_id=821278454711320576&permissions=268495936&scope=bot)
 
 ## Features
 
@@ -66,14 +66,14 @@ Optional fields are marked with a `*`
 
 ### Theme Management Commands
 
-|           **Command**            |       **Example**        |           **Description**           |
-| :------------------------------: | :----------------------: | :---------------------------------: |
-|         import \<preset>         |     \$import Outrun      | Adds a preset theme to saved themes |
-|          save \<name\*>          |     \$save My Theme      |   Saves current colors as a theme   |
-|          load \<theme>           |      \$load vibrant      |     Loads a saved theme for use     |
-|      theme.remove \<theme>       |      \$t.r vibrant       |           Removes a theme           |
-|        overwrite \<name>         |   \$overwrite vibrant    |      overwrites a saved theme       |
-| theme.rename \<theme> \| \<name> | \$t.rn vibant \| Vibrant |        Renames a saved theme        |
+|       **Command**       |       **Example**       |           **Description**           |
+| :---------------------: | :---------------------: | :---------------------------------: |
+|    import \<preset>     |     \$import Outrun     | Adds a preset theme to saved themes |
+|     save \<name\*>      |     \$save My Theme     |   Saves current colors as a theme   |
+|      load \<theme>      |     \$load vibrant      |     Loads a saved theme for use     |
+|     erase \<theme>      |     \$erase vibrant     |           Removes a theme           |
+|    overwrite \<name>    |   \$overwrite vibrant   |      overwrites a saved theme       |
+| trn \<theme> \| \<name> | \$trn vibant \| Vibrant |        Renames a saved theme        |
 
 ## Support Server
 
