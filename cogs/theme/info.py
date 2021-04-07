@@ -40,18 +40,8 @@ class ThemeInfo(commands.Cog):
             size=text_height
         )
 
-        # Themes can fit on one page
-        if len(themes) <= slice_length:
-            theme_slices = [themes]
-        # Themes need multiple pages
-        else:
-            # Fill all but one page
-            theme_slices = [themes[slice_length*x:slice_length*(x+1)]
-                            for x in range(slice_amt-1)]
-
-            # Fill last page if remaining themes
-            if len(themes) % slice_length != 0:
-                theme_slices.append(themes[slice_length*(slice_amt-1):])
+        theme_slices = [themes[i:i+slice_length]
+                        for i in range(0, len(themes), slice_length)]
 
         theme_images = []
         for i, theme_slice in enumerate(theme_slices):
@@ -119,7 +109,7 @@ class ThemeInfo(commands.Cog):
 
         await ctx.send(embed=themes_embed)
 
-    @commands.command(name="imports", aliases=["presets", "i"])
+    @commands.command(name="imports", aliases=["presets"])
     async def show_imports(self, ctx):
         """Draw and send an image of all presets"""
         themes = []

@@ -1,51 +1,51 @@
 {
-    "name": "Grayscale",
-    "colors": [
-      {
-        "name": "White",
-        "hexcode": "#F8F9FA",
-        "members": []
-      },
-      {
-        "name": "Faded Gray",
-        "hexcode": "#E9ECEF",
-        "members": []
-      },
-      {
-        "name": "Gainsboro",
-        "hexcode": "#DEE2E6",
-        "members": []
-      },
-      {
-        "name": "Light Gray",
-        "hexcode": "#CED4DA",
-        "members": []
-      },
-      {
-        "name": "Metallic Silver",
-        "hexcode": "#ADB5BD",
-        "members": []
-      },
-      {
-        "name": "Slate Gray",
-        "hexcode": "#6C757D",
-        "members": []
-      },
-      {
-        "name": "Space Gray",
-        "hexcode": "#495057",
-        "members": []
-      },
-      {
-        "name": "Gunmetal",
-        "hexcode": "#343A40",
-        "members": []
-      },
-      {
-        "name": "Dark Gray",
-        "hexcode": "#212529",
-        "members": []
-      }
-    ]
-  }
+  "name": "Grayscale",
+  "colors": [
+    {
+      "name": "White",
+      "hexcode": "#F8F9FA",
+      "members": []
+    },
+    {
+      "name": "Faded Gray",
+      "hexcode": "#E9ECEF",
+      "members": []
+    },
+    {
+      "name": "Gainsboro",
+      "hexcode": "#DEE2E6",
+      "members": []
+    },
+    {
+      "name": "Light Gray",
+      "hexcode": "#CED4DA",
+      "members": []
+    },
+    {
+      "name": "Metallic Silver",
+      "hexcode": "#ADB5BD",
+      "members": []
+    },
+    {
+      "name": "Slate Gray",
+      "hexcode": "#6C757D",
+      "members": []
+    },
+    {
+      "name": "Space Gray",
+      "hexcode": "#495057",
+      "members": []
+    },
+    {
+      "name": "Gunmetal",
+      "hexcode": "#343A40",
+      "members": []
+    },
+    {
+      "name": "Dark Gray",
+      "hexcode": "#212529",
+      "members": []
+    }
+  ]
+}
   
