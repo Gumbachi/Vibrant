@@ -147,12 +147,8 @@ class ColorManagement(commands.Cog):
         if color["role"]:
             role = ctx.guild.get_role(color["role"])
             new_color = utils.to_rgb(after)
-            await role.edit(color=new_color)
-            # else:
-            #     db.coll.update_one(
-            #         {"_id": ctx.guild.id, "colors": color},
-            #         {"$set": {"colors.$.role": None}}
-            #     )
+            await role.edit(color=discord.Color.from_rgb(*new_color))
+
 
         # update database
         db.guilds.update_one(
