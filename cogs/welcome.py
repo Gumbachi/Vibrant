@@ -11,7 +11,7 @@ class WelcomeCommands(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(name="welcome")
+    @commands.command(name="welcome", aliases=["wc"])
     @commands.has_guild_permissions(manage_channels=True)  # check permissions
     async def set_welcome_channel(self, ctx):
         """Sets or unsets a welcome channel."""
