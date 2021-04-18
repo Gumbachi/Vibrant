@@ -110,3 +110,15 @@ def image_to_file(img, name="image"):
     buffer = buffer.getvalue()
     img = io.BytesIO(buffer)
     return discord.File(img, filename=f"{name}.png")
+
+
+def loading_emoji():
+    return (str(cfg.bot.get_emoji(833127464636907551))
+            if cfg.bot.get_emoji(833127464636907551)
+            else "⌛")
+
+
+def check_emoji():
+    return (str(cfg.bot.get_emoji(833138608532750357))
+            if cfg.bot.get_emoji(833138608532750357)
+            else "✅")
