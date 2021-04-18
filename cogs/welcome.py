@@ -1,8 +1,10 @@
 """Holds commands and listeners related to 
 someone joining or the bot joining a server.
 """
+from discord.ext.commands.core import check
 import common.database as db
 from discord.ext import commands
+from common.utils import check_emoji
 
 
 class WelcomeCommands(commands.Cog):
@@ -22,14 +24,14 @@ class WelcomeCommands(commands.Cog):
 
         # Check for found and changed document
         if response.matched_count == 1:
-            return await ctx.send(f"{ctx.channel.mention} is no longer the welcome channel")
+            return await ctx.send(f"{ctx.channel.mention} is no longer the welcome channel {check_emoji()}")
 
         # else change it to new channel
         db.guilds.update_one(
             {"_id": ctx.guild.id},
             {"$set": {"wc": ctx.channel.id}}
         )
-        await ctx.send(f"{ctx.channel.mention} is set as the welcoming channel")
+        await ctx.send(f"{ctx.channel.mention} is set as the welcoming channel {check_emoji()}")
 
     @commands.Cog.listener()
     async def on_guild_join(self, guild):

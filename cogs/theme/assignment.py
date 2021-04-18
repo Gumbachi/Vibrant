@@ -2,7 +2,7 @@ import copy
 import discord
 from discord.ext import commands
 from discord.ext.commands import CommandError, UserInputError
-from common.utils import theme_lookup
+from common.utils import theme_lookup, loading_emoji, check_emoji
 import common.cfg as cfg
 import common.database as db
 from cogs.color.assignment import ColorAssignment
@@ -26,15 +26,22 @@ class ThemeAssignment(commands.Cog):
         themes = db.get(ctx.guild.id, "themes")
         theme = theme_lookup(themename, themes)
 
+        already_suppressed = ctx.guild.id in cfg.suppress_output
+
         try:
-            embed = discord.Embed(title=f"Loading **{theme['name']}**...")
+            embed = discord.Embed(
+                title=f"Loading **{theme['name']}** {loading_emoji()}")
             if ctx.guild.id not in cfg.suppress_output:
                 msg = await ctx.send(embed=embed)
         except TypeError:
             raise UserInputError("Could not find that theme")
 
+        # Supress output from clear_colors and prevent other commands from modifying colors
         cfg.heavy_command_active.add(ctx.guild.id)
+        cfg.suppress_output.add(ctx.guild.id)
         await ctx.invoke(self.bot.get_command("clear_colors"))  # clear colors
+        if not already_suppressed:
+            cfg.suppress_output.discard(ctx.guild.id)
 
         # Update colors in db
         theme_ref = copy.deepcopy(theme)
@@ -67,10 +74,9 @@ class ThemeAssignment(commands.Cog):
 
         # report success
         success_embed = discord.Embed(
-            title=f"Loaded **{theme['name']}**",
+            title=f"Loaded **{theme['name']}** {check_emoji()}",
             color=discord.Color.green()
         )
-
         if ctx.guild.id not in cfg.suppress_output:
             await msg.edit(embed=success_embed)
             await ctx.invoke(self.bot.get_command("colors"))

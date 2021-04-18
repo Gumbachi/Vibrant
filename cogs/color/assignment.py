@@ -10,6 +10,7 @@ from discord.ext.commands import CommandError
 import common.cfg as cfg
 import common.database as db
 import common.utils as utils
+from common.utils import check_emoji, loading_emoji
 
 
 class ColorAssignment(commands.Cog):
@@ -93,7 +94,7 @@ class ColorAssignment(commands.Cog):
         await self.color(member, color)
 
         embed = discord.Embed(
-            title=f"{member.name} is {color['name']}",
+            title=f"{member.name} is {color['name']} {check_emoji()}",
             color=utils.discord_color(color)
         )
         await ctx.send(embed=embed)
@@ -116,7 +117,7 @@ class ColorAssignment(commands.Cog):
         # remove color
         if ucolor:
             await self.uncolor(ctx.author, ucolor)
-            response = "You have been uncolored"
+            response = f"You have been uncolored {check_emoji()}"
         else:
             response = "You don't have a color"
 
@@ -139,7 +140,7 @@ class ColorAssignment(commands.Cog):
                      if not utils.find_user_color(member, colors))
 
         if ctx.guild.id not in cfg.suppress_output:
-            msg = await ctx.send(embed=discord.Embed(title="Coloring everyone(may take a while)..."))
+            msg = await ctx.send(embed=discord.Embed(title=f"Coloring everyone {loading_emoji()}"))
 
         # color generator for splashing
         if not color:
@@ -172,7 +173,7 @@ class ColorAssignment(commands.Cog):
         cfg.heavy_command_active.discard(ctx.guild.id)
         if ctx.guild.id not in cfg.suppress_output:
             embed = embed = discord.Embed(
-                title=f"Colored {colored_members} members!",
+                title=f"Colored {colored_members} members {check_emoji()}",
                 color=discord.Color.green()
             )
             await msg.edit(embed=embed)
@@ -192,7 +193,7 @@ class ColorAssignment(commands.Cog):
 
         cfg.heavy_command_active.discard(ctx.guild.id)
 
-        await ctx.send(embed=discord.Embed(title="Everyone has been uncolored",
+        await ctx.send(embed=discord.Embed(title=f"Everyone has been uncolored {check_emoji()}",
                                            color=discord.Color.green()))
 
     ############# EVENT LISTENERS #############

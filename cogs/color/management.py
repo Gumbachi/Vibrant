@@ -3,6 +3,7 @@ import common.cfg as cfg
 import common.database as db
 from common.cfg import bot
 import common.utils as utils
+from common.utils import loading_emoji, check_emoji
 from discord.ext import commands
 from discord.ext.commands.errors import CommandError, UserInputError
 
@@ -107,12 +108,6 @@ class ColorManagement(commands.Cog):
         if color["role"]:
             role = ctx.guild.get_role(color["role"])
             await role.edit(name=after)
-            # else:
-            #     # remove false role value in database
-            #     db.coll.update_one(
-            #         {"_id": ctx.guild.id, "colors": color},
-            #         {"$set": {"colors.$.role": None}}
-            #     )
 
         # update database
         db.guilds.update_one(
@@ -149,7 +144,6 @@ class ColorManagement(commands.Cog):
             new_color = utils.to_rgb(after)
             await role.edit(color=discord.Color.from_rgb(*new_color))
 
-
         # update database
         db.guilds.update_one(
             {"_id": ctx.guild.id, "colors": color},
@@ -164,7 +158,7 @@ class ColorManagement(commands.Cog):
         colors = db.get(ctx.guild.id, "colors")
 
         if ctx.guild.id not in cfg.suppress_output:
-            msg = await ctx.send(embed=discord.Embed(title="Clearing colors.."))
+            msg = await ctx.send(embed=discord.Embed(title=f"Clearing colors {loading_emoji()}"))
 
         # remove roles
         for color in colors:
@@ -178,7 +172,7 @@ class ColorManagement(commands.Cog):
         )
         if ctx.guild.id not in cfg.suppress_output:
             await msg.edit(embed=discord.Embed(
-                title="Colors Removed!",
+                title=f"Colors Removed {check_emoji()}",
                 color=discord.Color.green())
             )
 
