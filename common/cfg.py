@@ -27,7 +27,7 @@ emojis = {
     "right_arrow": "➡️",
     "home_arrow": "↩️",
     "double_down": "⏬",
-    "updown_arrow": "↕️"
+    "updown_arrow": "↕️",
 }
 
 admin_ids = {

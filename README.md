@@ -5,7 +5,7 @@ This bot manages roles for a discord server ie. creation, deletion, editing of r
 You can view how to setup and use commands with the bot using the help command after inviting the bot to your server.  
 If you forgot your prefix then you can type `@Vibrant` for help.
 
-[Invite Link](https://discord.com/oauth2/authorize?client_id=821278454711320576&permissions=268495936&scope=bot)
+[Invite Link](https://discord.com/oauth2/authorize?client_id=821278454711320576&permissions=268822592&scope=bot)
 
 ## Features
 
@@ -19,7 +19,7 @@ If you forgot your prefix then you can type `@Vibrant` for help.
 
 ## Setup
 
-1. Invite the [bot](https://discord.com/oauth2/authorize?client_id=821278454711320576&permissions=268495936&scope=bot) to your server
+1. Invite the [bot](https://discord.com/oauth2/authorize?client_id=821278454711320576&permissions=268822592&scope=bot) to your server
 2. Type `$help` in a text channel to view setup instructions and to get a basic understanding of how to use the bot. Note that '\$' is the default prefix and may change if you decide to, in which case you need to use your custom prefix
 3. Navigate through the help pages until the end and you should have a basic understanding of how to use the bot
 
@@ -74,6 +74,15 @@ Optional fields are marked with a `*`
 |     erase \<theme>      |     \$erase vibrant     |           Removes a theme           |
 |    overwrite \<name>    |   \$overwrite vibrant   |      overwrites a saved theme       |
 | trn \<theme> \| \<name> | \$trn vibant \| Vibrant |        Renames a saved theme        |
+
+### Macro Commands
+
+|  **Command**   |      **Example**      |             **Description**             |
+| :------------: | :-------------------: | :-------------------------------------: |
+| ilso \<preset> |     \$ilso Outrun     |  Import -> Load -> Splash -> Overwrite  |
+|  lso \<theme>  |    \$lso My Theme     |       Load -> Splash -> Overwrite       |
+|  acm \<theme>  | \$acm #7298DA Blurple |   Add a color and then apply to self    |
+|    resplash    |      \$resplash       | Reapplies colors in a different pattern |
 
 ## Support Server
 

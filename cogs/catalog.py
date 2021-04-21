@@ -83,7 +83,6 @@ class Catalog:
         if self.type == "Image":
             # only one image to send
             if len(self.content) == 1:
-                print("only one")
                 imagefile = image_to_file(self.content[0])
                 return await channel.send(file=imagefile)
 

@@ -1,8 +1,9 @@
-import copy
+from copy import deepcopy
+import asyncio
 import discord
 from discord.ext import commands
 from discord.ext.commands import CommandError, UserInputError
-from common.utils import theme_lookup
+from common.utils import theme_lookup, loading_emoji, check_emoji
 import common.cfg as cfg
 import common.database as db
 from cogs.color.assignment import ColorAssignment
@@ -26,55 +27,75 @@ class ThemeAssignment(commands.Cog):
         themes = db.get(ctx.guild.id, "themes")
         theme = theme_lookup(themename, themes)
 
-        try:
-            embed = discord.Embed(title=f"Loading **{theme['name']}**...")
-            if ctx.guild.id not in cfg.suppress_output:
-                msg = await ctx.send(embed=embed)
-        except TypeError:
+        output_suppressed = ctx.guild.id in cfg.suppress_output
+
+        if not theme:
             raise UserInputError("Could not find that theme")
 
+        if not output_suppressed:
+            embed = discord.Embed(
+                title=f"Clearing Colors {loading_emoji()}")
+            msg = await ctx.send(embed=embed)
+
+        # Supress output from clear_colors and prevent other commands from modifying colors
         cfg.heavy_command_active.add(ctx.guild.id)
+        cfg.suppress_output.add(ctx.guild.id)
         await ctx.invoke(self.bot.get_command("clear_colors"))  # clear colors
 
+        if not output_suppressed:
+            cfg.suppress_output.discard(ctx.guild.id)
+
+            # Progress update
+            embed = discord.Embed(title=f"Creating Roles {loading_emoji()}")
+            await msg.edit(embed=embed)
+
+        # kind of a monster and probably impractical but it works
+        # keeps only colors that have members that can be found
+        owned_colors = [color for color in theme["colors"]
+                        if color["members"]
+                        and all([ctx.guild.get_member(member_id) for member_id in color["members"]])]
+
         # Update colors in db
-        theme_ref = copy.deepcopy(theme)
-        for color in theme["colors"]:
+        colors = deepcopy(theme["colors"])
+        for color in colors:
             color["role"] = None
             color["members"] = []
+
         db.guilds.update_one(
             {"_id": ctx.guild.id},
-            {"$set": {"colors": theme["colors"]}}
+            {"$set": {"colors": colors}}
         )
 
-        color_memory = {}
-        for color in theme_ref["colors"]:
-            if not color["members"]:
-                continue
+        cm_pairs = []  # Color and Member pairs
+        for color in owned_colors:
+            # create role
+            role = await ColorAssignment.create_role(ctx.guild, color)
+            color["role"] = role.id
 
-            # Color members of a color
-            for mid in color["members"]:
-                member = ctx.guild.get_member(mid)  # ignore missing members
-                if member:
+            # add to color member pair
+            for member_id in color["members"]:
+                cm_pairs.append((color, ctx.guild.get_member(member_id)))
 
-                    # avoids role duplication by ColorAssignment.color
-                    color["role"] = color_memory.get(color["name"], None)
-                    if not color["role"]:
-                        role = await ColorAssignment.create_role(ctx.guild, color)
-                        color_memory[color["name"]] = role.id
-                        color["role"] = role.id
+        # Progress update
+        if not output_suppressed:
+            embed = discord.Embed(title=f"Applying Color {loading_emoji()}")
+            await msg.edit(embed=embed)
 
-                    await ColorAssignment.color(member, color)
+        # loop and apply colors
+        for color, member in cm_pairs:
+            await ColorAssignment.color(member, color)
+            await asyncio.sleep(1)
+
+        cfg.heavy_command_active.discard(ctx.guild.id)
 
         # report success
-        success_embed = discord.Embed(
-            title=f"Loaded **{theme['name']}**",
-            color=discord.Color.green()
-        )
-
         if ctx.guild.id not in cfg.suppress_output:
+            success_embed = discord.Embed(
+                title=f"Loaded {theme['name']} {check_emoji()}",
+                color=discord.Color.green()
+            )
             await msg.edit(embed=success_embed)
             await ctx.invoke(self.bot.get_command("colors"))
-        cfg.heavy_command_active.discard(ctx.guild.id)
 
 
 def setup(bot):

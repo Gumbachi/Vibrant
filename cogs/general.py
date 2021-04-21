@@ -2,6 +2,7 @@ from discord.ext import commands
 import common.database as db
 import docs.docs as docs
 from .catalog import Catalog
+from common.utils import check_emoji
 
 
 class GeneralCommands(commands.Cog):
@@ -29,7 +30,7 @@ class GeneralCommands(commands.Cog):
             {"_id": ctx.guild.id},
             {"$set": {"prefix": new_prefix}}
         )
-        await ctx.send(f"Prefix changed to `{new_prefix}`")
+        await ctx.send(f"Prefix changed to `{new_prefix}` {check_emoji()}")
 
 
 def setup(bot):
