@@ -1,5 +1,5 @@
 """Holds all commands that are macros for multiple commands."""
-
+import asyncio
 import discord
 from discord.ext import commands
 from discord.ext.commands import CommandError
@@ -18,38 +18,42 @@ class VibrantMacros(commands.Cog):
             raise CommandError("Please wait for the current command to finish")
         return True
 
+    def get_embed(self, commands, *sequence):
+        """Generates an embed with emojies and command names"""
+        sequence = zip(sequence, commands)
+        return discord.Embed(
+            title="Macro Status",
+            description="\n".join(
+                [f"{check_emoji() if e else loading_emoji()} {c}" for e, c in sequence])
+        )
+
     @commands.command(name="ilso", aliases=["ILSO"])
     async def import_load_splash_overwrite(self, ctx, *, theme):
         """Macro command: Import->Load->Splash->Overwrite."""
 
         cfg.suppress_output.add(ctx.guild.id)
 
-        def get_embed(*sequence):
-            """Generates an embed with emojies and command names"""
-            sequence = zip(sequence, ("Import", "Load", "Splash", "Overwrite"))
-            return discord.Embed(
-                title="ILSO Status",
-                description="\n".join(
-                    [f"{check_emoji() if e else loading_emoji()} {c}" for e, c in sequence])
-            )
+        cmds = ("Import", "Load", "Splash", "Overwrite")
 
         # Import
         await ctx.invoke(self.bot.get_command("import"), name=theme)
-        msg = await ctx.send(embed=get_embed(1, 0, 0, 0))
+        msg = await ctx.send(embed=self.get_embed(cmds, 0, 0, 0, 0))
 
         # Load
         await ctx.invoke(self.bot.get_command("load"), themename=theme)
-        await msg.edit(embed=get_embed(1, 1, 0, 0))
+        await msg.edit(embed=self.get_embed(cmds, 1, 1, 0, 0))
+
+        await asyncio.sleep(3)  # Pause for 3 seconds
 
         # Splash
         await ctx.invoke(self.bot.get_command("splash"))
-        await msg.edit(embed=get_embed(1, 1, 1, 0))
+        await msg.edit(embed=self.get_embed(cmds, 1, 1, 1, 0))
+
+        await asyncio.sleep(3)  # Pause for 3 seconds
 
         # Overwrite
         await ctx.invoke(self.bot.get_command("overwrite"), themename=theme)
-        finished_embed = discord.Embed(
-            title=f"Tasks complete {check_emoji()}")
-        await msg.edit(embed=finished_embed)
+        await msg.edit(embed=discord.Embed(title=f"Tasks complete {check_emoji()}"))
 
         cfg.suppress_output.discard(ctx.guild.id)
 
@@ -62,8 +66,22 @@ class VibrantMacros(commands.Cog):
     @commands.command(name="resplash")
     async def resplash(self, ctx):
         """Macro command: Unsplash->Splash"""
+        cfg.suppress_output.add(ctx.guild.id)
+
+        cmds = ("Unsplash", "Resplash")
+        msg = await ctx.send(embed=self.get_embed(cmds, 0, 0))
+
+        # Unsplash
         await ctx.invoke(self.bot.get_command("unsplash"))
+        await msg.edit(embed=self.get_embed(cmds, 1, 0))
+
+        await asyncio.sleep(3)  # Pause for 3 seconds
+
+        # Splash
         await ctx.invoke(self.bot.get_command("splash"))
+        await msg.edit(embed=discord.Embed(title=f"Tasks complete {check_emoji()}"))
+
+        cfg.suppress_output.discard(ctx.guild.id)
 
     @commands.command(name="lso", aliases=["LSO"])
     async def load_splash_overwrite(self, ctx, *, theme):
@@ -71,30 +89,25 @@ class VibrantMacros(commands.Cog):
 
         cfg.suppress_output.add(ctx.guild.id)
 
-        def get_embed(*sequence):
-            """Generates an embed with emojies and command names"""
-            sequence = zip(sequence, ("Load", "Splash", "Overwrite"))
-            return discord.Embed(
-                title="LSO Status",
-                description="\n".join(
-                    [f"{check_emoji() if e else loading_emoji()} {c}" for e, c in sequence])
-            )
+        cmds = ("Load", "Splash", "Overwrite")
 
-        msg = await ctx.send(embed=get_embed(0, 0, 0))
+        msg = await ctx.send(embed=self.get_embed(cmds, 0, 0, 0))
 
         # Load
         await ctx.invoke(self.bot.get_command("load"), themename=theme)
-        await msg.edit(embed=get_embed(1, 0, 0))
+        await msg.edit(embed=self.get_embed(cmds, 1, 0, 0))
+
+        await asyncio.sleep(3)  # Pause for 3 seconds
 
         # Splash
         await ctx.invoke(self.bot.get_command("splash"))
-        await msg.edit(embed=get_embed(1, 1, 0))
+        await msg.edit(embed=self.get_embed(cmds, 1, 1, 0))
+
+        await asyncio.sleep(3)  # Pause for 3 seconds
 
         # Overwrite
         await ctx.invoke(self.bot.get_command("overwrite"), themename=theme)
-        finished_embed = discord.Embed(
-            title=f"Tasks complete {check_emoji()}")
-        await msg.edit(embed=finished_embed)
+        await msg.edit(embed=discord.Embed(title=f"Tasks complete {check_emoji()}"))
 
         cfg.suppress_output.discard(ctx.guild.id)
 

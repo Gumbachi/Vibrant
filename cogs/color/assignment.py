@@ -1,7 +1,8 @@
 """Handles all color assignment and roles."""
 
+import asyncio
 import random
-from itertools import cycle, islice, repeat
+from itertools import cycle, repeat
 
 import discord
 from discord.ext import commands
@@ -128,7 +129,8 @@ class ColorAssignment(commands.Cog):
     async def color_server(self, ctx, *, color: utils.ColorConverter = None):
         """Gather all of the uncolored users and assigns them a color"""
 
-        colors = db.get(ctx.guild.id, "colors")
+        output_suppressed = ctx.guild.id in cfg.suppress_output
+        colors = db.get(ctx.guild.id, "colors")  # Fetch colors
 
         if not colors:
             raise CommandError("There are no active colors")
@@ -136,44 +138,44 @@ class ColorAssignment(commands.Cog):
         cfg.heavy_command_active.add(ctx.guild.id)  # begin heavy command
 
         # get uncolored members
-        uncolored = (member for member in ctx.guild.members
-                     if not utils.find_user_color(member, colors))
+        uncolored = [member for member in ctx.guild.members
+                     if not utils.find_user_color(member, colors)]
 
-        if ctx.guild.id not in cfg.suppress_output:
-            msg = await ctx.send(embed=discord.Embed(title=f"Coloring everyone {loading_emoji()}"))
+        # Send working message
+        if not output_suppressed:
+            embed = discord.Embed(title=f"Creating Roles {loading_emoji()}")
+            msg = await ctx.send(embed=embed)
 
         # color generator for splashing
-        if not color:
-            color_cycle = islice(
-                cycle(colors),
-                random.randint(0, len(colors)-1),
-                None)
-        else:
-            color_cycle = repeat(color)
+        colors = [color] if color else colors  # One color needed if color arg
+        index = random.randrange(len(colors))  # random index in colors
+        sliced_colors = colors[index:] + colors[:index]
 
-        color_memory = {}  # remember roles assigned during command
-
-        # loop and color people
-        colored_members = 0
-        for member in uncolored:
-            color = next(color_cycle)
-
-            # Create role and add it to db instead of in color
-            # This is to avoid more db calls than necessary to check a colors existence
+        # Loop over all colors that will be applied and create roles
+        for color in sliced_colors[:len(uncolored)]:
             if not color["role"]:
-                color["role"] = color_memory.get(color["name"], None)
-                if not color["role"]:
-                    role = await self.create_role(ctx.guild, color)
-                    color_memory[color["name"]] = role.id
-                    color["role"] = role.id
+                role = await self.create_role(ctx.guild, color)
+                color["role"] = role.id
 
+        # Send progress update
+        if not output_suppressed:
+            embed = discord.Embed(
+                title=f"Coloring {len(uncolored)} People {loading_emoji()}",
+                description=f"This will take around {len(uncolored)} seconds"
+            )
+            await msg.edit(embed=embed)
+
+        # Loop and color every member sleeping a bit inbetween
+        for color, member in zip(cycle(sliced_colors), uncolored):
             await self.color(member, color)
-            colored_members += 1
+            await asyncio.sleep(1)
 
         cfg.heavy_command_active.discard(ctx.guild.id)
-        if ctx.guild.id not in cfg.suppress_output:
-            embed = embed = discord.Embed(
-                title=f"Colored {colored_members} members {check_emoji()}",
+
+        # Send success message
+        if not output_suppressed:
+            embed = discord.Embed(
+                title=f"Colored {len(uncolored)} members {check_emoji()}",
                 color=discord.Color.green()
             )
             await msg.edit(embed=embed)
@@ -193,8 +195,9 @@ class ColorAssignment(commands.Cog):
 
         cfg.heavy_command_active.discard(ctx.guild.id)
 
-        await ctx.send(embed=discord.Embed(title=f"Everyone has been uncolored {check_emoji()}",
-                                           color=discord.Color.green()))
+        if ctx.guild.id not in cfg.suppress_output:
+            await ctx.send(embed=discord.Embed(title=f"Everyone has been uncolored {check_emoji()}",
+                                               color=discord.Color.green()))
 
     ############# EVENT LISTENERS #############
 
