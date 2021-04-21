@@ -75,6 +75,15 @@ Optional fields are marked with a `*`
 |    overwrite \<name>    |   \$overwrite vibrant   |      overwrites a saved theme       |
 | trn \<theme> \| \<name> | \$trn vibant \| Vibrant |        Renames a saved theme        |
 
+### Macro Commands
+
+|  **Command**   |      **Example**      |             **Description**             |
+| :------------: | :-------------------: | :-------------------------------------: |
+| ilso \<preset> |     \$ilso Outrun     |  Import -> Load -> Splash -> Overwrite  |
+|  lso \<theme>  |    \$lso My Theme     |       Load -> Splash -> Overwrite       |
+|  acm \<theme>  | \$acm #7298DA Blurple |   Add a color and then apply to self    |
+|    resplash    |      \$resplash       | Reapplies colors in a different pattern |
+
 ## Support Server
 
 If you couldn't find what you were looking for with the help command, have any general questions you need answered, or just want to see the bot in action before you invite it then join the [Support Server](https://discord.gg/rhvyup5)
