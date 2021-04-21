@@ -1,3 +1,4 @@
+import asyncio
 import discord
 from discord.ext import commands
 from common.cfg import admin_ids
@@ -20,6 +21,7 @@ class AdminCommands(commands.Cog):
     @commands.command(name="test")
     async def testcommand(self, ctx):
         """purge a set amount of messages!"""
+        await asyncio.sleep(5)
         embed = discord.Embed(
             title=f"Test {loading_emoji()} {check_emoji()}"
         )

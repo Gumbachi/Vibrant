@@ -43,13 +43,13 @@ class VibrantMacros(commands.Cog):
         await ctx.invoke(self.bot.get_command("load"), themename=theme)
         await msg.edit(embed=self.get_embed(cmds, 1, 1, 0, 0))
 
-        await asyncio.sleep(3)  # Pause for 3 seconds
+        await asyncio.sleep(2)  # Pause for 3 seconds
 
         # Splash
         await ctx.invoke(self.bot.get_command("splash"))
         await msg.edit(embed=self.get_embed(cmds, 1, 1, 1, 0))
 
-        await asyncio.sleep(3)  # Pause for 3 seconds
+        await asyncio.sleep(2)  # Pause for 3 seconds
 
         # Overwrite
         await ctx.invoke(self.bot.get_command("overwrite"), themename=theme)
@@ -68,7 +68,7 @@ class VibrantMacros(commands.Cog):
         """Macro command: Unsplash->Splash"""
         cfg.suppress_output.add(ctx.guild.id)
 
-        cmds = ("Unsplash", "Resplash")
+        cmds = ("Unsplash", "Splash")
         msg = await ctx.send(embed=self.get_embed(cmds, 0, 0))
 
         # Unsplash
@@ -97,13 +97,13 @@ class VibrantMacros(commands.Cog):
         await ctx.invoke(self.bot.get_command("load"), themename=theme)
         await msg.edit(embed=self.get_embed(cmds, 1, 0, 0))
 
-        await asyncio.sleep(3)  # Pause for 3 seconds
+        await asyncio.sleep(2)  # Pause for 3 seconds
 
         # Splash
         await ctx.invoke(self.bot.get_command("splash"))
         await msg.edit(embed=self.get_embed(cmds, 1, 1, 0))
 
-        await asyncio.sleep(3)  # Pause for 3 seconds
+        await asyncio.sleep(2)  # Pause for 3 seconds
 
         # Overwrite
         await ctx.invoke(self.bot.get_command("overwrite"), themename=theme)
