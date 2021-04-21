@@ -1,3 +1,4 @@
+import asyncio
 import discord
 import common.cfg as cfg
 import common.database as db
@@ -165,6 +166,7 @@ class ColorManagement(commands.Cog):
             if color["role"]:
                 role = ctx.guild.get_role(color["role"])
                 await role.delete()
+                await asyncio.sleep(0.25)
 
         db.guilds.update_one(
             {"_id": ctx.guild.id},

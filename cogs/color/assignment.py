@@ -188,16 +188,19 @@ class ColorAssignment(commands.Cog):
         colors = db.get(ctx.guild.id, "colors")
         cfg.heavy_command_active.add(ctx.guild.id)  # begin heavy command
 
+        # Remove every role associated with a color
         for color in colors:
             if color["role"]:
                 role = ctx.guild.get_role(color["role"])
                 await role.delete()
 
-        cfg.heavy_command_active.discard(ctx.guild.id)
+        cfg.heavy_command_active.discard(ctx.guild.id)  # end heavy cmd
 
+        # Send success message
         if ctx.guild.id not in cfg.suppress_output:
-            await ctx.send(embed=discord.Embed(title=f"Everyone has been uncolored {check_emoji()}",
-                                               color=discord.Color.green()))
+            embed = discord.Embed(title=f"Everyone has been uncolored {check_emoji()}",
+                                  color=discord.Color.green())
+            await ctx.send(embed=embed)
 
     ############# EVENT LISTENERS #############
 
