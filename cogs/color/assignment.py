@@ -100,7 +100,7 @@ class ColorAssignment(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-    @commands.command(name="colorme", aliases=["colourme", "cm", "me"])
+    @commands.command(name="colorme", aliases=["colourme", "cm", "me", "cme"])
     async def colorme(self, ctx, *, cstring=""):
         """Display an image of equipped colors."""
         await ctx.invoke(
