@@ -277,13 +277,13 @@ class ColorAssignment(commands.Cog):
 
         # Role removed
         for role in removed_roles:
-            db.guilds.update_one(
+            response = db.guilds.update_one(
                 {"_id": after.guild.id, "colors.role": role.id},
                 {"$pull": {"colors.$.members": after.id}}
             )
 
             # clear role if empty
-            if not role.members:
+            if not role.members and response.matched_count == 1:
                 try:
                     await role.delete()
                 except discord.errors.NotFound:

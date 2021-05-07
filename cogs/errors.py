@@ -25,6 +25,8 @@ class CommandErrorHandler(commands.Cog):
         if isinstance(error, commands.CommandNotFound):
             return
 
+        # ADD HEAVY COMMAND ERROR AND SUPPRESS ERROR HERE
+
         cfg.heavy_command_active.discard(ctx.guild.id)  # reset heavy command
         cfg.suppress_output.discard(ctx.guild.id)
 
