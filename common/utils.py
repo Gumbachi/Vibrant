@@ -12,6 +12,11 @@ import common.cfg as cfg
 import common.database as db
 
 
+def no_colors_embed():
+    """Return an embed indicated they have no colors."""
+    return discord.Embed(title="You have no colors :(")
+
+
 def to_rgb(hexcode):
     """Convert hexcode to rgb tuple."""
     return ImageColor.getrgb(hexcode)

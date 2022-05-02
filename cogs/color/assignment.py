@@ -5,26 +5,17 @@ import random
 from itertools import cycle, repeat
 
 import discord
-from discord.ext import commands
-from discord.ext.commands import CommandError
+from discord import ApplicationContext, slash_command, Option
 
-import common.cfg as cfg
-import common.database as db
-import common.utils as utils
-from common.utils import check_emoji, loading_emoji
+from common.utils import no_colors_embed
+from model.theme import Theme
 
 
-class ColorAssignment(commands.Cog):
+class ColorAssignment(discord.Cog):
     """Handles commands and listeners related to displaying colors"""
 
-    def __init__(self, bot):
+    def __init__(self, bot: discord.Bot):
         self.bot = bot
-
-    def cog_check(self, ctx):
-        """Disable all commands in cog if heavy command is running."""
-        if ctx.guild.id in cfg.heavy_command_active:
-            raise CommandError("A command is running, please wait")
-        return True
 
     @staticmethod
     async def color(member, color):
@@ -65,16 +56,25 @@ class ColorAssignment(commands.Cog):
 
     ################ COMMANDS #################
 
-    @commands.command(name="color", aliases=["colour", "cu"])
-    @commands.has_guild_permissions(manage_roles=True)
-    async def color_user(self, ctx, member: discord.Member, *, cstring=""):
-        """Color a specified user a specified color."""
+    @slash_command(name="color")
+    async def color_user(
+        self, ctx: ApplicationContext,
+        member: Option(discord.Member, "The one to be colored"),
+        color: Option(discord.Color, "The color to apply", required=False)
+    ):
+        """Color somebody."""
+
+        # TODO Get theme for guild
+        theme = Theme()
+
+        if theme.empty:
+            return await ctx.respond(embed=no_colors_embed())
+
+        if not color:
+            newcolor = theme.random_color()
 
         colors = db.get(ctx.guild.id, "colors")
         ucolor = utils.find_user_color(member, colors)
-
-        if not colors:
-            raise CommandError("There are no active colors")
 
         # to eliminate random coloring the same color
         if len(colors) > 1 and not cstring:

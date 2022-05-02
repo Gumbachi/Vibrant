@@ -1,16 +1,8 @@
-import io
-import math
-from os.path import sep
-
-from common.cfg import bot
-import common.utils as utils
-import common.database as db
-from discord import Embed, File
-from discord.ext import commands
-from PIL import Image, ImageDraw, ImageFont
+import discord
+from discord import ApplicationContext, slash_command
 
 
-class ColorInfo(commands.Cog):
+class ColorInfo(discord.Cog):
     """Handles commands and listeners related to displaying colors"""
 
     def __init__(self, bot):
@@ -60,7 +52,7 @@ class ColorInfo(commands.Cog):
 
             # Make text readable
             r, g, b = rgb
-            luminance = (0.299 * r + 0.587 * g + 0.114 * b)/255
+            luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
             text_color = (0, 0, 0) if luminance > 0.5 else (240, 240, 240)
 
             # Draw text on boxes
@@ -75,29 +67,19 @@ class ColorInfo(commands.Cog):
         im = io.BytesIO(byte_arr)
         return File(im, filename="colors.png")
 
-    @commands.command(name="colors", aliases=["colours", "c"])
-    async def show_colors(self, ctx):
-        """Display an image of equipped colors."""
-        colors = db.get(ctx.guild.id, "colors")
+    @slash_command(name="colors")
+    async def show_colors(self, ctx: ApplicationContext):
+        """Display the active theme's colors."""
+
+        # TODO Fetch Colors
+        colors = None
 
         if not colors:
-            return await ctx.send(embed=Embed(title="You have no colors"))
+            no_colors_embed = discord.Embed(title="You have no colors :(")
+            return await ctx.respond(embed=no_colors_embed)
 
-        await ctx.send(file=self.draw_colors(colors))
-
-    @commands.command(name="colorinfo", aliases=["cinfo"])
-    async def show_colors_in_detail(self, ctx):
-        """Show what the database thinks colors are (For testing/support)."""
-        colors = db.get(ctx.guild.id, "colors")
-        cinfo = Embed(title="Detailed Color Info", description="")
-        for color in colors:
-            members = [bot.get_user(id).name for id in color["members"]]
-            cinfo.add_field(
-                name=color["name"],
-                value=f"**ROLE:** {color['role']}\n**MEMBERS({len(members)}):** {', '.join(members)}")
-
-        await ctx.send(embed=cinfo)
+        await ctx.respond("TODO Respond with file")
 
 
-def setup(bot):
+def setup(bot: discord.Bot):
     bot.add_cog(ColorInfo(bot))
