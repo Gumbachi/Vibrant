@@ -1,0 +1,30 @@
+{
+  "name": "Vaporwave",
+  "colors": [
+    {
+      "name": "Rose Pink",
+      "hexcode": "#ff71ce",
+      "members": []
+    },
+    {
+      "name": "Heliotrope",
+      "hexcode": "#b967ff",
+      "members": []
+    },
+    {
+      "name": "Deep Sky Blue",
+      "hexcode": "#01cdfe",
+      "members": []
+    },
+    {
+      "name": "Spring Green",
+      "hexcode": "#05ffa1",
+      "members": []
+    },
+    {
+      "name": "Canary",
+      "hexcode": "#fffb96",
+      "members": []
+    }
+  ]
+}

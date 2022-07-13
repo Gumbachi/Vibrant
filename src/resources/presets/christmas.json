@@ -1,0 +1,30 @@
+{
+  "name": "Christmas",
+  "colors": [
+    {
+      "name": "Red",
+      "hexcode": "#ff0000",
+      "members": []
+    },
+    {
+      "name": "Light Red",
+      "hexcode": "#ff7878",
+      "members": []
+    },
+    {
+      "name": "White",
+      "hexcode": "#ffffff",
+      "members": []
+    },
+    {
+      "name": "Light Green",
+      "hexcode": "#74d680",
+      "members": []
+    },
+    {
+      "name": "Green",
+      "hexcode": "#378b29",
+      "members": []
+    }
+  ]
+}
