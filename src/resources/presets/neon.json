@@ -3,38 +3,31 @@
   "colors": [
     {
       "name": "UFO Green",
-      "hexcode": "#7FFF00",
-      "members": []
+      "hexcode": "#7FFF00"
     },
     {
       "name": "Neon Magenta",
-      "hexcode": "#FF1493",
-      "members": []
+      "hexcode": "#FF1493"
     },
     {
       "name": "Proton Purple",
-      "hexcode": "#8A2BE2",
-      "members": []
+      "hexcode": "#8A2BE2"
     },
     {
       "name": "Neon Red",
-      "hexcode": "#FF073A",
-      "members": []
+      "hexcode": "#FF073A"
     },
     {
       "name": "Neon Blue",
-      "hexcode": "#04D9FF",
-      "members": []
+      "hexcode": "#04D9FF"
     },
     {
       "name": "Electric Yellow",
-      "hexcode": "#FFFC00",
-      "members": []
+      "hexcode": "#FFFC00"
     },
     {
       "name": "Electric Orange",
-      "hexcode": "#FF3503",
-      "members": []
+      "hexcode": "#FF3503"
     }
   ]
 }

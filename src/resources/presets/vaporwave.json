@@ -3,28 +3,23 @@
   "colors": [
     {
       "name": "Rose Pink",
-      "hexcode": "#ff71ce",
-      "members": []
+      "hexcode": "#ff71ce"
     },
     {
       "name": "Heliotrope",
-      "hexcode": "#b967ff",
-      "members": []
+      "hexcode": "#b967ff"
     },
     {
       "name": "Deep Sky Blue",
-      "hexcode": "#01cdfe",
-      "members": []
+      "hexcode": "#01cdfe"
     },
     {
       "name": "Spring Green",
-      "hexcode": "#05ffa1",
-      "members": []
+      "hexcode": "#05ffa1"
     },
     {
       "name": "Canary",
-      "hexcode": "#fffb96",
-      "members": []
+      "hexcode": "#fffb96"
     }
   ]
 }

@@ -3,58 +3,47 @@
   "colors": [
     {
       "name": "Magic Mint",
-      "hexcode": "#aaf0d1",
-      "members": []
+      "hexcode": "#aaf0d1"
     },
     {
       "name": "Turquoise Pastel",
-      "hexcode": "#9adedb",
-      "members": []
+      "hexcode": "#9adedb"
     },
     {
       "name": "Baby Blue",
-      "hexcode": "#89cff0",
-      "members": []
+      "hexcode": "#89cff0"
     },
     {
       "name": "Pastel Green",
-      "hexcode": "#b2fba5",
-      "members": []
+      "hexcode": "#b2fba5"
     },
     {
       "name": "Lilac",
-      "hexcode": "#bdb0d0",
-      "members": []
+      "hexcode": "#bdb0d0"
     },
     {
       "name": "Periwinkle",
-      "hexcode": "#c1c6fc",
-      "members": []
+      "hexcode": "#c1c6fc"
     },
     {
       "name": "Pastel Violet",
-      "hexcode": "#cb99c9",
-      "members": []
+      "hexcode": "#cb99c9"
     },
     {
       "name": "Pale Blue",
-      "hexcode": "#d6fffe",
-      "members": []
+      "hexcode": "#d6fffe"
     },
     {
       "name": "Pastel Yellow",
-      "hexcode": "#fdfd96",
-      "members": []
+      "hexcode": "#fdfd96"
     },
     {
       "name": "Baby Pink",
-      "hexcode": "#ffb7ce",
-      "members": []
+      "hexcode": "#ffb7ce"
     },
     {
       "name": "Baby Purple",
-      "hexcode": "#ca9bf7",
-      "members": []
+      "hexcode": "#ca9bf7"
     }
   ]
 }

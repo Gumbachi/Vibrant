@@ -3,33 +3,27 @@
   "colors": [
     {
       "name": "Orange Sun",
-      "hexcode": "#F57800",
-      "members": []
+      "hexcode": "#F57800"
     },
     {
       "name": "Purple Sky",
-      "hexcode": "#7308CA",
-      "members": []
+      "hexcode": "#7308CA"
     },
     {
       "name": "Magenta Sky",
-      "hexcode": "#C403E8",
-      "members": []
+      "hexcode": "#C403E8"
     },
     {
       "name": "Blue Violet",
-      "hexcode": "#3D048E",
-      "members": []
+      "hexcode": "#3D048E"
     },
     {
       "name": "Cyan",
-      "hexcode": "#3EB0FF",
-      "members": []
+      "hexcode": "#3EB0FF"
     },
     {
       "name": "Light Red",
-      "hexcode": "#F5384E",
-      "members": []
+      "hexcode": "#F5384E"
     }
   ]
 }
