@@ -227,6 +227,10 @@ class ColorCog(discord.Cog):
         if isinstance(error, utils.errors.InvalidColorName):
             return await ctx.respond(embed=INVALID_COLOR_NAME, ephemeral=True)
 
+        # Invalidate Caches For Guild
+        del db.color.color_cache[ctx.guild.id]
+        del db.theme.theme_cache[ctx.guild.id]
+
         if ctx.response.is_done():
             await ctx.interaction.edit_original_message(embed=error_embed(error))
         else:
