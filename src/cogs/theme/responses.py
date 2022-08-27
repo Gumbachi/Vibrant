@@ -52,11 +52,11 @@ def remove_theme_sucess(theme: "Theme"):
     return discord.Embed(
         title=f"Successfully removed {theme.name}",
         color=discord.Color.green()
-    )
+    ).set_thumbnail(url=success_url())
 
 
 def theme_saved_embed(theme: "Theme"):
     return discord.Embed(
         title=f"Theme saved as {theme.name}",
         color=discord.Color.green()
-    )
+    ).set_thumbnail(url=success_url())

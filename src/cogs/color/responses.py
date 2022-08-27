@@ -114,6 +114,6 @@ def edit_successful(before: "Color", after: "Color"):
 def error_embed(error: Exception):
     return discord.Embed(
         title="There was a problem with that",
-        description="This can be caused if a heavy operation like `/splash` is running and you attempt to modify colors",
+        description="If the problem persists, report it with the `/report` command",
         color=discord.Color.red()
     ).set_footer(text=str(error)).set_thumbnail(url=failed_url(size=48))
