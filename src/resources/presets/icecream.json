@@ -1,0 +1,25 @@
+{
+  "name": "Ice Cream",
+  "colors": [
+    {
+      "name": "Chocolate",
+      "hexcode": "#6b3e26"
+    },
+    {
+      "name": "Strawberry",
+      "hexcode": "#ffc5d9"
+    },
+    {
+      "name": "Mint",
+      "hexcode": "#c2f2d0"
+    },
+    {
+      "name": "Vanilla",
+      "hexcode": "#fdf5c9"
+    },
+    {
+      "name": "Peanut Butter",
+      "hexcode": "#ffcb85"
+    }
+  ]
+}

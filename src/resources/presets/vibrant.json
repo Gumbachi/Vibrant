@@ -1,0 +1,89 @@
+{
+  "name": "Vibrant",
+  "colors": [
+    {
+      "name": "Aqua",
+      "hexcode": "#00ffff"
+    },
+    {
+      "name": "Aquamarine",
+      "hexcode": "#7fffd4"
+    },
+    {
+      "name": "Blue",
+      "hexcode": "#0000ff"
+    },
+    {
+      "name": "Blue Violet",
+      "hexcode": "#8a2be2"
+    },
+    {
+      "name": "Chartreuse",
+      "hexcode": "#7fff00"
+    },
+    {
+      "name": "Coral",
+      "hexcode": "#ff7f50"
+    },
+    {
+      "name": "Crimson",
+      "hexcode": "#dc143c"
+    },
+    {
+      "name": "Deep Pink",
+      "hexcode": "#ff1493"
+    },
+    {
+      "name": "Deep Sky Blue",
+      "hexcode": "#00bfff"
+    },
+    {
+      "name": "Fuchsia",
+      "hexcode": "#ff00ff"
+    },
+    {
+      "name": "Hot Pink",
+      "hexcode": "#ff69b4"
+    },
+    {
+      "name": "Lime",
+      "hexcode": "#00ff00"
+    },
+    {
+      "name": "Midnight Blue",
+      "hexcode": "#191970"
+    },
+    {
+      "name": "Orange Red",
+      "hexcode": "#ff4500"
+    },
+    {
+      "name": "Purple",
+      "hexcode": "#800080"
+    },
+    {
+      "name": "Red",
+      "hexcode": "#ff0000"
+    },
+    {
+      "name": "Slate Blue",
+      "hexcode": "#6a5acd"
+    },
+    {
+      "name": "Spring Green",
+      "hexcode": "#00ff7f"
+    },
+    {
+      "name": "Turquoise",
+      "hexcode": "#40e0d0"
+    },
+    {
+      "name": "Violet",
+      "hexcode": "#ee82ee"
+    },
+    {
+      "name": "Yellow",
+      "hexcode": "#ffff00"
+    }
+  ]
+}

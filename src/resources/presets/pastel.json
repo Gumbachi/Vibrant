@@ -1,0 +1,49 @@
+{
+  "name": "Pastel",
+  "colors": [
+    {
+      "name": "Magic Mint",
+      "hexcode": "#aaf0d1"
+    },
+    {
+      "name": "Turquoise Pastel",
+      "hexcode": "#9adedb"
+    },
+    {
+      "name": "Baby Blue",
+      "hexcode": "#89cff0"
+    },
+    {
+      "name": "Pastel Green",
+      "hexcode": "#b2fba5"
+    },
+    {
+      "name": "Lilac",
+      "hexcode": "#bdb0d0"
+    },
+    {
+      "name": "Periwinkle",
+      "hexcode": "#c1c6fc"
+    },
+    {
+      "name": "Pastel Violet",
+      "hexcode": "#cb99c9"
+    },
+    {
+      "name": "Pale Blue",
+      "hexcode": "#d6fffe"
+    },
+    {
+      "name": "Pastel Yellow",
+      "hexcode": "#fdfd96"
+    },
+    {
+      "name": "Baby Pink",
+      "hexcode": "#ffb7ce"
+    },
+    {
+      "name": "Baby Purple",
+      "hexcode": "#ca9bf7"
+    }
+  ]
+}
