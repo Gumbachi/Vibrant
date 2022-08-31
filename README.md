@@ -1,6 +1,7 @@
 # Vibrant
 
 A discord bot that uses color roles and themes to spice up your server.  
+[Invite to you server](https://discord.com/api/oauth2/authorize?client_id=821278454711320576&permissions=2415970304&scope=applications.commands%20bot)
  
 ## Create and manage colors to make your perfect theme  
 
