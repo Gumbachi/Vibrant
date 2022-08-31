@@ -28,7 +28,9 @@ class PresetCog(discord.Cog):
 
     preset = SlashCommandGroup(
         name="preset",
-        description="view and add presets with these commands."
+        description="view and add presets with these commands.",
+        guild_only=True,
+        default_member_permissions=discord.Permissions(manage_roles=True)
     )
 
     async def preset_autocomplete(self, ctx: discord.AutocompleteContext):
@@ -49,7 +51,6 @@ class PresetCog(discord.Cog):
         await ctx.respond(files=snapshots)
 
     @preset.command(name="save")
-    @guild_only()
     @option(name="preset", description="The preset to save to your themes", autocomplete=preset_autocomplete)
     async def save_preset(self, ctx: discord.ApplicationContext, preset: str):
         """Saves a preset to the themes of a guild."""

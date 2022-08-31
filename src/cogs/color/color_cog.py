@@ -5,10 +5,10 @@ from itertools import cycle
 import database as db
 import discord
 import utils
-from database import guild
 from discord import SlashCommandGroup, guild_only, option, slash_command
 from model import Color
 
+from .components import ColorControls
 from .responses import *
 
 
@@ -20,7 +20,9 @@ class ColorCog(discord.Cog):
 
     color = SlashCommandGroup(
         name="color",
-        description="commands to create and manage colors"
+        description="commands to create and manage colors",
+        guild_only=True,
+        default_member_permissions=discord.Permissions(manage_roles=True)
     )
 
     async def autocomplete_color(ctx: discord.AutocompleteContext):
@@ -45,10 +47,9 @@ class ColorCog(discord.Cog):
             return await ctx.respond(embed=NO_COLORS_EMBED, ephemeral=True)
 
         snapshot = utils.draw_colors(colors)
-        await ctx.respond(file=snapshot)
+        await ctx.respond(file=snapshot, view=ColorControls())
 
     @color.command(name="me")
-    @guild_only()
     @option(name="color", description="The color to apply.", autocomplete=autocomplete_color)
     async def color_author(self, ctx: discord.ApplicationContext, color: str):
         """Color yourself your favorite color."""
@@ -59,7 +60,6 @@ class ColorCog(discord.Cog):
                 break
 
     @color.command(name="them")
-    @guild_only()
     @option(name="target", description="The person to be colored")
     @option(name="color", description="The color to apply", autocomplete=autocomplete_color)
     async def color_someone(
@@ -88,7 +88,6 @@ class ColorCog(discord.Cog):
         await ctx.respond(embed=color_applied_embed(new_color, target))
 
     @color.command(name="add")
-    @guild_only()
     @option(name="name", description="The name for your new color")
     @option(name="value", description="The value of the color (Hex or RGB). Example: '#7289DA'")
     async def add_color(
@@ -108,7 +107,6 @@ class ColorCog(discord.Cog):
         await ctx.respond(embed=add_color_success(color))
 
     @color.command(name="remove")
-    @guild_only()
     @option(name="color", description="The color to remove", autocomplete=autocomplete_color)
     async def remove_color(self, ctx: discord.ApplicationContext, color: str):
         """Remove your favorite color."""
@@ -123,7 +121,6 @@ class ColorCog(discord.Cog):
         await ctx.respond(embed=remove_color_success(color_to_remove))
 
     @color.command(name="splash")
-    @guild_only()
     @option(name="type", description="The type of splash to perform.", choices=["Default", "Resplash", "Unsplash"], default="Default")
     async def splash_color(self, ctx: discord.ApplicationContext, type: str):
         """Color everyone that is uncolored. Or uncolor everyone. Or recolor everyone."""
@@ -159,7 +156,6 @@ class ColorCog(discord.Cog):
         await interaction.edit_original_message(embed=splash_successful(amount=len(uncolored)))
 
     @color.command(name="clear")
-    @guild_only()
     async def clear_colors(self, ctx: discord.ApplicationContext):
         """WARNING: Clears all colors and uncolors everyone with a color."""
         colors = db.get_colors(ctx.guild.id)
@@ -175,7 +171,6 @@ class ColorCog(discord.Cog):
         await interaction.edit_original_message(embed=CLEAR_COLORS_SUCCESS)
 
     @color.command(name="edit")
-    @guild_only()
     @option(name="color", description="The color to edit", autocomplete=autocomplete_color)
     @option(name="name", description="The new name for the color", required=False)
     @option(name="value", description="The new value for your color (hex or RGB)", required=False)
@@ -235,8 +230,11 @@ class ColorCog(discord.Cog):
             return await ctx.respond(embed=INVALID_COLOR_NAME, ephemeral=True)
 
         # Invalidate Caches For Guild
-        del db.color.color_cache[ctx.guild.id]
-        del db.theme.theme_cache[ctx.guild.id]
+        try:
+            del db.color.color_cache[ctx.guild.id]
+            del db.theme.theme_cache[ctx.guild.id]
+        except KeyError:
+            pass
 
         if ctx.response.is_done():
             await ctx.interaction.edit_original_message(embed=error_embed(error))

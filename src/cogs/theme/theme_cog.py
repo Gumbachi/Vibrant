@@ -16,7 +16,9 @@ class ThemeCog(discord.Cog):
 
     theme_commands = SlashCommandGroup(
         name="theme",
-        description="save and manage themes with these commands"
+        description="save and manage themes with these commands",
+        guild_only=True,
+        default_member_permissions=discord.Permissions(manage_roles=True)
     )
 
     async def theme_autocomplete(self, ctx: discord.AutocompleteContext):
@@ -44,7 +46,6 @@ class ThemeCog(discord.Cog):
         await ctx.respond(files=snapshots)
 
     @theme_commands.command(name="save")
-    @guild_only()
     @option(name="name", description="The name of the theme", min_length=1, max_length=99)
     @option(name="overwrite", description="The theme to overwrite", autocomplete=theme_autocomplete, required=False)
     async def save_theme(self, ctx: discord.ApplicationContext, name: str, overwrite: str):
@@ -82,7 +83,6 @@ class ThemeCog(discord.Cog):
         return await ctx.respond(embed=theme_saved_embed(theme))
 
     @theme_commands.command(name="remove")
-    @guild_only()
     @option(name="theme", description="The theme to remove", autocomplete=theme_autocomplete)
     async def remove_theme(self, ctx: discord.ApplicationContext, theme: str):
         """Remove a theme from your themes"""
@@ -96,7 +96,6 @@ class ThemeCog(discord.Cog):
         await ctx.respond(embed=remove_theme_sucess(theme=to_remove))
 
     @theme_commands.command(name="apply")
-    @guild_only()
     @option(name="theme", description="The theme to apply", autocomplete=theme_autocomplete)
     @option(name="everyone", description="color people who dont have a color saved for this theme", default=True)
     async def apply_theme(self, ctx: discord.ApplicationContext, theme: str, everyone: bool):
