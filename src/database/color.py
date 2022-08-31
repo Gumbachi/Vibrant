@@ -13,10 +13,7 @@ def get_colors(id: int, from_cache=True) -> list[model.Color]:
 
     # check for colors in cache
     if id in color_cache and from_cache:
-        print("Colors from CACHE")
         return color_cache[id]
-
-    print("Colors from ATLAS")
 
     # find guild or use default if not found
     data = db.Guilds.find_one({"_id": id}, {"_id": False, "colors": True}) or insert_guild(id=id)

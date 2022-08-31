@@ -44,7 +44,7 @@ class GeneralCommands(discord.Cog):
             description="Thanks for the feedback."
         ))
 
-    @slash_command(name="guide")
+    @slash_command(name="help")
     async def guide(self, ctx: discord.ApplicationContext):
         """Explains how Vibrant works in detail."""
         paginator = Paginator(pages=docs.guide, timeout=None, author_check=False)

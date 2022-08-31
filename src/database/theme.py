@@ -11,10 +11,7 @@ def get_themes(id: int, from_cache=True) -> list[model.Theme]:
     """Fetch all the themes a guild has."""
     # check for colors in cache
     if id in theme_cache and from_cache:
-        print("Theme from CACHE")
         return theme_cache[id]
-
-    print("Theme from ATLAS")
 
     # find guild or use default if not found
     data = db.Guilds.find_one({"_id": id}, {"_id": False, "themes": True}) or insert_guild(id=id)

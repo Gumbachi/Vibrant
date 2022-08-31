@@ -85,7 +85,7 @@ class ColorCog(discord.Cog):
 
         # add New color
         await new_color.apply_to(target)
-        await ctx.respond(embed=color_applied_embed(new_color, target), ephemeral=True)
+        await ctx.respond(embed=color_applied_embed(new_color, target))
 
     @color.command(name="add")
     @guild_only()
@@ -152,6 +152,10 @@ class ColorCog(discord.Cog):
             await color.apply_to(member)
             await asyncio.sleep(1)
 
+        # Sleep to ensure message is updated if the bot has little processing to do
+        if not uncolored:
+            await asyncio.sleep(1)
+
         await interaction.edit_original_message(embed=splash_successful(amount=len(uncolored)))
 
     @color.command(name="clear")
@@ -159,6 +163,9 @@ class ColorCog(discord.Cog):
     async def clear_colors(self, ctx: discord.ApplicationContext):
         """WARNING: Clears all colors and uncolors everyone with a color."""
         colors = db.get_colors(ctx.guild.id)
+
+        if not colors:
+            return await ctx.respond(embed=NO_COLORS_EMBED, ephemeral=True)
 
         interaction = await ctx.respond(embed=REMOVING_COLORS)
 
