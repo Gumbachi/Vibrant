@@ -77,7 +77,7 @@ def draw_colors(
         text_width, _ = draw.textsize(text, font)
 
         # Ellipsize text
-        text_size_limit = column_width - (column_width/10)
+        text_size_limit = column_width - (column_width/6)
         while text_width > text_size_limit:
             text = text[:-2]  # Cut off two characters
             text_width, _ = draw.textsize(text, font)
