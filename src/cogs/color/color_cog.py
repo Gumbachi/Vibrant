@@ -5,7 +5,8 @@ from itertools import cycle
 import database as db
 import discord
 import utils
-from discord import SlashCommandGroup, guild_only, option, slash_command
+from discord import (SlashCommandGroup, guild_only, option, slash_command,
+                     user_command)
 from model import Color
 
 from .components import ColorControls
@@ -57,6 +58,26 @@ class ColorCog(discord.Cog):
         for cmd in self.color.walk_commands():
             if cmd.qualified_name == "color them":
                 await ctx.invoke(cmd, ctx.author, color)
+
+    @user_command(name="Color Randomly")
+    @guild_only()
+    async def color_randomly(self, ctx: discord.ApplicationContext, member: discord.Member):
+        """Color the selected person a random color"""
+        colors = db.get_colors(id=ctx.guild.id)
+
+        if not colors:
+            return await ctx.respond(embed=NO_COLORS_EMBED, ephemeral=True)
+
+        new_color = random.choice(colors)
+
+        # Remove any previous colors
+        owned_colors = utils.get_colors_from_person(person=member, colors=colors)
+        for owned_color in owned_colors:
+            await owned_color.remove_from(member)
+
+        # add New color
+        await new_color.apply_to(member)
+        await ctx.respond(embed=color_applied_embed(new_color, member))
 
     @color.command(name="them")
     @option(name="target", description="The person to be colored")
