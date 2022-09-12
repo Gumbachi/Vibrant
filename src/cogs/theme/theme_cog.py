@@ -107,6 +107,12 @@ class ThemeCog(discord.Cog):
         if not theme_to_apply:
             return await ctx.respond(embed=COULDNT_FIND_THEME, ephemeral=True)
 
+        # DB update comes before apply to prevent straggling roles if people try to color during apply
+        db.replace_colors(
+            id=ctx.guild.id,
+            colors=[tc.as_color() for tc in theme_to_apply.colors]
+        )
+
         interaction = await ctx.respond(embed=REMOVING_PREVIOUS_THEME)
 
         # Remove all colors
@@ -116,10 +122,6 @@ class ThemeCog(discord.Cog):
         await interaction.edit_original_message(embed=APPLYING_THEME)
         await theme_to_apply.apply_to(guild=ctx.guild, include_everyone=everyone)
 
-        db.replace_colors(
-            id=ctx.guild.id,
-            colors=[tc.as_color() for tc in theme_to_apply.colors]
-        )
         return await interaction.edit_original_message(embed=theme_applied_embed(theme_to_apply))
 
 
