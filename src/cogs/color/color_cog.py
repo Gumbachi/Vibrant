@@ -49,15 +49,14 @@ class ColorCog(discord.Cog):
         snapshot = utils.draw_colors(colors)
         await ctx.respond(file=snapshot, view=ColorControls())
 
-    @color.command(name="me")
+    @slash_command(name="colorme")
+    @guild_only()
     @option(name="color", description="The color to apply.", autocomplete=autocomplete_color)
     async def color_author(self, ctx: discord.ApplicationContext, color: str):
         """Color yourself your favorite color."""
-        # This is like this because bot.get_application_command wasnt working
-        for command in self.bot.walk_application_commands():
-            if command.qualified_name == "color them":
-                await ctx.invoke(command, ctx.author, color)
-                break
+        for cmd in self.color.walk_commands():
+            if cmd.qualified_name == "color them":
+                await ctx.invoke(cmd, ctx.author, color)
 
     @color.command(name="them")
     @option(name="target", description="The person to be colored")

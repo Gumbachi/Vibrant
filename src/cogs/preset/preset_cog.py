@@ -6,7 +6,7 @@ import discord
 import utils
 from cogs.theme.responses import MAX_THEMES_EMBED
 from common.constants import MAX_THEMES
-from discord import SlashCommandGroup, guild_only, option, slash_command
+from discord import SlashCommandGroup, option, slash_command
 from model import Theme
 
 from .responses import *
