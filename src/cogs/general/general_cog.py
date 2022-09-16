@@ -1,3 +1,4 @@
+import database as db
 import discord
 import docs
 from discord import guild_only, option, slash_command
@@ -51,6 +52,11 @@ class GeneralCommands(discord.Cog):
         paginator.remove_button("first")
         paginator.remove_button("last")
         await paginator.respond(ctx.interaction)
+
+    # @discord.Cog.listener(name="on_guild_remove")
+    # async def on_guild_remove(self, guild: discord.Guild):
+    #     """Delete a guild's data. Will not fail if no guild data found."""
+    #     db.delete_guild(id=guild.id)
 
 
 def setup(bot: discord.Bot):

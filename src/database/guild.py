@@ -2,6 +2,9 @@ import os
 
 import pymongo
 
+from .color import color_cache
+from .theme import theme_cache
+
 # database connection setup
 mongo_string = f"mongodb+srv://Gumbachi:{os.getenv('MONGO_PASS')}@discordbotcluster.afgyl.mongodb.net/VibrantDB?retryWrites=true&w=majority"
 connection = pymongo.MongoClient(mongo_string)
@@ -19,6 +22,15 @@ def insert_guild(id: int):
     empty_guild = generate_default_guild(id=id)
     db.Guilds.insert_one(empty_guild)
     return empty_guild
+
+
+def delete_guild(id: int):
+    """Delete a guild from the database."""
+    # Remove from cache
+    color_cache.pop(id, None)
+    theme_cache.pop(id, None)
+
+    db.Guilds.delete_one({"_id": id})
 
 
 def get_guild(id: int) -> dict:

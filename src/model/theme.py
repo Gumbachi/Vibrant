@@ -33,6 +33,8 @@ class Theme:
 
         uncolored = guild.members
 
+        # Should calculate roles and create then update database
+
         for color in self.colors:
             for member_id in color.members:
                 member = guild.get_member(member_id)
