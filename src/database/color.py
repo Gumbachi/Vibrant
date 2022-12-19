@@ -1,5 +1,4 @@
 import model
-
 from database import errors
 
 from .guild import db, insert_guild
