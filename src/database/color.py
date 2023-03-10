@@ -7,19 +7,19 @@ from .guild import db, insert_guild
 color_cache: dict[int, list[model.Color]] = {}
 
 
-def get_colors(id: int, from_cache=True) -> list[model.Color]:
+def get_colors(guild_id: int, from_cache=True) -> list[model.Color]:
     """Fetch colors for a guild and add guilds if not exists"""
 
     # check for colors in cache
-    if id in color_cache and from_cache:
-        return color_cache[id]
+    if guild_id in color_cache and from_cache:
+        return color_cache[guild_id]
 
     # find guild or use default if not found
-    data = db.Guilds.find_one({"_id": id}, {"_id": False, "colors": True}) or insert_guild(id=id)
+    data = db.Guilds.find_one({"_id": guild_id}, {"_id": False, "colors": True}) or insert_guild(guild_id=guild_id)
 
     # update cache
     colors = [model.Color.from_dict(color) for color in data["colors"]]
-    color_cache[id] = colors
+    color_cache[guild_id] = colors
 
     return colors
 

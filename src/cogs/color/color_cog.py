@@ -2,11 +2,12 @@ import asyncio
 import random
 from itertools import cycle
 
-import database as db
 import discord
-import utils
 from discord import (SlashCommandGroup, guild_only, option, slash_command,
                      user_command)
+
+import database as db
+import utils
 from model import Color
 
 from .components import ColorControls
@@ -26,6 +27,7 @@ class ColorCog(discord.Cog):
         default_member_permissions=discord.Permissions(manage_roles=True)
     )
 
+    @staticmethod
     async def autocomplete_color(ctx: discord.AutocompleteContext):
         """General use autocomplete for looking for a specific color."""
         colors = db.get_colors(ctx.interaction.guild.id)

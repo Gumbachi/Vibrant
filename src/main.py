@@ -2,10 +2,7 @@ import os
 
 import discord
 
-# from model.color_manager import ColorManager
-
-intents = discord.Intents.default()
-intents.members = True
+intents = discord.Intents(members=True)
 
 if os.getenv("DEBUG"):
     print("DEBUG ENVIRONMENT")
@@ -37,7 +34,6 @@ extensions = [
     "cogs.preset.preset_cog",
     "cogs.general.general_cog",  # General should come last
 ]
-
 
 if __name__ == "__main__":
     bot.load_extensions(*extensions)

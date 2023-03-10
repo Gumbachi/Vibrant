@@ -14,7 +14,7 @@ def get_themes(id: int, from_cache=True) -> list[model.Theme]:
         return theme_cache[id]
 
     # find guild or use default if not found
-    data = db.Guilds.find_one({"_id": id}, {"_id": False, "themes": True}) or insert_guild(id=id)
+    data = db.Guilds.find_one({"_id": id}, {"_id": False, "themes": True}) or insert_guild(guild_id=id)
 
     # update cache
     themes = [model.Theme.from_dict(theme) for theme in data["themes"]]

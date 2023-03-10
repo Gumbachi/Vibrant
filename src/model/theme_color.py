@@ -42,5 +42,5 @@ class ThemeColor(Color):
         return Color(
             name=self.name,
             hexcode=self.hexcode,
-            role=self.role
+            role_id=self.role_id
         )

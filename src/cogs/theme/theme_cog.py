@@ -50,7 +50,7 @@ class ThemeCog(discord.Cog):
     @option(name="overwrite", description="The theme to overwrite", autocomplete=theme_autocomplete, required=False)
     async def save_theme(self, ctx: discord.ApplicationContext, name: str, overwrite: str):
         """Save the state of your colors in case you want to come back later."""
-        colors = db.get_colors(id=ctx.guild.id)
+        colors = db.get_colors(guild_id=ctx.guild.id)
 
         if not colors:
             return await ctx.respond(embed=MISSING_COLORS_FOR_THEME, ephemeral=True)
