@@ -1,12 +1,24 @@
 
 FROM python:3.11-slim-bullseye
 
-WORKDIR /app
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONHASHSEED=random \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_VERSION=1.4.1
 
-COPY requirements.txt *.env ./
+# System deps:
+RUN pip install "poetry==$POETRY_VERSION"
 
-RUN pip3 install -r requirements.txt
+# Copy only requirements to cache them in docker layer
+WORKDIR /code
+COPY poetry.lock pyproject.toml /code/
 
-COPY src ./src
+# Project initialization:
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-dev --no-interaction --no-ansi
 
-CMD [ "python3", "src/main.py" ]
+# Creating folders, and files for a project:
+COPY . /code

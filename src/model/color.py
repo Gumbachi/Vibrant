@@ -1,12 +1,11 @@
 from dataclasses import dataclass
 from typing import Self, TypedDict
 
+import common.exceptions as exceptions
+import database as db
 import discord
+import utils as utils
 from PIL import ImageColor
-
-import src.common.exceptions as exceptions
-import src.database as db
-import src.utils as utils
 
 
 class ColorDict(TypedDict):
@@ -39,7 +38,7 @@ class NewColor:
     def serialize(self, include_members: bool = False) -> ColorDict:
         """Serialize the class to a dict/json. Include members is optional."""
 
-        role = None if role is None else role.id
+        role = None if self.role is None else self.role.id
 
         dict = {
             "name": self.name,
@@ -56,7 +55,7 @@ class NewColor:
     def deserialize(cls, data: ColorDict, guild: discord.Guild) -> Self:
         """Convert dict/json to class. Guild instance to resolve member/role ids"""
 
-        if data["role"] != None:
+        if data["role"] is not None:
             role = guild.get_role(data["role"])
         else:
             role = None

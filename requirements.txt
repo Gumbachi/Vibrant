@@ -1,3 +1,0 @@
-py-cord[speed]==2.4.0
-Pillow==9.4.0
-pymongo[srv]==4.3.3

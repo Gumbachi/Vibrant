@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "vibrant"
+version = "0.3.0"
+description = "Role management discord bot based on color"
+authors = ["Gumbachi <jaredremsberg@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+py-cord = {version = "^2.4.0", extras = ["speed"]}
+Pillow = "^9.4.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.259"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+exclude = [".venv"]
+line-length = 120
