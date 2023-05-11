@@ -29,10 +29,10 @@ async def on_ready():
 
 # Cogs the bot loads
 extensions = [
-    "cogs.color.color_cog",
-    "cogs.theme.theme_cog",
-    "cogs.preset.preset_cog",
-    "cogs.general.general_cog",  # General should come last
+    "cogs.general.general_cog"
+    # "cogs.color.color_cog",
+    # "cogs.theme.theme_cog",
+    # "cogs.preset.preset_cog",
 ]
 
 if __name__ == "__main__":

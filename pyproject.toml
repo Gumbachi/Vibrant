@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 py-cord = {version = "^2.4.0", extras = ["speed"]}
-Pillow = "^9.4.0"
+Pillow = "^9.5.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.0.259"

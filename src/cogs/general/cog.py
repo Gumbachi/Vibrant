@@ -1,4 +1,3 @@
-import database as db
 import discord
 import docs
 from discord import guild_only, option, slash_command
@@ -19,7 +18,7 @@ class GeneralCommands(discord.Cog):
 
     @slash_command(name="howdy")
     async def howdy(self, ctx: discord.ApplicationContext):
-        """You've got a friend in me."""
+        """You've got a friend in me. For checking the bot's pulse"""
         await ctx.respond(f"Howdy, {ctx.author.display_name}!")
 
     @slash_command(name="report")
