@@ -1,8 +1,9 @@
 import os
 
 import discord
+from dotenv import load_dotenv
 
-# from model.color_manager import ColorManager
+load_dotenv()
 
 intents = discord.Intents.default()
 intents.members = True
