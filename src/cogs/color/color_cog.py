@@ -156,9 +156,9 @@ class ColorCog(discord.Cog):
             await utils.delete_color_roles(guild=ctx.guild, colors=colors)
 
             if type == "Unsplash":
-                return await interaction.edit_original_message(embed=UNSPLASH_SUCCESS)
+                return await interaction.edit_original_response(embed=UNSPLASH_SUCCESS)
 
-        await interaction.edit_original_message(embed=SPLASH_COLORING_PEOPLE)
+        await interaction.edit_original_response(embed=SPLASH_COLORING_PEOPLE)
 
         # randomize colors and member order
         random.shuffle(colors)
@@ -173,7 +173,7 @@ class ColorCog(discord.Cog):
         if not uncolored:
             await asyncio.sleep(1)
 
-        await interaction.edit_original_message(embed=splash_successful(amount=len(uncolored)))
+        await interaction.edit_original_response(embed=splash_successful(amount=len(uncolored)))
 
     @color.command(name="clear")
     async def clear_colors(self, ctx: discord.ApplicationContext):
@@ -188,7 +188,7 @@ class ColorCog(discord.Cog):
         await utils.delete_color_roles(guild=ctx.guild, colors=colors)
 
         db.replace_colors(id=ctx.guild.id, colors=[])
-        await interaction.edit_original_message(embed=CLEAR_COLORS_SUCCESS)
+        await interaction.edit_original_response(embed=CLEAR_COLORS_SUCCESS)
 
     @color.command(name="edit")
     @option(name="color", description="The color to edit", autocomplete=autocomplete_color)
@@ -257,7 +257,7 @@ class ColorCog(discord.Cog):
             pass
 
         if ctx.response.is_done():
-            await ctx.interaction.edit_original_message(embed=error_embed(error))
+            await ctx.interaction.edit_original_response(embed=error_embed(error))
         else:
             await ctx.respond(embed=error_embed(error), ephemeral=True)
 

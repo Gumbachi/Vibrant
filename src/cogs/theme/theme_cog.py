@@ -115,7 +115,7 @@ class ThemeCog(discord.Cog):
         colors = db.get_colors(ctx.guild.id)
         await utils.delete_color_roles(guild=ctx.guild, colors=colors)
 
-        await interaction.edit_original_message(embed=APPLYING_THEME)
+        await interaction.edit_original_response(embed=APPLYING_THEME)
         await theme_to_apply.apply_to(guild=ctx.guild, include_everyone=everyone)
 
         db.replace_colors(
@@ -123,7 +123,7 @@ class ThemeCog(discord.Cog):
             colors=[tc.as_color() for tc in theme_to_apply.colors]
         )
 
-        return await interaction.edit_original_message(embed=theme_applied_embed(theme_to_apply))
+        return await interaction.edit_original_response(embed=theme_applied_embed(theme_to_apply))
 
 
 def setup(bot: discord.Bot):
