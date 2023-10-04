@@ -9,7 +9,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 py-cord = {version = "^2.4.1", extras = ["speed"]}
-Pillow = "^9.5.0"
+Pillow = "^10.0.1"
 pymongo = {extras = ["srv"], version = "^4.3.3"}
 python-dotenv = "^1.0.0"
 
