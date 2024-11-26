@@ -1,0 +1,6 @@
+services:
+  vibrant:
+    container_name: vibrant
+    build: .
+    env_file: .env
+    restart: always
