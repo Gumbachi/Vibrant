@@ -5,7 +5,7 @@ description = "Role management discord based on color."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "py-cord[speed]>=2.4.1",
+    "py-cord>=2.4.1",
     "Pillow>=9.5.0",
     "pymongo>=4.3.3",
 ]
