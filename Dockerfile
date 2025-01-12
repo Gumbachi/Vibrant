@@ -1,6 +1,6 @@
 FROM python:3.11-slim-bullseye
 
-RUN pip3 install poetry \
+RUN pip3 install -v "poetry==1.8.5" \
     && rm -rf /var/lib/apt/lists/* \
     && poetry config virtualenvs.create false
 
