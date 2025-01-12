@@ -1,25 +1,11 @@
-[tool.poetry]
+[project]
 name = "vibrant"
 version = "0.3.0"
 description = "Role management discord based on color."
-authors = ["Gumbachi"]
-license = "MIT"
 readme = "README.md"
-
-[tool.poetry.dependencies]
-python = "^3.11"
-py-cord = {version = "^2.4.1", extras = ["speed"]}
-Pillow = "^9.5.0"
-pymongo = {extras = ["srv"], version = "^4.3.3"}
-python-dotenv = "^1.0.0"
-
-[tool.poetry.group.dev.dependencies]
-ruff = "^0.0.259"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
-
-[tool.ruff]
-exclude = [".venv"]
-line-length = 120
+requires-python = ">=3.12"
+dependencies = [
+    "py-cord[speed]>=2.4.1",
+    "Pillow>=9.5.0",
+    "pymongo>=4.3.3",
+]
