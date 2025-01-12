@@ -1,8 +1,6 @@
-FROM python:3.13-slim-bookworm
+FROM python:3.12-slim-bookworm
 
-RUN apt update \
-    && pip3 install uv \
-    && rm -rf /var/lib/apt/lists/*
+RUN apt update && pip3 install uv
 
 WORKDIR /app
 
