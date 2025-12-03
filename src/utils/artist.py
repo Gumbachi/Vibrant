@@ -74,13 +74,13 @@ def draw_colors(
         )
 
         text = f"{color.name}"
-        text_width, _ = draw.textsize(text, font)
+        text_width = draw.textlength(text, font)
 
         # Ellipsize text
         text_size_limit = column_width - (column_width/6)
         while text_width > text_size_limit:
             text = text[:-2]  # Cut off two characters
-            text_width, _ = draw.textsize(text, font)
+            text_width = draw.textlength(text, font)
             if text_width <= text_size_limit:
                 text += "..."
 
@@ -126,7 +126,7 @@ def draw_themes(themes: list["Theme"], row_height: int = 120, chunksize: int = 5
             text = f"{theme.name}"
 
             # text coords (x, y) indicates top left corner of text
-            text_width, text_height = draw.textsize(text, fnt)
+            text_width = draw.textlength(text, fnt)
             x = (canvas_width/2)-(text_width/2)  # centered text
             y = j * row_height + text_top
             draw.text((x, y), text, font=fnt, fill=(240, 240, 240))
